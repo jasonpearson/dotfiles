@@ -1,0 +1,12 @@
+[submodule "zsh/src/pure"]
+	path = zsh/src/pure
+	url = https://github.com/sindresorhus/pure.git
+[submodule "zsh/src/zsh-autosuggestions"]
+	path = zsh/src/zsh-autosuggestions
+	url = https://github.com/zsh-users/zsh-autosuggestions.git
+[submodule "zsh/src/z"]
+	path = zsh/src/z
+	url = https://github.com/rupa/z.git
+[submodule "vim/src/nerdtree"]
+	path = vim/src/nerdtree
+	url = https://github.com/scrooloose/nerdtree.git

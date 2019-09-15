@@ -1,0 +1,12 @@
+set runtimepath^=~/.dotfiles/vim/src/nerdtree/
+syntax on
+colorscheme zenburn
+set nowrap
+set encoding=utf8
+set number
+set tabstop=2
+set splitright
+set splitbelow
+set autoread
+
+map <C-n> :NERDTreeToggle<CR>
