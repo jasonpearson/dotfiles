@@ -1,4 +1,4 @@
-set runtimepath^=~/.dotfiles/vim/src/nerdtree/
+set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/
 syntax on
 colorscheme zenburn
 set nowrap

@@ -10,3 +10,6 @@
 [submodule "vim/src/nerdtree"]
 	path = vim/src/nerdtree
 	url = https://github.com/scrooloose/nerdtree.git
+[submodule "fzf/src/fzf"]
+	path = fzf/src/fzf
+	url = https://github.com/junegunn/fzf.git
