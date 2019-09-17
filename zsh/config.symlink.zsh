@@ -3,11 +3,14 @@
 export DOTFILES=~/.dotfiles
 export EDITOR=vim
 
+# source path.zsh files
+for file in $DOTFILES/**/path.zsh(.); do source $file; done
+
 # source alias.zsh files
 for file in $DOTFILES/**/alias.zsh(.); do source $file; done
 
-# source path.zsh files
-for file in $DOTFILES/**/path.zsh(.); do source $file; done
+# source config.zsh files
+for file in $DOTFILES/**/config.zsh(.); do source $file; done
 
 # pure prompt
 fpath+=("$DOTFILES/zsh/src/pure" "$DOTFILES/fzf")

@@ -3,5 +3,5 @@
 set -e
 
 # symlink .tmux.conf
-rm -f ~/.tmux.conf
-ln -s ~/.dotfiles/tmux/tmux.conf.symlink ~/.tmux.conf
+rm -f $HOME/.tmux.conf
+ln -s $DOTFILES/tmux/config.symlink ~/.tmux.conf

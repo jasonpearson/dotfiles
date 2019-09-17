@@ -18,7 +18,7 @@ fi
 
 # symlink .zshrc
 rm -f $HOME/.zshrc
-ln -s $DOTFILES/zsh/zshrc.symlink ~/.zshrc
+ln -s $DOTFILES/zsh/config.symlink.zsh $HOME/.zshrc
 
-# source ~/.zshrc
+# source $HOME/.zshrc
 exec zsh
