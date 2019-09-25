@@ -1,4 +1,4 @@
-set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/
+set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/,~/.dotfiles/vim/src/vim-gitgutter/,~/.dotfiles/vim/src/nerdtree-git-plugin/
 syntax on
 colorscheme zenburn
 set nowrap
@@ -8,5 +8,6 @@ set tabstop=2
 set splitright
 set splitbelow
 set autoread
+set updatetime=100
 
 map <C-n> :NERDTreeToggle<CR>
