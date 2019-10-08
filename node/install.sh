@@ -1,5 +1,12 @@
-#! /bin/zsh
+#! /bin/bash
 
-sudo apt-get install nodejs
-curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
-sudo apt-get install yarn
+pkg_mgr_install nvm
+mkdir -p $HOME/.nvm
+[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"
+
+echo RUNNING nvm install --lts
+nvm install --lts
+
+echo RUNNING nvm use --lts
+nvm use --lts
+

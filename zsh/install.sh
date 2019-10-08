@@ -1,24 +1,22 @@
 #! /bin/bash
 
-set -e
-
-if ! [ -x "$(command -v zsh)" ];
-then
-	sudo apt-get install zsh
-fi
-
+pkg_mgr_install zsh
 
 if ! [ $SHELL = $(which zsh) ];
 then
-	echo "RUN chsh -s $(which zsh)"
+	if ! grep -q "$(which zsh)" /etc/shells;
+	then
+		echo "ADDING $(which zsh) to /etc/shells"
+		echo $(which zsh) | sudo tee -a /etc/shells
+	fi
+	echo "RUNNING chsh -s $(which zsh)"
 	chsh -s $(which zsh)
-	echo SHELL HAS BEEN CHANGED TO ZSH. LOGOUT AND RUN INSTALL AGAIN.
+	echo "SHELL CHANGED. LOGOUT AND RUN $DOTFILES/install.sh AGAIN."
 	exit 1
 fi
 
 # symlink .zshrc
+echo "SYMLINKING $DOTFILES/zsh/config.symlink.zsh to $HOME/.zshrc"
 rm -f $HOME/.zshrc
 ln -s $DOTFILES/zsh/config.symlink.zsh $HOME/.zshrc
 
-# source $HOME/.zshrc
-exec zsh
