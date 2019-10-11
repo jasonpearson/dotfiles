@@ -1,4 +1,4 @@
 #! /bin/bash
 
-pkg_mgr_install fzf
+. $DOTFILES/fzf/src/fzf/install
 

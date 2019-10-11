@@ -24,3 +24,4 @@ function find_and_edit {
 		$EDITOR $result
 	fi
 }
+
