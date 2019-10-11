@@ -8,6 +8,6 @@ ln -s $DOTFILES/vim/config.symlink ~/.vimrc
 
 # symlink colors
 echo "SYMLINKING $DOTFILES/vim/src/colors to $HOME/.vim/colors"
-rm -f $HOME/.vim/colors
+rm -f $HOME/.vim
 ln -s $DOTFILES/vim/src/colors $HOME/.vim/colors
 
