@@ -19,3 +19,6 @@
 [submodule "vim/src/nerdtree-git-plugin"]
 	path = vim/src/nerdtree-git-plugin
 	url = https://github.com/Xuyuanp/nerdtree-git-plugin.git
+[submodule "node/src/nvm"]
+	path = node/src/nvm
+	url = https://github.com/nvm-sh/nvm.git
