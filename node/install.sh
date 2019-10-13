@@ -1,8 +1,9 @@
 #! /bin/bash
 
-pkg_mgr_install nvm
-mkdir -p $HOME/.nvm
-[ -s "/usr/local/opt/nvm/nvm.sh" ] && . "/usr/local/opt/nvm/nvm.sh"
+cd $DOTFILES/node/src/nvm
+git checkout v0.35.0
+
+. $DOTFILES/node/src/nvm/nvm.sh
 
 echo RUNNING nvm install --lts
 nvm install --lts
