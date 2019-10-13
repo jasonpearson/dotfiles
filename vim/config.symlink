@@ -1,6 +1,6 @@
 set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/,~/.dotfiles/vim/src/vim-gitgutter/,~/.dotfiles/vim/src/nerdtree-git-plugin/
 syntax on
-colorscheme zenburn
+colorscheme nord
 set nowrap
 set encoding=utf8
 set number
