@@ -1,3 +1,4 @@
+source $HOME/.fzf.zsh
 export FZF_DEFAULT_OPTS='--preview "[[ $(file --mime {}) =~ binary ]] && \
                  echo {} is a binary file || \
                  (bat --style=numbers --color=always {} || \
@@ -7,6 +8,8 @@ export FZF_DEFAULT_OPTS='--preview "[[ $(file --mime {}) =~ binary ]] && \
                   cat {}) 2> /dev/null | head -500"'
 
 
+fpath+=("$DOTFILES/fzf")
+ 
 function find_and_edit {
 	query=$1
 
@@ -22,3 +25,4 @@ function find_and_edit {
 		$EDITOR $result
 	fi
 }
+
