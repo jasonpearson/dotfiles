@@ -28,3 +28,6 @@
 [submodule "vim/src/ale"]
 	path = vim/src/ale
 	url = https://github.com/dense-analysis/ale.git
+[submodule "vim/src/auto-pairs"]
+	path = vim/src/auto-pairs
+	url = https://github.com/jiangmiao/auto-pairs.git
