@@ -5,9 +5,18 @@ set nowrap
 set encoding=utf8
 set number
 set tabstop=2
+set shiftwidth=2
 set splitright
 set splitbelow
 set autoread
 set updatetime=100
 
 map <C-n> :NERDTreeToggle<CR>
+
+let g:ale_fixers = {
+\   '*': ['trim_whitespace'],
+\   'javascript': ['prettier', 'eslint'],
+\}
+
+let g:ale_fix_on_save = 1
+

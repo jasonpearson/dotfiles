@@ -22,3 +22,9 @@
 [submodule "node/src/nvm"]
 	path = node/src/nvm
 	url = https://github.com/nvm-sh/nvm.git
+[submodule "vim/src/typescript-vim"]
+	path = vim/src/typescript-vim
+	url = https://github.com/leafgarland/typescript-vim.git
+[submodule "vim/src/ale"]
+	path = vim/src/ale
+	url = https://github.com/dense-analysis/ale.git
