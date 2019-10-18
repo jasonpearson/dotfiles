@@ -31,3 +31,6 @@
 [submodule "vim/src/auto-pairs"]
 	path = vim/src/auto-pairs
 	url = https://github.com/jiangmiao/auto-pairs.git
+[submodule "vim/src/YouCompleteMe"]
+	path = vim/src/YouCompleteMe
+	url = https://github.com/ycm-core/YouCompleteMe.git
