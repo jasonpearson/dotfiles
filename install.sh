@@ -1,7 +1,21 @@
 #! /bin/bash
 
 set -e
-. ./config.sh
+
+while getopts c:t: option
+do
+ case "${option}"
+ in
+ c) DOTFILESCONFIG=${OPTARG};;
+ t) TOPIC=${OPTARG};;
+ esac
+done
+
+if [ -z ${DOTFILESCONFIG+x} ]; then
+	. ./config.ubuntu.sh
+else
+	. $DOTFILESCONFIG
+fi
 
 function pkg_mgr_install() {
 	if [ "$PKG_MGR_BIN" = "brew" ]; then
@@ -31,18 +45,16 @@ git submodule update --init --recursive
 echo "RUNNING $PKG_MGR_UPDATE_COMMAND"
 $PKG_MGR_UPDATE_COMMAND
 
-if [ $# -gt 0 ]; then
-	for topic in $*; do
-		echo "RUNNING ./$topic/install.sh"
-		./$topic/install.sh
-	done
-else
+if [ -z ${TOPIC+x} ]; then
 	for topic in "${TOPICS[@]}"
 	do
 		echo "RUNNING ./$topic/install.sh"
 		./$topic/install.sh
 	done
-	
-	echo "DONE. RUN source $HOME/.zshrc OR OPEN A NEW SHELL."
+else
+	echo "RUNNING ./$TOPIC/install.sh"
+	./$TOPIC/install.sh
 fi
+
+echo "DONE. RUN source $HOME/.zshrc OR OPEN A NEW SHELL."
 
