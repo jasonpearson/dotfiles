@@ -1,4 +1,4 @@
-. ~/.dotfiles/config.sh
+. $1
 
 # source path.zsh, alias.zsh, and config.zsh files
 for topic in $TOPICS; do

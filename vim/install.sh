@@ -21,3 +21,6 @@ ln -s $DOTFILES/vim/src/ale $HOME/.vim/pack/git-plugins/start/ale
 echo "SYMLINKING $DOTFILES/vim/src/auto-pairs/plugins/auto-pairs.vim to $HOME/.vim/plugin/auto-pairs.vim"
 ln -s $DOTFILES/vim/src/auto-pairs/plugin/auto-pairs.vim $HOME/.vim/plugin/
 
+cd $DOTFILES/vim/src/YouCompleteMe
+python3 install.py --ts-completer
+
