@@ -1,4 +1,10 @@
-. $1
+if test "$(uname)" = "Darwin"
+then
+	. ~/.dotfiles/config.macos.sh
+elif test "$(expr substr $(uname -s) 1 5)" = "Linux"
+then
+	. ~/.dotfiles/config.ubuntu.sh
+fi
 
 # source path.zsh, alias.zsh, and config.zsh files
 for topic in $TOPICS; do
