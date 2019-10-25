@@ -1,4 +1,6 @@
 source $HOME/.fzf.zsh
+source "$DOTFILES/fzf/src/fzf/shell/key-bindings.zsh"
+
 export FZF_DEFAULT_OPTS='--preview "[[ $(file --mime {}) =~ binary ]] && \
                  echo {} is a binary file || \
                  (bat --style=numbers --color=always {} || \
@@ -9,7 +11,7 @@ export FZF_DEFAULT_OPTS='--preview "[[ $(file --mime {}) =~ binary ]] && \
 
 
 fpath+=("$DOTFILES/fzf")
- 
+
 function find_and_edit {
 	query=$1
 

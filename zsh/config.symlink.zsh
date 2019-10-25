@@ -38,3 +38,4 @@ source $DOTFILES/zsh/src/zsh-autosuggestions/zsh-autosuggestions.zsh
 # z jump
 source $DOTFILES/zsh/src/z/z.sh
 
+
