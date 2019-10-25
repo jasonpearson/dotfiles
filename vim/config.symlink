@@ -1,6 +1,6 @@
 set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/,~/.dotfiles/vim/src/vim-gitgutter/,~/.dotfiles/vim/src/nerdtree-git-plugin/,~/.dotfiles/vim/src/YouCompleteMe/
 syntax on
-colorscheme nord
+colorscheme base16-paraiso
 set nowrap
 set encoding=utf8
 set number
@@ -21,4 +21,9 @@ let g:ale_fixers = {
 let g:ale_fix_on_save = 1
 
 let g:ycm_autoclose_preview_window_after_completion = 1
+
+if filereadable(expand("~/.vimrc_background"))
+  let base16colorspace=256
+  source ~/.vimrc_background
+endif
 

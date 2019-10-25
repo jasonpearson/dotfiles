@@ -34,3 +34,9 @@
 [submodule "vim/src/YouCompleteMe"]
 	path = vim/src/YouCompleteMe
 	url = https://github.com/ycm-core/YouCompleteMe.git
+[submodule "vim/src/base16"]
+	path = vim/src/base16
+	url = https://github.com/chriskempson/base16-vim.git
+[submodule "vim/src/base16-shell"]
+	path = vim/src/base16-shell
+	url = https://github.com/chriskempson/base16-shell.git

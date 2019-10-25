@@ -9,8 +9,8 @@ ln -s $DOTFILES/vim/config.symlink ~/.vimrc
 rm -rf $HOME/.vim
 mkdir -p $HOME/.vim/{pack,plugin}/{typescript,git-plugins}/start
 
-echo "SYMLINKING $DOTFILES/vim/src/colors to $HOME/.vim/colors"
-ln -s $DOTFILES/vim/src/colors $HOME/.vim/colors
+echo "SYMLINKING $DOTFILES/vim/src/base16/colors/ to $HOME/.vim/colors"
+ln -s $DOTFILES/vim/src/base16/colors/ $HOME/.vim/colors
 
 echo "SYMLINKING $DOTFILES/vim/src/typescript-vim to $HOME/.vim/pack/typescript/start/typescript-vim"
 ln -s $DOTFILES/vim/src/typescript-vim $HOME/.vim/pack/typescript/start/typescript-vim
