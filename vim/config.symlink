@@ -6,8 +6,6 @@ set encoding=utf8
 set number
 set tabstop=2
 set shiftwidth=2
-set splitright
-set splitbelow
 set autoread
 set updatetime=100
 
