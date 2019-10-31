@@ -43,3 +43,6 @@
 [submodule "ethereum/src/go-ethereum"]
 	path = ethereum/src/go-ethereum
 	url = https://github.com/ethereum/go-ethereum
+[submodule "vim/src/vim-tmux-navigator"]
+	path = vim/src/vim-tmux-navigator
+	url = https://github.com/christoomey/vim-tmux-navigator.git
