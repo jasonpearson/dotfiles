@@ -1,13 +1,13 @@
 source $HOME/.fzf.zsh
 source "$DOTFILES/fzf/src/fzf/shell/key-bindings.zsh"
 
-export FZF_DEFAULT_OPTS='--preview "[[ $(file --mime {}) =~ binary ]] && \
+export FZF_DEFAULT_OPTS=' --preview "[[ $(file --mime {}) =~ binary ]] && \
                  echo {} is a binary file || \
                  (bat --style=numbers --color=always {} || \
                   highlight -O ansi -l {} || \
                   coderay {} || \
                   rougify {} || \
-                  cat {}) 2> /dev/null | head -500"'
+                  cat {}) 2> /dev/null | head -500" --bind=ctrl-y:up,ctrl-e:down'
 
 
 fpath+=("$DOTFILES/fzf")

@@ -1,4 +1,4 @@
-set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/,~/.dotfiles/vim/src/vim-gitgutter/,~/.dotfiles/vim/src/nerdtree-git-plugin/,~/.dotfiles/vim/src/YouCompleteMe/,~/.dotfiles/vim/src/vim-tmux-navigator
+set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/,~/.dotfiles/vim/src/vim-gitgutter/,~/.dotfiles/vim/src/nerdtree-git-plugin/,~/.dotfiles/vim/src/YouCompleteMe/,~/.dotfiles/vim/src/vim-tmux-navigator,~/.dotfiles/vim/src/vim-solidity
 syntax on
 colorscheme base16-paraiso
 set nowrap
@@ -10,6 +10,8 @@ set autoread
 set updatetime=100
 
 map <C-n> :NERDTreeToggle<CR>
+inoremap jj <Esc>
+cnoremap jj <C-c>
 
 let g:ale_fixers = {
 \   '*': ['trim_whitespace'],

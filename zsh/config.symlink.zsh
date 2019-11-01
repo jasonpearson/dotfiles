@@ -31,6 +31,7 @@ prompt pure
 
 # vi-style command line
 bindkey -v
+bindkey jj vi-cmd-mode
 
 # zsh-autosuggestions
 source $DOTFILES/zsh/src/zsh-autosuggestions/zsh-autosuggestions.zsh

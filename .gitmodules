@@ -46,3 +46,6 @@
 [submodule "vim/src/vim-tmux-navigator"]
 	path = vim/src/vim-tmux-navigator
 	url = https://github.com/christoomey/vim-tmux-navigator.git
+[submodule "vim/src/vim-solidity"]
+	path = vim/src/vim-solidity
+	url = https://github.com/tomlion/vim-solidity.git
