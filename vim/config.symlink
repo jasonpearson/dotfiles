@@ -12,6 +12,8 @@ set splitright
 set backspace=indent,eol,start
 
 map <C-n> :NERDTreeToggle<CR>
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
 inoremap kj <Esc>
 cnoremap kj <C-c>
 vnoremap kj <Esc>

@@ -13,6 +13,7 @@ setw -g mode-keys vi
 bind-key C-a send-prefix
 bind-key v split-window -h
 bind-key s split-window -v
+bind-key q killp
 bind-key C-j resize-pane -D 10
 bind-key C-k resize-pane -U 10
 bind-key C-h resize-pane -L 10
