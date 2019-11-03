@@ -49,3 +49,9 @@
 [submodule "vim/src/vim-solidity"]
 	path = vim/src/vim-solidity
 	url = https://github.com/tomlion/vim-solidity.git
+[submodule "tmux/src/nord-tmux"]
+	path = tmux/src/nord-tmux
+	url = https://github.com/arcticicestudio/nord-tmux.git
+[submodule "tmux/src/fonts"]
+	path = tmux/src/fonts
+	url = https://github.com/powerline/fonts.git
