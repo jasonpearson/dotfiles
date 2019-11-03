@@ -1,6 +1,5 @@
 set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/,~/.dotfiles/vim/src/vim-gitgutter/,~/.dotfiles/vim/src/nerdtree-git-plugin/,~/.dotfiles/vim/src/YouCompleteMe/,~/.dotfiles/vim/src/vim-tmux-navigator,~/.dotfiles/vim/src/vim-solidity
 syntax on
-colorscheme base16-paraiso
 set nowrap
 set encoding=utf8
 set number
@@ -8,10 +7,14 @@ set tabstop=2
 set shiftwidth=2
 set autoread
 set updatetime=100
+set splitbelow
+set splitright
+set backspace=indent,eol,start
 
 map <C-n> :NERDTreeToggle<CR>
-inoremap jj <Esc>
-cnoremap jj <C-c>
+inoremap kj <Esc>
+cnoremap kj <C-c>
+vnoremap kj <Esc>
 
 let g:ale_fixers = {
 \   '*': ['trim_whitespace'],
@@ -26,4 +29,6 @@ if filereadable(expand("~/.vimrc_background"))
   let base16colorspace=256
   source ~/.vimrc_background
 endif
+
+colorscheme base16-material-palenight
 
