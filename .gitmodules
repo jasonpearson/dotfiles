@@ -55,3 +55,6 @@
 [submodule "tmux/src/fonts"]
 	path = tmux/src/fonts
 	url = https://github.com/powerline/fonts.git
+[submodule "vim/src/lightline"]
+	path = vim/src/lightline
+	url = https://github.com/itchyny/lightline.vim.git

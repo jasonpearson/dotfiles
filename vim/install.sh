@@ -7,7 +7,7 @@ rm -f $HOME/.vimrc
 ln -s $DOTFILES/vim/config.symlink ~/.vimrc
 
 rm -rf $HOME/.vim
-mkdir -p $HOME/.vim/{pack,plugin,bundle}/{typescript,git-plugins}/start
+mkdir -p $HOME/.vim/{pack,plugin,bundle}/{typescript,git-plugins,plugins}/start
 
 echo "SYMLINKING $DOTFILES/vim/src/base16/colors/ to $HOME/.vim/colors"
 ln -s $DOTFILES/vim/src/base16/colors/ $HOME/.vim/colors
@@ -23,6 +23,9 @@ ln -s $DOTFILES/vim/src/auto-pairs/plugin/auto-pairs.vim $HOME/.vim/plugin/
 
 echo "SYMLINKING $DOTFILES/vim/src/vim-solidity to $HOME/.vim/bundle/vim-solidity"
 ln -s $DOTFILES/vim/src/vim-solidity $HOME/.vim/bundle/vim-solidity
+
+echo "SYMLINKING $DOTFILES/vim/src/lightline/ to $HOME/.vim/pack/plugins/start/lightline"
+ln -s $DOTFILES/vim/src/lightline/ $HOME/.vim/pack/plugins/start/lightline
 
 cd $DOTFILES/vim/src/YouCompleteMe
 python3 install.py --ts-completer

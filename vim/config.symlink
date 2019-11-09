@@ -12,6 +12,7 @@ set updatetime=100
 set splitbelow
 set splitright
 set backspace=indent,eol,start
+set laststatus=2
 
 filetype plugin indent on
 
