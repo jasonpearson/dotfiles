@@ -3,7 +3,9 @@ syntax on
 set nowrap
 set encoding=utf8
 set number
+set expandtab
 set tabstop=2
+set softtabstop=2
 set shiftwidth=2
 set autoread
 set updatetime=100
@@ -11,21 +13,15 @@ set splitbelow
 set splitright
 set backspace=indent,eol,start
 
+filetype plugin indent on
+
 map <C-n> :NERDTreeToggle<CR>
+map <C-f> :FZF<CR>
 nnoremap <leader>w :w<CR>
 nnoremap <leader>q :q<CR>
 inoremap kj <Esc>
 cnoremap kj <C-c>
 vnoremap kj <Esc>
-
-let g:ale_fixers = {
-\   '*': ['trim_whitespace'],
-\   'javascript': ['prettier', 'eslint'],
-\}
-
-let g:ale_fix_on_save = 1
-
-let g:ycm_autoclose_preview_window_after_completion = 1
 
 if filereadable(expand("~/.vimrc_background"))
   let base16colorspace=256
@@ -33,4 +29,16 @@ if filereadable(expand("~/.vimrc_background"))
 endif
 
 colorscheme base16-material-palenight
+
+let g:ale_fixers = {
+\   '*': ['trim_whitespace'],
+\   'javascript': ['prettier', 'eslint'],
+\   'typescript': ['prettier', 'eslint'],
+\}
+
+let g:ale_fix_on_save = 1
+highlight ALEWarning ctermbg=Yellow ctermfg=Black
+highlight ALEError ctermbg=Red ctermfg=Black
+
+let g:ycm_autoclose_preview_window_after_completion = 1
 
