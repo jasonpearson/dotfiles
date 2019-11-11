@@ -6,6 +6,11 @@ then
 	. ~/.dotfiles/config.ubuntu.sh
 fi
 
+BASE16_SHELL="$HOME/.config/base16-shell/"
+[ -n "$PS1"  ] && \
+      [ -s "$BASE16_SHELL/profile_helper.sh"  ] && \
+              eval "$("$BASE16_SHELL/profile_helper.sh")"
+
 # source path.zsh, alias.zsh, and config.zsh files
 for topic in $TOPICS; do
 	if [ -e $DOTFILES/$topic/path.zsh ]; then

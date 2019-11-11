@@ -9,6 +9,7 @@ ln -s $DOTFILES/vim/config.symlink ~/.vimrc
 rm -rf $HOME/.vim
 mkdir -p $HOME/.vim/{pack,plugin,bundle}/{typescript,git-plugins,plugins}/start
 
+ln -s $DOTFILES/vim/src/base16-shell $HOME/.config/base16-shell
 echo "SYMLINKING $DOTFILES/vim/src/base16/colors/ to $HOME/.vim/colors"
 ln -s $DOTFILES/vim/src/base16/colors/ $HOME/.vim/colors
 

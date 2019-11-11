@@ -24,13 +24,6 @@ inoremap kj <Esc>
 cnoremap kj <C-c>
 vnoremap kj <Esc>
 
-if filereadable(expand("~/.vimrc_background"))
-  let base16colorspace=256
-  source ~/.vimrc_background
-endif
-
-colorscheme base16-material-palenight
-
 let g:ale_fixers = {
 \   '*': ['trim_whitespace'],
 \   'javascript': ['prettier', 'eslint'],
@@ -42,4 +35,4 @@ highlight ALEWarning ctermbg=Yellow ctermfg=Black
 highlight ALEError ctermbg=Red ctermfg=Black
 
 let g:ycm_autoclose_preview_window_after_completion = 1
-
+"let g:loaded_youcompleteme = 1
