@@ -49,12 +49,12 @@
 [submodule "vim/src/vim-solidity"]
 	path = vim/src/vim-solidity
 	url = https://github.com/tomlion/vim-solidity.git
-[submodule "tmux/src/nord-tmux"]
-	path = tmux/src/nord-tmux
-	url = https://github.com/arcticicestudio/nord-tmux.git
 [submodule "tmux/src/fonts"]
 	path = tmux/src/fonts
 	url = https://github.com/powerline/fonts.git
 [submodule "vim/src/lightline"]
 	path = vim/src/lightline
 	url = https://github.com/itchyny/lightline.vim.git
+[submodule "tmux/src/base16-tmux"]
+	path = tmux/src/base16-tmux
+	url = https://github.com/Kraust/base16-tmux.git
