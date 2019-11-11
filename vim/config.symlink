@@ -24,13 +24,14 @@ inoremap kj <Esc>
 cnoremap kj <C-c>
 vnoremap kj <Esc>
 
+let g:ale_fix_on_save = 1
 let g:ale_fixers = {
 \   '*': ['trim_whitespace'],
 \   'javascript': ['prettier', 'eslint'],
 \   'typescript': ['prettier', 'eslint'],
 \}
 
-let g:ale_fix_on_save = 1
+highlight Visual ctermbg=Blue ctermfg=Black
 highlight ALEWarning ctermbg=Yellow ctermfg=Black
 highlight ALEError ctermbg=Red ctermfg=Black
 
