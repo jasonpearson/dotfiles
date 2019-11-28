@@ -18,10 +18,14 @@ filetype plugin indent on
 
 map <C-n> :NERDTreeToggle<CR>
 map <C-f> :FZF<CR>
+nnoremap <leader>h :ALEHover<CR>
+nnoremap <leader>d :ALEGoToDefinition<CR>
+nnoremap <leader>c :pc<CR>
 nnoremap <leader>w :w<CR>
 nnoremap <leader>q :q<CR>
 inoremap kj <Esc>
 cnoremap kj <C-c>
+cnoremap <expr> %% getcmdtype() == ':' ? expand('%:h').'/' : '%%'
 vnoremap kj <Esc>
 
 let g:ale_fix_on_save = 1
@@ -36,4 +40,7 @@ highlight ALEWarning ctermbg=Yellow ctermfg=Black
 highlight ALEError ctermbg=Red ctermfg=Black
 
 let g:ycm_autoclose_preview_window_after_completion = 1
-"let g:loaded_youcompleteme = 1
+let g:loaded_youcompleteme = 1
+
+packloadall
+silent! helptags ALL
