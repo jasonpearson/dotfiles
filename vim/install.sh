@@ -31,6 +31,9 @@ ln -s $DOTFILES/vim/src/lightline/ $HOME/.vim/pack/plugins/start/lightline
 echo "SYMLINKING $DOTFILES/vim/src/nerdcommenter/ to $HOME/.vim/plugin/nerdcommenter"
 ln -s $DOTFILES/vim/src/nerdcommenter/ $HOME/.vim/plugin/nerdcommenter
 
+echo "SYMLINKING $DOTFILES/vim/src/vim-jsx-typescript/ to $HOME/.vim/plugin/vim-jsx-typescript"
+ln -s $DOTFILES/vim/src/vim-jsx-typescript/ $HOME/.vim/plugin/vim-jsx-typescript
+
 cd $DOTFILES/vim/src/YouCompleteMe
 python3 install.py --ts-completer
 

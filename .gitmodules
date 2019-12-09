@@ -61,3 +61,6 @@
 [submodule "vim/src/nerdcommenter"]
 	path = vim/src/nerdcommenter
 	url = https://github.com/scrooloose/nerdcommenter.git
+[submodule "vim/src/vim-jsx-typescript"]
+	path = vim/src/vim-jsx-typescript
+	url = https://github.com/peitalin/vim-jsx-typescript.git
