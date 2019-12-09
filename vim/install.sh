@@ -28,6 +28,9 @@ ln -s $DOTFILES/vim/src/vim-solidity $HOME/.vim/bundle/vim-solidity
 echo "SYMLINKING $DOTFILES/vim/src/lightline/ to $HOME/.vim/pack/plugins/start/lightline"
 ln -s $DOTFILES/vim/src/lightline/ $HOME/.vim/pack/plugins/start/lightline
 
+echo "SYMLINKING $DOTFILES/vim/src/nerdcommenter/ to $HOME/.vim/plugin/nerdcommenter"
+ln -s $DOTFILES/vim/src/nerdcommenter/ $HOME/.vim/plugin/nerdcommenter
+
 cd $DOTFILES/vim/src/YouCompleteMe
 python3 install.py --ts-completer
 

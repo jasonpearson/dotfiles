@@ -58,3 +58,6 @@
 [submodule "tmux/src/base16-tmux"]
 	path = tmux/src/base16-tmux
 	url = https://github.com/Kraust/base16-tmux.git
+[submodule "vim/src/nerdcommenter"]
+	path = vim/src/nerdcommenter
+	url = https://github.com/scrooloose/nerdcommenter.git
