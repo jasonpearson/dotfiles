@@ -21,6 +21,11 @@ map <C-n> :NERDTreeToggle<CR>
 map <C-f> :FZF<CR>
 nnoremap <leader>h :ALEHover<CR>
 nnoremap <leader>d :ALEGoToDefinition<CR>
+nnoremap <leader>dt :ALEGoToDefinitionInTab<CR>
+nnoremap <leader>dv :ALEGoToDefinitionInVSplit<CR>
+nnoremap <leader>ds :ALEGoToDefinitionInSplit<CR>
+nnoremap <Leader>n :NERDTreeFind<CR>
+nnoremap <leader>t :tabe<CR>
 nnoremap <leader>c :pc<CR>
 nnoremap <leader>w :w<CR>
 nnoremap <leader>q :q<CR>
@@ -42,6 +47,10 @@ highlight ALEError ctermbg=Red ctermfg=Black
 
 let g:ycm_autoclose_preview_window_after_completion = 1
 let g:loaded_youcompleteme = 1
+let g:NERDTreeMapOpenSplit = 's'
+let g:NERDTreeMapPreviewSplit = 'gs'
+let g:NERDTreeMapOpenVSplit = 'v'
+let g:NERDTreeMapPreviewVSplit = 'gv'
 let g:NERDSpaceDelims = 1
 let g:NERDCompactSexyComs = 1
 let g:NERDDefaultAlign = 'left'
