@@ -54,6 +54,7 @@ let g:NERDTreeMapPreviewVSplit = 'gv'
 let g:NERDSpaceDelims = 1
 let g:NERDCompactSexyComs = 1
 let g:NERDDefaultAlign = 'left'
+let g:AutoPairsShortcutFastWrap = '<C-f>'
 
 packloadall
 silent! helptags ALL
