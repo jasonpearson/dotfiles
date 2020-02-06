@@ -64,3 +64,6 @@
 [submodule "vim/src/vim-jsx-typescript"]
 	path = vim/src/vim-jsx-typescript
 	url = https://github.com/peitalin/vim-jsx-typescript.git
+[submodule "vim/src/vim-surround"]
+	path = vim/src/vim-surround
+	url = https://github.com/tpope/vim-surround.git

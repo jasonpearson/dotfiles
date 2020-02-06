@@ -1,4 +1,4 @@
-set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/,~/.dotfiles/vim/src/vim-gitgutter/,~/.dotfiles/vim/src/nerdtree-git-plugin/,~/.dotfiles/vim/src/YouCompleteMe/,~/.dotfiles/vim/src/vim-tmux-navigator,~/.dotfiles/vim/src/vim-solidity,~/.dotfiles/vim/src/nerdcommenter
+set runtimepath^=~/.dotfiles/vim/src/nerdtree/,~/.dotfiles/fzf/src/fzf/,~/.dotfiles/vim/src/vim-gitgutter/,~/.dotfiles/vim/src/nerdtree-git-plugin/,~/.dotfiles/vim/src/YouCompleteMe/,~/.dotfiles/vim/src/vim-tmux-navigator,~/.dotfiles/vim/src/vim-solidity,~/.dotfiles/vim/src/nerdcommenter,~/.dotfiles/vim/src/vim-surround
 syntax on
 set nowrap
 set encoding=utf8
