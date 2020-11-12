@@ -1,69 +1,51 @@
-[submodule "zsh/src/pure"]
-	path = zsh/src/pure
+[submodule "zsh/pure"]
+	path = zsh/pure
 	url = https://github.com/sindresorhus/pure.git
-[submodule "zsh/src/zsh-autosuggestions"]
-	path = zsh/src/zsh-autosuggestions
+[submodule "zsh/zsh-autosuggestions"]
+	path = zsh/zsh-autosuggestions
 	url = https://github.com/zsh-users/zsh-autosuggestions.git
-[submodule "zsh/src/z"]
-	path = zsh/src/z
-	url = https://github.com/rupa/z.git
-[submodule "vim/src/nerdtree"]
-	path = vim/src/nerdtree
-	url = https://github.com/scrooloose/nerdtree.git
-[submodule "fzf/src/fzf"]
-	path = fzf/src/fzf
-	url = https://github.com/junegunn/fzf.git
-[submodule "vim/src/vim-gitgutter"]
-	path = vim/src/vim-gitgutter
+[submodule "vim/vim-gitgutter"]
+	path = vim/vim-gitgutter
 	url = https://github.com/airblade/vim-gitgutter.git
-[submodule "vim/src/nerdtree-git-plugin"]
-	path = vim/src/nerdtree-git-plugin
-	url = https://github.com/Xuyuanp/nerdtree-git-plugin.git
-[submodule "node/src/nvm"]
-	path = node/src/nvm
-	url = https://github.com/nvm-sh/nvm.git
-[submodule "vim/src/typescript-vim"]
-	path = vim/src/typescript-vim
+[submodule "vim/typescript-vim"]
+	path = vim/typescript-vim
 	url = https://github.com/leafgarland/typescript-vim.git
-[submodule "vim/src/ale"]
-	path = vim/src/ale
-	url = https://github.com/dense-analysis/ale.git
-[submodule "vim/src/auto-pairs"]
-	path = vim/src/auto-pairs
+[submodule "vim/auto-pairs"]
+	path = vim/auto-pairs
 	url = https://github.com/jiangmiao/auto-pairs.git
-[submodule "vim/src/YouCompleteMe"]
-	path = vim/src/YouCompleteMe
-	url = https://github.com/ycm-core/YouCompleteMe.git
-[submodule "vim/src/base16"]
-	path = vim/src/base16
+[submodule "vim/base16-vim"]
+	path = vim/base16-vim
 	url = https://github.com/chriskempson/base16-vim.git
-[submodule "vim/src/base16-shell"]
-	path = vim/src/base16-shell
+[submodule "vim/base16-shell"]
+	path = vim/base16-shell
 	url = https://github.com/chriskempson/base16-shell.git
-[submodule "ethereum/src/go-ethereum"]
-	path = ethereum/src/go-ethereum
-	url = https://github.com/ethereum/go-ethereum
-[submodule "vim/src/vim-tmux-navigator"]
-	path = vim/src/vim-tmux-navigator
+[submodule "vim/vim-tmux-navigator"]
+	path = vim/vim-tmux-navigator
 	url = https://github.com/christoomey/vim-tmux-navigator.git
-[submodule "vim/src/vim-solidity"]
-	path = vim/src/vim-solidity
+[submodule "vim/vim-solidity"]
+	path = vim/vim-solidity
 	url = https://github.com/tomlion/vim-solidity.git
-[submodule "tmux/src/fonts"]
-	path = tmux/src/fonts
-	url = https://github.com/powerline/fonts.git
-[submodule "vim/src/lightline"]
-	path = vim/src/lightline
-	url = https://github.com/itchyny/lightline.vim.git
-[submodule "tmux/src/base16-tmux"]
-	path = tmux/src/base16-tmux
+[submodule "tmux/base16-tmux"]
+	path = tmux/base16-tmux
 	url = https://github.com/Kraust/base16-tmux.git
-[submodule "vim/src/nerdcommenter"]
-	path = vim/src/nerdcommenter
+[submodule "vim/nerdcommenter"]
+	path = vim/nerdcommenter
 	url = https://github.com/scrooloose/nerdcommenter.git
-[submodule "vim/src/vim-jsx-typescript"]
-	path = vim/src/vim-jsx-typescript
+[submodule "vim/vim-jsx-typescript"]
+	path = vim/vim-jsx-typescript
 	url = https://github.com/peitalin/vim-jsx-typescript.git
-[submodule "vim/src/vim-surround"]
-	path = vim/src/vim-surround
-	url = https://github.com/tpope/vim-surround.git
+[submodule "zsh/zsh-z"]
+	path = zsh/zsh-z
+	url = https://github.com/agkozak/zsh-z.git
+[submodule "vim/coc.nvim"]
+	path = vim/coc.nvim
+	url = https://github.com/neoclide/coc.nvim.git
+[submodule "vim/vim-javascript"]
+	path = vim/vim-javascript
+	url = https://github.com/pangloss/vim-javascript.git
+[submodule "vim/vim-graphql"]
+	path = vim/vim-graphql
+	url = https://github.com/jparise/vim-graphql.git
+[submodule "vim/denite.nvim"]
+	path = vim/denite.nvim
+	url = https://github.com/Shougo/denite.nvim.git
