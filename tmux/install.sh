@@ -1,9 +1,6 @@
-#! /bin/bash
+#!/bin/bash
 
-pkg_mgr_install tmux
+echo "RUNNING tmux install script"
 
-# symlink .tmux.conf
-echo "SYMLINKING $DOTFILES/tmux/config.symlink to $HOME/.tmux.conf"
-rm -f $HOME/.tmux.conf
-ln -s $DOTFILES/tmux/config.symlink $HOME/.tmux.conf
-
+rm -f ~/.tmux.conf
+ln -s $DOTFILES/tmux/tmux.conf ~/.tmux.conf

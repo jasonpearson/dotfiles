@@ -1,60 +1,15 @@
-#! /bin/bash
+#!/bin/bash
 
 set -e
-
-while getopts c:t: option
-do
- case "${option}"
- in
- c) DOTFILESCONFIG=${OPTARG};;
- t) TOPIC=${OPTARG};;
- esac
-done
-
-if [ -z ${DOTFILESCONFIG+x} ]; then
-	. ./config.ubuntu.sh
-else
-	. $DOTFILESCONFIG
-fi
-
-function pkg_mgr_install() {
-	if [ "$PKG_MGR_BIN" = "brew" ]; then
-		if [ $(brew list | grep "$1" | wc -l)  -lt 1 ]; then
-			echo "RUNNING $PKG_MGR_INSTALL_COMMAND $1"
-			$PKG_MGR_INSTALL_COMMAND $1
-			echo "DONE. INSTALLED $1"
-		else
-			echo "ALREADY INSTALLED: $1"
-		fi
-	elif [ "$PKG_MGR_BIN" = "sudo apt" ]; then
-		if [ $(dpkg --list | grep "$1" | wc -l)  -lt 1 ]; then
-			echo "RUNNING $PKG_MGR_INSTALL_COMMAND $1"
-			$PKG_MGR_INSTALL_COMMAND $1
-			echo "DONE. INSTALLED $1"
-		else
-			echo "ALREADY INSTALLED: $1"
-		fi
-	fi
-}
-
-export -f pkg_mgr_install
+export DOTFILES=~/.dotfiles
+export TOPICS=(homebrew zsh vim tmux git go)
 
 echo "RUNNING git submodule update --init --recursive"
 git submodule update --init --recursive
 
-echo "RUNNING $PKG_MGR_UPDATE_COMMAND"
-$PKG_MGR_UPDATE_COMMAND
+for topic in "${TOPICS[@]}"
+  do
+    ./$topic/install.sh
+  done
 
-if [ -z ${TOPIC+x} ]; then
-	for topic in "${TOPICS[@]}"
-	do
-		echo "RUNNING ./$topic/install.sh"
-		./$topic/install.sh
-	done
-else
-	echo "RUNNING ./$TOPIC/install.sh"
-	./$TOPIC/install.sh
-fi
-
-echo "DONE. RUN source $HOME/.zshrc OR OPEN A NEW SHELL."
-
+echo "DONE"

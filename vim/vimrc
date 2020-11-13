@@ -1,0 +1,151 @@
+"###
+" general
+"###
+set hidden
+syntax on
+set nowrap
+set encoding=utf8
+set number
+set expandtab
+set tabstop=2
+set softtabstop=2
+set shiftwidth=2
+set autoread
+set timeoutlen=1000 ttimeoutlen=0
+set updatetime=100
+set backspace=indent,eol,start
+set laststatus=2
+set pastetoggle=<leader>v
+
+filetype plugin indent on
+
+let mapleader = " "
+let g:netrw_banner = 0
+
+nnoremap <leader>1 :source ~/.vimrc<CR>
+nnoremap <leader>w :w<CR>
+nnoremap <leader>q :q<CR>
+nnoremap <leader>t :tabe<CR>
+nnoremap <leader>E :E<CR>
+nnoremap <leader>e :e.<CR>
+nnoremap <leader>v :Ve<CR>
+nnoremap <leader>s :Se<CR>
+nnoremap <leader>n :bn<CR>
+nnoremap <leader>p :bp<CR>
+inoremap kj <Esc>
+
+nnoremap <C-j> <C-w><C-j>
+nnoremap <C-k> <C-w><C-k>
+nnoremap <C-l> <C-w><C-l>
+nnoremap <C-h <C-w><C-h>
+noremap <silent><esc> <esc>:noh<CR><esc>
+
+hi Pmenu ctermbg=18 ctermfg=21
+hi PmenuSel ctermbg=21 ctermfg=19
+
+packloadall
+helptags ALL
+
+
+"###
+" autopairs
+"###
+let g:AutoPairsShortcutFastWrap = '<C-f>'
+
+
+"###
+" coc
+"###
+nmap <silent> gd <Plug>(coc-definition)
+nnoremap gds :call CocAction('jumpDefinition', 'split')<CR>
+nnoremap gdv :call CocAction('jumpDefinition', 'vsplit')<CR>
+nnoremap gdt :call CocAction('jumpDefinition', 'tabe')<CR>
+
+nmap <silent> gy <Plug>(coc-type-definition)
+nnoremap gys :call CocAction('jumpDefinition', 'split')<CR>
+nnoremap gyv :call CocAction('jumpDefinition', 'vsplit')<CR>
+nnoremap gyt :call CocAction('jumpDefinition', 'tabe')<CR>
+
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+inoremap <expr> <Tab> pumvisible() ? "\<C-n>" : "\<Tab>"
+inoremap <expr> <S-Tab> pumvisible() ? "\<C-p>" : "\<S-Tab>"
+
+let g:coc_global_extensions = [ 'coc-tsserver' ]
+if isdirectory('./node_modules') && isdirectory('./node_modules/prettier')
+  let g:coc_global_extensions += ['coc-prettier']
+endif
+
+if isdirectory('./node_modules') && isdirectory('./node_modules/eslint')
+  let g:coc_global_extensions += ['coc-eslint']
+endif
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remapped by other vim plugin
+inoremap <silent><expr> <C-Space> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+nmap <leader>rn <Plug>(coc-rename)
+
+" Formatting selected code.
+xmap <leader>f  <Plug>(coc-format-selected)
+nmap <leader>f  <Plug>(coc-format-selected)
+
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+
+"###
+" denite
+"###
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+  nnoremap <silent><buffer><expr> <CR>
+  \ denite#do_map('do_action')
+  nnoremap <silent><buffer><expr> d
+  \ denite#do_map('do_action', 'delete')
+  nnoremap <silent><buffer><expr> p
+  \ denite#do_map('do_action', 'preview')
+  nnoremap <silent><buffer><expr> q
+  \ denite#do_map('quit')
+  nnoremap <silent><buffer><expr> <C-c>
+  \ denite#do_map('quit')
+  nnoremap <silent><buffer><expr> i
+  \ denite#do_map('open_filter_buffer')
+  nnoremap <silent><buffer><expr> <Space>
+  \ denite#do_map('toggle_select').'j'
+  nnoremap <silent><buffer><expr> r
+  \ denite#do_map('do_action', 'quickfix')
+endfunction
+
+autocmd FileType denite-filter call s:denite_filter_my_settings()
+function! s:denite_filter_my_settings() abort
+  imap <silent><buffer> <C-o> <Plug>(denite_filter_quit)
+endfunction
+
+call denite#custom#var('file/rec', 'command', ['rg', '--files'])
+call denite#custom#var('grep', 'command', ['rg', '--glob', '!yarn.lock'])
+call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
+call denite#custom#var('grep', 'recursive_opts', [])
+call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
+call denite#custom#var('grep', 'separator', ['--'])
+call denite#custom#var('grep', 'final_opts', [])
+
+nnoremap <C-p> :Denite -start-filter file/rec<CR>
+nnoremap <C-f> :Denite buffer<CR>
+nnoremap gr :Denite grep:.<CR>
+nnoremap gK :DeniteCursorWord grep:.<CR>

@@ -1,15 +1,10 @@
-#! /bin/bash
+#!/bin/bash
 
-if test "$(uname)" = "Darwin"
+if ! command -v brew &> /dev/null
 then
-	echo "RUNNING curl --output /tmp/go.tar.gz https://dl.google.com/go/go1.13.3.darwin-amd64.tar.gz"
-	curl --output /tmp/go.tar.gz https://dl.google.com/go/go1.13.3.darwin-amd64.tar.gz
-elif test "$(expr substr $(uname -s) 1 5)" = "Linux"
-then
-	echo "RUNNING curl --output /tmp/go.tar.gz https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz"
-	curl --output /tmp/go.tar.gz https://dl.google.com/go/go1.13.3.linux-amd64.tar.gz
+  echo "RUNNING go install script"
+  curl -L https://golang.org/dl/go1.15.4.darwin-amd64.tar.gz --output /tmp/go.tar.gz
+  tar -C /usr/local -xzf /tmp/go.tar.gz
+else
+  echo "SKIPPING go (already installed)"
 fi
-
-echo "RUNNING sudo tar -C /usr/local -xzf /tmp/go.tar.gz"
-sudo tar -C /usr/local -xzf /tmp/go.tar.gz
-

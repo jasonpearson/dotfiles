@@ -16,8 +16,8 @@
 [submodule "vim/base16-vim"]
 	path = vim/base16-vim
 	url = https://github.com/chriskempson/base16-vim.git
-[submodule "vim/base16-shell"]
-	path = vim/base16-shell
+[submodule "zsh/base16-shell"]
+	path = zsh/base16-shell
 	url = https://github.com/chriskempson/base16-shell.git
 [submodule "vim/vim-tmux-navigator"]
 	path = vim/vim-tmux-navigator
