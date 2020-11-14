@@ -3,6 +3,7 @@
 "###
 set hidden
 syntax on
+set cursorline
 set nowrap
 set encoding=utf8
 set number
@@ -16,6 +17,8 @@ set updatetime=100
 set backspace=indent,eol,start
 set laststatus=2
 set pastetoggle=<leader>v
+autocmd WinEnter * setlocal cursorline
+autocmd WinLeave * setlocal nocursorline
 
 filetype plugin indent on
 
@@ -27,11 +30,14 @@ nnoremap <leader>w :w<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <leader>t :tabe<CR>
 nnoremap <leader>E :E<CR>
+nnoremap <leader>V :Ve<CR>
+nnoremap <leader>S :Se<CR>
 nnoremap <leader>e :e.<CR>
-nnoremap <leader>v :Ve<CR>
-nnoremap <leader>s :Se<CR>
+nnoremap <leader>v :vsp .<CR>
+nnoremap <leader>s :sp .<CR>
 nnoremap <leader>n :bn<CR>
 nnoremap <leader>p :bp<CR>
+nnoremap <leader>d :bd<CR>
 inoremap kj <Esc>
 
 nnoremap <C-j> <C-w><C-j>
@@ -42,6 +48,15 @@ noremap <silent><esc> <esc>:noh<CR><esc>
 
 hi Pmenu ctermbg=18 ctermfg=21
 hi PmenuSel ctermbg=21 ctermfg=19
+hi VertSplit ctermbg=05 ctermfg=Black
+hi clear CursorLine
+augroup CLClear
+    autocmd! ColorScheme * hi clear CursorLine
+augroup END
+hi CursorLineNR cterm=bold
+augroup CLNRSet
+    autocmd! ColorScheme * hi CursorLineNR cterm=bold
+augroup END
 
 packloadall
 helptags ALL
@@ -116,6 +131,12 @@ autocmd FileType denite call s:denite_my_settings()
 function! s:denite_my_settings() abort
   nnoremap <silent><buffer><expr> <CR>
   \ denite#do_map('do_action')
+  nnoremap <silent><buffer><expr> v
+  \ denite#do_map('do_action', 'vsplitswitch')
+  nnoremap <silent><buffer><expr> s
+  \ denite#do_map('do_action', 'splitswitch')
+  nnoremap <silent><buffer><expr> t
+  \ denite#do_map('do_action', 'tabopen')
   nnoremap <silent><buffer><expr> d
   \ denite#do_map('do_action', 'delete')
   nnoremap <silent><buffer><expr> p

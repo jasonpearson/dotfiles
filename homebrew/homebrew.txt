@@ -2,5 +2,6 @@ zsh
 nvim
 tmux
 ripgrep
+fnm
 python
 tmux-mem-cpu-load
