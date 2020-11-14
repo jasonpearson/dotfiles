@@ -25,9 +25,6 @@
 [submodule "vim/vim-solidity"]
 	path = vim/vim-solidity
 	url = https://github.com/tomlion/vim-solidity.git
-[submodule "tmux/base16-tmux"]
-	path = tmux/base16-tmux
-	url = https://github.com/Kraust/base16-tmux.git
 [submodule "vim/nerdcommenter"]
 	path = vim/nerdcommenter
 	url = https://github.com/scrooloose/nerdcommenter.git
