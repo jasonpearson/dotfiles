@@ -3,5 +3,6 @@ nvim
 tmux
 ripgrep
 fnm
+rbenv
 python
 tmux-mem-cpu-load

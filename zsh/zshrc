@@ -65,6 +65,11 @@ prompt pure
 PATH="/usr/local/opt/python/libexec/bin:$PATH"
 
 ###
+# rbenv
+###
+eval "$(rbenv init -)"
+
+###
 # ripgrep
 ###
 alias rgf="rg --files | rg $1"
