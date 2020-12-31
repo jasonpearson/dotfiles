@@ -82,6 +82,8 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nnoremap gys :call CocAction('jumpDefinition', 'split')<CR>
 nnoremap gyv :call CocAction('jumpDefinition', 'vsplit')<CR>
 nnoremap gyt :call CocAction('jumpDefinition', 'tabe')<CR>
+nnoremap gd :call CocAction('diagnosticInfo')<CR>
+nnoremap gh :call CocAction('doHover')<CR>
 
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
@@ -172,3 +174,10 @@ nnoremap <C-p> :Denite -start-filter file/rec<CR>
 nnoremap <C-f> :Denite buffer<CR>
 nnoremap gr :Denite grep:.<CR>
 nnoremap gK :DeniteCursorWord grep:.<CR>
+
+
+"###
+"# nerdcommenter
+"###
+let g:NERDSpaceDelims = 1
+let g:NERDDefaultAlign = 'left'
