@@ -6,3 +6,4 @@ fnm
 rbenv
 python
 tmux-mem-cpu-load
+ipfs

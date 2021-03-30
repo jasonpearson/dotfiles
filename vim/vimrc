@@ -82,7 +82,7 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nnoremap gys :call CocAction('jumpDefinition', 'split')<CR>
 nnoremap gyv :call CocAction('jumpDefinition', 'vsplit')<CR>
 nnoremap gyt :call CocAction('jumpDefinition', 'tabe')<CR>
-nnoremap gd :call CocAction('diagnosticInfo')<CR>
+nnoremap gd :call CocAction('jumpDefinition')<CR>
 nnoremap gh :call CocAction('doHover')<CR>
 
 nmap <silent> gi <Plug>(coc-implementation)

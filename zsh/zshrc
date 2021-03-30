@@ -73,7 +73,7 @@ eval "$(rbenv init -)"
 # ripgrep
 ###
 alias rgf="rg --files | rg $1"
-
+function rge() { e $(rg -l $1) };
 
 ###
 # z jump
