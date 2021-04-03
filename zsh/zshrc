@@ -52,6 +52,11 @@ export GOPATH=$HOME/go
 export PATH=$PATH:$GOPATH/bin
 
 ###
+# homebrew
+###
+eval "$(/opt/homebrew/bin/brew shellenv)"
+
+###
 # pureprompt
 ###
 fpath+=$HOME/.zsh/pure
