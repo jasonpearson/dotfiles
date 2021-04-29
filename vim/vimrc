@@ -24,6 +24,7 @@ filetype plugin indent on
 
 let mapleader = " "
 let g:netrw_banner = 0
+autocmd FileType netrw :wincmd =
 
 nnoremap <leader>1 :source ~/.vimrc<CR>
 nnoremap <leader>w :w<CR>
@@ -63,8 +64,19 @@ augroup END
 packloadall
 helptags ALL
 
-
 "###
+" ale
+"###
+let g:ale_linters_explicit = 1
+let g:ale_linters = {
+\   'solidity': ['solhint'],
+\}
+let g:ale_fix_on_save = 1
+let g:ale_fixers = {
+\   '*': ['remove_trailing_lines', 'trim_whitespace'],
+\}"###
+"\   'solidity': ['solc'],
+
 " autopairs
 "###
 let g:AutoPairsShortcutFastWrap = '<C-f>'

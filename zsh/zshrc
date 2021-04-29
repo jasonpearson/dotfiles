@@ -13,7 +13,7 @@ alias e="$EDITOR $1"
 ###
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=14,underline"
-source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh 
+source ~/.zsh/zsh-autosuggestions/zsh-autosuggestions.zsh
 bindkey '^ ' autosuggest-accept
 
 
@@ -79,6 +79,11 @@ eval "$(rbenv init -)"
 ###
 alias rgf="rg --files | rg $1"
 function rge() { e $(rg -l $1) };
+
+###
+# yarn
+# #
+PATH="$PATH:/Users/jsonp/.yarn/bin"
 
 ###
 # z jump

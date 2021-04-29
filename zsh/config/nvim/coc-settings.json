@@ -6,5 +6,6 @@
     "typescript",
     "typescript.tsx"
   ],
-  "coc.preferences.formatOnSaveFiletypes": ["*"]
+  "coc.preferences.formatOnSaveFiletypes": ["*"],
+  "javascript.suggestionActions.enabled": false
 }

@@ -46,3 +46,6 @@
 [submodule "vim/denite.nvim"]
 	path = vim/denite.nvim
 	url = https://github.com/Shougo/denite.nvim.git
+[submodule "vim/ale"]
+	path = vim/ale
+	url = https://github.com/dense-analysis/ale.git
