@@ -6,6 +6,9 @@ EDITOR=nvim
 DOTFILES=~/.dotfiles
 alias ll='ls -la'
 alias e="$EDITOR $1"
+# set -o vi
+bindkey -v
+bindkey -M viins 'kj' vi-cmd-mode
 
 
 ###
