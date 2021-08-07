@@ -37,9 +37,6 @@
 [submodule "vim/coc.nvim"]
 	path = vim/coc.nvim
 	url = https://github.com/neoclide/coc.nvim.git
-[submodule "vim/vim-javascript"]
-	path = vim/vim-javascript
-	url = https://github.com/pangloss/vim-javascript.git
 [submodule "vim/vim-graphql"]
 	path = vim/vim-graphql
 	url = https://github.com/jparise/vim-graphql.git

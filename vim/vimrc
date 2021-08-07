@@ -220,3 +220,9 @@ let g:gitgutter_map_keys = 0
 "###
 let g:NERDSpaceDelims = 1
 let g:NERDDefaultAlign = 'left'
+
+
+"###
+"# vim-jsx-typescript
+"###
+autocmd BufNewFile,BufRead *.tsx,*.jsx set filetype=typescriptreact
