@@ -6,7 +6,6 @@ EDITOR=nvim
 DOTFILES=~/.dotfiles
 alias ll='ls -la'
 alias e="$EDITOR $1"
-# set -o vi
 bindkey -v
 bindkey -M viins 'kj' vi-cmd-mode
 
@@ -29,10 +28,6 @@ BASE16_SHELL="$DOTFILES/zsh/base16-shell/"
         eval "$("$BASE16_SHELL/profile_helper.sh")"
 
 
-###
-# fnm
-###
-eval "$(fnm env)"
 
 
 ###
@@ -94,3 +89,8 @@ PATH="$PATH:/Users/jsonp/.yarn/bin"
 source ~/.zsh/zsh-z/zsh-z.plugin.zsh
 zstyle ':completion:*' menu select
 autoload -U compinit && compinit
+#
+###
+# fnm
+###
+eval "$(fnm env)"
