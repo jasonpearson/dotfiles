@@ -28,10 +28,27 @@ let mapleader = " "
 let g:netrw_banner = 0
 autocmd FileType netrw :wincmd =
 
+" netrw disable <C-l> mapping
+augroup netrw_mapping
+  autocmd!
+  autocmd filetype netrw call NetrwMapping()
+augroup END
+
+function! NetrwMapping()
+  nnoremap <silent> <buffer> <c-l> :TmuxNavigateRight<CR>
+endfunction
+
 nnoremap <leader>1 :source ~/.vimrc<CR>
 nnoremap <leader>w :w<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <leader>t :tabe<CR>
+noremap <leader>1 1gt
+noremap <leader>2 2gt
+noremap <leader>3 3gt
+noremap <leader>4 4gt
+noremap <leader>5 5gt
+nnoremap <leader>h :tabprevious<CR>
+nnoremap <leader>l :tabnext<CR>
 nnoremap <leader>E :E<CR>
 nnoremap <leader>o :e %:h<C-z>
 nnoremap <leader>O :vsp %:h<C-z>
@@ -95,10 +112,10 @@ nnoremap gdv :call CocAction('jumpDefinition', 'vsplit')<CR>
 nnoremap gdt :call CocAction('jumpDefinition', 'tabe')<CR>
 
 nmap <silent> gy <Plug>(coc-type-definition)
-nnoremap gys :call CocAction('jumpDefinition', 'split')<CR>
-nnoremap gyv :call CocAction('jumpDefinition', 'vsplit')<CR>
-nnoremap gyt :call CocAction('jumpDefinition', 'tabe')<CR>
-nnoremap gd :call CocAction('jumpDefinition')<CR>
+nnoremap gys :call CocAction('jumpTypeDefinition', 'split')<CR>
+nnoremap gyv :call CocAction('jumpTypeDefinition', 'vsplit')<CR>
+nnoremap gyt :call CocAction('jumpTypeDefinition', 'tabe')<CR>
+nnoremap gd :call CocAction('jumpTypeDefinition')<CR>
 nnoremap gh :call CocAction('doHover')<CR>
 
 nmap <silent> gi <Plug>(coc-implementation)
@@ -190,6 +207,12 @@ nnoremap <C-p> :Denite -start-filter file/rec<CR>
 nnoremap <C-f> :Denite buffer<CR>
 nnoremap gr :Denite grep:.<CR>
 nnoremap gK :DeniteCursorWord grep:.<CR>
+
+
+"###
+"# git-gitter
+"###
+let g:gitgutter_map_keys = 0
 
 
 "###
