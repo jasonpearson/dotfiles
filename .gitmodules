@@ -34,3 +34,6 @@
 [submodule "vim/ale"]
 	path = vim/ale
 	url = https://github.com/dense-analysis/ale.git
+[submodule "vim/vim-polyglot"]
+	path = vim/vim-polyglot
+	url = https://github.com/sheerun/vim-polyglot.git
