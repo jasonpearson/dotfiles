@@ -1,9 +1,0 @@
-{
-  "dependencies": {
-    "eth-cli": "^2.0.1",
-    "ethlint": "^1.2.5",
-    "serve": "^11.3.2",
-    "solhint": "^3.3.4",
-    "solium": "^1.2.5"
-  }
-}

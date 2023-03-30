@@ -60,6 +60,7 @@ nnoremap <leader>s :sp .<CR>
 nnoremap <leader>n :bn<CR>
 nnoremap <leader>p :bp<CR>
 nnoremap <leader>d :bd<CR>
+nnoremap <leader>c :let @*=expand("%")<CR>
 inoremap kj <Esc>
 
 nnoremap <C-j> <C-w><C-j>
