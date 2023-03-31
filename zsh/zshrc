@@ -9,6 +9,15 @@ alias e="$EDITOR $1"
 bindkey -v
 bindkey -M viins 'kj' vi-cmd-mode
 
+function ef() {
+  if [[ $# -eq 0 ]]; then
+    files=$(git diff --name-only)
+  else
+    files=$(git diff --name-only --diff-filter=$1)
+  fi
+
+  echo $files | xargs nvim
+}
 
 ###
 # autosuggestions
@@ -62,6 +71,11 @@ prompt pure
 # pureprompt
 ###
 PATH="/usr/local/opt/python/libexec/bin:$PATH"
+
+###
+# python
+###
+eval "$(pyenv init --path)"
 
 ###
 # ripgrep

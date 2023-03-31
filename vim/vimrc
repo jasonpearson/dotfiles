@@ -38,7 +38,7 @@ function! NetrwMapping()
   nnoremap <silent> <buffer> <c-l> :TmuxNavigateRight<CR>
 endfunction
 
-nnoremap <leader>1 :source ~/.vimrc<CR>
+nnoremap <leader>~ :source ~/.vimrc<CR>
 nnoremap <leader>w :w<CR>
 nnoremap <leader>q :q<CR>
 nnoremap <leader>t :tabe<CR>
@@ -71,9 +71,11 @@ noremap <silent><esc> <esc>:noh<CR><esc>
 noremap <silent><C-c> <C-c>:noh<CR><C-c>
 
 hi Search ctermbg=05 ctermfg=White
-hi Pmenu ctermbg=18 ctermfg=21
-hi PmenuSel ctermbg=21 ctermfg=19
-hi VertSplit ctermbg=05 ctermfg=Black
+hi Pmenu ctermbg=White ctermfg=Black
+hi PmenuSel ctermbg=DarkGrey ctermfg=White
+hi CocMenuSel ctermbg=01 ctermfg=Black
+hi VertSplit ctermfg=05 ctermbg=NONE
+hi SignColumn ctermbg=NONE
 hi clear CursorLine
 augroup CLClear
     autocmd! ColorScheme * hi clear CursorLine
@@ -133,10 +135,7 @@ if isdirectory('./node_modules') && isdirectory('./node_modules/eslint')
   let g:coc_global_extensions += ['coc-eslint']
 endif
 
-" Make <CR> auto-select the first completion item and notify coc.nvim to
-" format on enter, <cr> could be remapped by other vim plugin
-inoremap <silent><expr> <C-Space> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+inoremap <silent><expr> <C-Space> coc#_select_confirm()
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
@@ -196,25 +195,27 @@ function! s:denite_filter_my_settings() abort
   imap <silent><buffer> <C-o> <Plug>(denite_filter_quit)
 endfunction
 
-call denite#custom#var('file/rec', 'command', ['rg', '--files'])
-call denite#custom#var('grep', 'command', ['rg', '--glob', '!yarn.lock'])
+call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!yarn.lock', '--glob', '!__generated__', '--glob', '!__tests__', '--glob', '!test-utils'])
+call denite#custom#var('grep', 'command', ['rg', '--glob', '!yarn.lock', '--glob', '!__generated__', '--glob', '!__tests__', '--glob', '!test-utils'])
 call denite#custom#var('grep', 'default_opts', ['--vimgrep', '--no-heading'])
 call denite#custom#var('grep', 'recursive_opts', [])
 call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
 call denite#custom#var('grep', 'separator', ['--'])
 call denite#custom#var('grep', 'final_opts', [])
+call denite#custom#var('grep', 'max_path_length', 1000)
 
 nnoremap <C-p> :Denite -start-filter file/rec<CR>
 nnoremap <C-f> :Denite buffer<CR>
 nnoremap gr :Denite grep:.<CR>
 nnoremap gK :DeniteCursorWord grep:.<CR>
 
-
 "###
 "# git-gitter
 "###
 let g:gitgutter_map_keys = 0
-
+hi GitGutterAdd ctermbg=NONE ctermfg=6
+hi GitGutterChange ctermbg=NONE ctermfg=7
+hi GitGutterDelete ctermbg=None ctermfg=7
 
 "###
 "# nerdcommenter
