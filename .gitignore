@@ -1,9 +1,8 @@
 node_modules
 TODO.md
 update-notifier-npm.json
-zsh/config/.isolated-storage/
-zsh/config/coc/list-*.json
-zsh/config/coc/commands
-zsh/config/coc/lists
-zsh/config/coc/extensions/db.json
-zsh/config/truffle/
+zsh/config
+!zsh/config/coc/extensions/package.json
+!zsh/config/nvim/coc-settings.json
+!zsh/config/nvim/init.vim
+.DS_Store

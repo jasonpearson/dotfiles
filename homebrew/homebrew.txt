@@ -1,9 +1,8 @@
-zsh
-nvim
-tmux
-ripgrep
 fnm
-rbenv
-python
+jq
+nvim
+pyenv
+ripgrep
+tmux
 tmux-mem-cpu-load
-ipfs
+zsh

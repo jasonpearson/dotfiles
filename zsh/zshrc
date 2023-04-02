@@ -9,6 +9,15 @@ alias e="$EDITOR $1"
 bindkey -v
 bindkey -M viins 'kj' vi-cmd-mode
 
+function ef() {
+  if [[ $# -eq 0 ]]; then
+    files=$(git diff --name-only)
+  else
+    files=$(git diff --name-only --diff-filter=$1)
+  fi
+
+  echo $files | xargs nvim
+}
 
 ###
 # autosuggestions
@@ -22,18 +31,14 @@ bindkey '^ ' autosuggest-accept
 ###
 # base16
 ###
-BASE16_SHELL="$DOTFILES/zsh/base16-shell/"
-[ -n "$PS1" ] && \
-    [ -s "$BASE16_SHELL/profile_helper.sh" ] && \
-        eval "$("$BASE16_SHELL/profile_helper.sh")"
-
-
+export BASE16_SHELL="$DOTFILES/zsh/base16-shell/"
+source "$BASE16_SHELL/profile_helper.sh"
 
 
 ###
 # git
 ###
-alias glo="git log --oneline -n$1"
+alias glo='git log --date=format:"%Y-%m-%d %H:%M %z" --pretty=format:"%h%x09%as%x09%ar%x09%an%x09%s"'
 alias gac="git add -A && git commit -m $1"
 alias gaca='git add -A && git commit --amend --no-edit'
 alias gs='git status'
@@ -68,9 +73,9 @@ prompt pure
 PATH="/usr/local/opt/python/libexec/bin:$PATH"
 
 ###
-# rbenv
+# python
 ###
-eval "$(rbenv init -)"
+eval "$(pyenv init --path)"
 
 ###
 # ripgrep

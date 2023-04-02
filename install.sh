@@ -4,8 +4,8 @@ set -e
 export DOTFILES=~/.dotfiles
 export TOPICS=(homebrew zsh vim tmux git go)
 
-echo "RUNNING git submodule update --init --recursive"
-git submodule update --init --recursive
+echo "RUNNING git submodule update --init --recursive --remote"
+git submodule update --init --recursive --remote
 
 for topic in "${TOPICS[@]}"
   do
