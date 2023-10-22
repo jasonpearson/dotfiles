@@ -1,8 +1,0 @@
-fnm
-jq
-nvim
-pyenv
-ripgrep
-tmux
-tmux-mem-cpu-load
-zsh

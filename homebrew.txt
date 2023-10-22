@@ -1,0 +1,7 @@
+deno
+fnm
+jq
+neovim
+ripgrep
+tmux
+zsh

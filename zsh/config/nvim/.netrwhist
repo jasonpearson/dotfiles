@@ -1,8 +1,0 @@
-let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =6
-let g:netrw_dirhist_6='/Users/jsonp'
-let g:netrw_dirhist_5='/Users/jsonp/.dotfiles'
-let g:netrw_dirhist_4='/Users/jsonp/code/sandbox/js-examples/3box-identities-ed25519'
-let g:netrw_dirhist_3='/Users/jsonp/code/sandbox/js-examples/3box-identities-ed25519/src'
-let g:netrw_dirhist_2='/Users/jsonp'
-let g:netrw_dirhist_1='/Users/jsonp/code/sandbox/js-examples/3box-identities-ed25519/src'

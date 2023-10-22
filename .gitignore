@@ -1,8 +1,2 @@
 node_modules
-TODO.md
-update-notifier-npm.json
-zsh/config
-!zsh/config/coc/extensions/package.json
-!zsh/config/nvim/coc-settings.json
-!zsh/config/nvim/init.vim
 .DS_Store
