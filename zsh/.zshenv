@@ -1,4 +1,4 @@
-export DOTFILES="~/.config"
+export CONFIG="~/.config"
 export EDITOR="nvim"
 export HISTFILE="$ZDOTDIR/.zsh_history"
 export KEYTIMEOUT=1
