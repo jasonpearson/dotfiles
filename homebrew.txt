@@ -2,6 +2,7 @@ deno
 fnm
 jq
 neovim
+pnpm
 ripgrep
 tmux
 zsh

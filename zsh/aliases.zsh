@@ -20,4 +20,3 @@ function ed() {
 
 function rge() { e $(rg -l $1) };
 function rgf() { e $(rg --files | rg $1) };
-

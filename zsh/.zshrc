@@ -10,4 +10,3 @@ source $ZDOTDIR/setup-homebrew.zsh
 source $ZDOTDIR/setup-pure.zsh
 source $ZDOTDIR/setup-autosuggestions.zsh
 source $ZDOTDIR/setup-z.zsh
-
