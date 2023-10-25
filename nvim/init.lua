@@ -1,5 +1,5 @@
 -- options
-vim.g.base16_colorspace = 256
+vim.g.base16colorspace = 256
 vim.g.mapleader = ' '
 vim.g.netrw_banner = 0
 
@@ -37,7 +37,7 @@ vim.keymap.set('n', '<leader>U', '<cmd>echo @%<cr>')
 vim.keymap.set('n', '<leader>u', '<cmd>echo expand("%:~:.")<cr>')
 vim.keymap.set('n', '<leader>w', '<cmd>write<cr>')
 
--- plugins
 require("me.lazy")
-require("mason").setup()
 
+vim.cmd("colorscheme base16-" .. os.getenv("BASE16_THEME"))
+vim.api.nvim_command("highlight LineNr ctermfg=15 ctermbg=00")

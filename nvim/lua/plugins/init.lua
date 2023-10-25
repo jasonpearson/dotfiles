@@ -1,8 +1,7 @@
 return {
 	"RRethy/nvim-base16",
-  "nvim-tree/nvim-web-devicons",
-  "nvim-lualine/lualine.nvim",
-  "neovim/nvim-lspconfig",
-  "williamboman/mason.nvim",
-  "williamboman/mason-lspconfig.nvim",
+	"nvim-lua/plenary.nvim",
+	"chriskempson/base16-vim",
+	"nvim-treesitter/nvim-treesitter",
+	"nvim-tree/nvim-web-devicons",
 }
