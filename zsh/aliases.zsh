@@ -18,5 +18,5 @@ function ed() {
   echo $files | xargs nvim
 }
 
-function rge() { e $(rg -l $1) };
-function rgf() { e $(rg --files | rg $1) };
+function eg() { e $(rg -l $@) };
+function ef() { e $(rg --files | rg $@) };
