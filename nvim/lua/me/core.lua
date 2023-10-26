@@ -2,14 +2,17 @@ vim.g.base16colorspace = 256
 vim.g.mapleader = ' '
 vim.g.netrw_banner = 0
 
+vim.opt.backspace = "indent,eol,start"
 vim.opt.breakindent = true
-vim.opt.expandtab = false
+vim.opt.cursorline = true
+vim.opt.expandtab = true
 vim.opt.hlsearch = false
 vim.opt.ignorecase = true
 vim.opt.mouse = 'a'
 vim.opt.number = true
 vim.opt.smartcase = true
 vim.opt.shiftwidth = 2
+vim.opt.swapfile = false
 vim.opt.tabstop = 2
 vim.opt.wrap = false
 
@@ -17,7 +20,7 @@ vim.keymap.set({'i'}, 'kj', '<Esc>')
 vim.keymap.set({'n', 'x'}, 'y', '"+y') -- copy to system clipboard
 
 vim.keymap.set('n', '<leader><space>', '<cmd>buffers<cr>:buffer<Space>')
-vim.keymap.set('n', '<leader>c', '<cmd>let @*=expand("%")<cr>')
+vim.keymap.set('n', '<leader>y', '<cmd>let @*=expand("%")<cr>')
 vim.keymap.set('n', '<leader>d', '<cmd>bd<cr>')
 vim.keymap.set('n', '<leader>E', '<cmd>E<cr>')
 vim.keymap.set('n', '<leader>e', '<cmd>e.<cr>')
