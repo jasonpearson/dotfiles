@@ -1,7 +1,7 @@
 return {
-	"RRethy/nvim-base16",
-	"nvim-lua/plenary.nvim",
-	"chriskempson/base16-vim",
+	"christoomey/vim-tmux-navigator",
 	"nvim-treesitter/nvim-treesitter",
+	"nvim-lua/plenary.nvim",
 	"nvim-tree/nvim-web-devicons",
+	"RRethy/nvim-base16",
 }
