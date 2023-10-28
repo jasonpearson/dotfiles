@@ -1,4 +1,5 @@
 deno
+fd
 fnm
 jq
 neovim
