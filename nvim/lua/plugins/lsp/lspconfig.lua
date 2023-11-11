@@ -27,12 +27,30 @@ return {
 
 			opts.desc = "Show LSP definitions"
 			keymap.set("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts) -- show lsp definitions
+			keymap.set(
+				"n",
+				"gdv",
+				"<cmd>lua require('telescope.builtin').lsp_definitions{ jump_type = 'vsplit' }<CR>",
+				opts
+			)
+			keymap.set(
+				"n",
+				"gdt",
+				"<cmd>lua require('telescope.builtin').lsp_definitions{ jump_type = 'tab' }<CR>",
+				opts
+			)
+			keymap.set(
+				"n",
+				"gds",
+				"<cmd>lua require('telescope.builtin').lsp_definitions{ jump_type = 'split' }<CR>",
+				opts
+			)
 
 			opts.desc = "Show LSP implementations"
 			keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts) -- show lsp implementations
 
 			opts.desc = "Show LSP type definitions"
-			-- keymap.set("n", "gt", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
+			keymap.set("n", "gK", "<cmd>Telescope lsp_type_definitions<CR>", opts) -- show lsp type definitions
 
 			opts.desc = "See available code actions"
 			keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts) -- see available code actions, in visual mode will apply to selection
@@ -44,7 +62,7 @@ return {
 			keymap.set("n", "<leader>D", "<cmd>Telescope diagnostics bufnr=0<CR>", opts) -- show  diagnostics for file
 
 			opts.desc = "Show line diagnostics"
-			keymap.set("n", "<leader>D", vim.diagnostic.open_float, opts) -- show diagnostics for line
+			keymap.set("n", "<leader>d", vim.diagnostic.open_float, opts) -- show diagnostics for line
 
 			opts.desc = "Go to previous diagnostic"
 			keymap.set("n", "[d", vim.diagnostic.goto_prev, opts) -- jump to previous diagnostic in buffer
@@ -90,29 +108,6 @@ return {
 
 		-- configure tailwindcss server
 		lspconfig["tailwindcss"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		-- configure svelte server
-		lspconfig["svelte"].setup({
-			capabilities = capabilities,
-			on_attach = function(client, bufnr)
-				on_attach(client, bufnr)
-
-				vim.api.nvim_create_autocmd("BufWritePost", {
-					pattern = { "*.js", "*.ts" },
-					callback = function(ctx)
-						if client.name == "svelte" then
-							client.notify("$/onDidChangeTsOrJsFile", { uri = ctx.file })
-						end
-					end,
-				})
-			end,
-		})
-
-		-- configure prisma orm server
-		lspconfig["prismals"].setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 		})
