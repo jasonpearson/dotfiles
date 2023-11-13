@@ -4,6 +4,7 @@ fnm
 jq
 neovim
 pnpm
+python
 ripgrep
 tmux
 zsh

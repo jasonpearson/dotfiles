@@ -11,7 +11,10 @@ return {
 
 		telescope.setup({
 			defaults = {
-				path_display = { "truncate " },
+				layout_config = {
+					vertical = { width = 0.8 },
+					horizontal = { width = 0.8 },
+				},
 				mappings = {
 					i = {
 						["<C-k>"] = actions.move_selection_previous, -- move to prev result
@@ -20,6 +23,16 @@ return {
 						["<C-q>"] = actions.send_selected_to_qflist + actions.open_qflist,
 						["<C-d>"] = actions.delete_buffer,
 					},
+				},
+			},
+			path_display = { truncate = 3 },
+			pickers = {
+				buffers = {
+					disable_devicons = true,
+					theme = "ivy",
+				},
+				find_files = {
+					disable_devicons = true,
 				},
 			},
 		})
