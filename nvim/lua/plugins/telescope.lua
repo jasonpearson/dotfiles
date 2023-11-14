@@ -57,6 +57,7 @@ return {
 
 		keymap.set("n", "<C-f>", "<cmd>Telescope buffers<cr>", { desc = "Show buffers" })
 		keymap.set("n", "<C-g>", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" })
+		keymap.set("n", "gK", "<cmd>Telescope grep_string<cr>", { desc = "Find string in cwd" })
 		keymap.set("n", "<C-p>", "<cmd>Telescope find_files<cr>", { desc = "Fuzzy find files in cwd" })
 	end,
 }
