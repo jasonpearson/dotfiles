@@ -11,6 +11,8 @@ return {
 
 		telescope.setup({
 			defaults = {
+				dynamic_preview_title = true,
+				layout_strategy = "vertical",
 				layout_config = {
 					vertical = { width = 0.8 },
 					horizontal = { width = 0.8 },
@@ -24,8 +26,8 @@ return {
 						["<C-d>"] = actions.delete_buffer,
 					},
 				},
+				path_display = { truncate = 3 },
 			},
-			path_display = { truncate = 3 },
 			pickers = {
 				buffers = {
 					disable_devicons = true,
@@ -33,6 +35,17 @@ return {
 				},
 				find_files = {
 					disable_devicons = true,
+				},
+				live_grep = {
+					disable_devicons = true,
+					vimgrep_arguments = {
+						"rg",
+						"--no-heading",
+						"--with-filename",
+						"--line-number",
+						"--column",
+						"-l",
+					},
 				},
 			},
 		})

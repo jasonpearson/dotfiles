@@ -15,7 +15,7 @@ return {
 			opts.buffer = bufnr
 
 			opts.desc = "Show LSP references"
-			keymap.set("n", "gr", "<cmd>Telescope lsp_references<CR>", opts) -- show definition, references
+			keymap.set("n", "gk", "<cmd>Telescope lsp_references path_display={'smart'}<CR>")
 
 			opts.desc = "Go to declaration"
 			keymap.set("n", "gD", vim.lsp.buf.declaration, opts) -- go to declaration
