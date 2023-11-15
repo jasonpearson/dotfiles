@@ -34,30 +34,40 @@ return {
 					theme = "ivy",
 				},
 				find_files = {
+					layout_strategy = "horizontal",
 					disable_devicons = true,
+					layout_config = {
+						preview_width = 0,
+					},
 				},
-				live_grep = {
+				grep_string = {
 					disable_devicons = true,
 					vimgrep_arguments = {
 						"rg",
-						"--no-heading",
-						"--with-filename",
-						"--line-number",
-						"--column",
 						"-l",
 					},
+				},
+				live_grep = {
+					disable_devicons = true,
+					theme = "ivy",
+					vimgrep_arguments = {
+						"rg",
+						"-l",
+					},
+				},
+				lsp_references = {
+					show_line = false,
 				},
 			},
 		})
 
 		telescope.load_extension("fzf")
 
-		-- set keymaps
-		local keymap = vim.keymap -- for conciseness
+		local builtin = require("telescope.builtin")
 
-		keymap.set("n", "<C-f>", "<cmd>Telescope buffers<cr>", { desc = "Show buffers" })
-		keymap.set("n", "<C-g>", "<cmd>Telescope live_grep<cr>", { desc = "Find string in cwd" })
-		keymap.set("n", "gK", "<cmd>Telescope grep_string<cr>", { desc = "Find string in cwd" })
-		keymap.set("n", "<C-p>", "<cmd>Telescope find_files<cr>", { desc = "Fuzzy find files in cwd" })
+		vim.keymap.set("n", "<C-f>", builtin.buffers)
+		vim.keymap.set("n", "<C-g>", builtin.live_grep)
+		vim.keymap.set("n", "gK", builtin.grep_string)
+		vim.keymap.set("n", "<C-p>", builtin.find_files)
 	end,
 }
