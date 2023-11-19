@@ -20,29 +20,25 @@ return {
 
 			vim.keymap.set("n", "gd", builtin.lsp_definitions, opts)
 
-			vim.keymap.set("n", "Gdv", function()
+			vim.keymap.set("n", "<leader>gdv", function()
 				builtin.lsp_definitions({ jump_type = "vsplit" })
 			end, opts)
 
-			vim.keymap.set("n", "Gdt", function()
+			vim.keymap.set("n", "<leader>gdt", function()
 				builtin.lsp_definitions({ jump_type = "tab" })
 			end, opts)
 
-			vim.keymap.set("n", "Gdt", function()
-				builtin.lsp_definitions({ jump_type = "tab" })
-			end, opts)
-
-			vim.keymap.set("n", "Gds", function()
+			vim.keymap.set("n", "<leader>gds", function()
 				builtin.lsp_definitions({ jump_type = "split" })
 			end, opts)
 
-			vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
-			vim.keymap.set("n", "gH", "<cmd>Telescope lsp_type_definitions<CR>", opts)
-			vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
-			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
 			vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
+			vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
+			vim.keymap.set("n", "gH", "<cmd>Telescope lsp_type_definitions<CR>", opts)
 			vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+			vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
+			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 			vim.keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
 		end
 

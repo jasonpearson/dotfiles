@@ -58,6 +58,9 @@ return {
 				lsp_references = {
 					show_line = false,
 				},
+				lsp_definitions = {
+					show_line = false,
+				},
 			},
 		})
 
@@ -66,8 +69,21 @@ return {
 		local builtin = require("telescope.builtin")
 
 		vim.keymap.set("n", "<C-f>", builtin.buffers)
-		vim.keymap.set("n", "<C-g>", builtin.live_grep)
-		vim.keymap.set("n", "gK", builtin.grep_string)
+
+		vim.keymap.set("n", "<C-g>", function()
+			builtin.live_grep({ vimgrep_arguments = { "rg", "-l", "-g", "!*test*", "--sort", "path" } })
+		end)
+
 		vim.keymap.set("n", "<C-p>", builtin.find_files)
+
+		vim.keymap.set("n", "gs", function()
+			builtin.grep_string({ vimgrep_arguments = { "rg", "-l", "-g", "!*test*", "--sort", "path" } })
+		end)
+
+		vim.keymap.set("n", "gsi", function()
+			builtin.grep_string({ vimgrep_arguments = { "rg", "-l", "-i", "-g", "!*test*", "--sort", "path" } })
+		end)
+
+		vim.keymap.set("n", "gsa", builtin.grep_string)
 	end,
 }
