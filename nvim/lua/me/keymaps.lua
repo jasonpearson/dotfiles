@@ -15,6 +15,7 @@ vim.keymap.set("n", "<leader>h", "<cmd>Ve<cr>")
 vim.keymap.set("n", "<leader>H", "<cmd>topleft vsplit .<cr>")
 vim.keymap.set("n", "<leader>s", "<cmd>Se<cr>")
 vim.keymap.set("n", "<leader>S", "<cmd>sp .<cr>")
-vim.keymap.set("n", "<leader>t", "<cmd>tabe<cr>")
+vim.keymap.set("n", "<leader>t", "<cmd>tabe %:p:h<cr>")
+vim.keymap.set("n", "<leader>T", "<cmd>tabe .<cr>")
 vim.keymap.set("n", "<leader>w", "<cmd>write<cr>")
 vim.keymap.set("n", "<leader>Y", '<cmd>let @*=expand("%")<cr>') -- copy filename to clipboard

@@ -18,6 +18,7 @@ return {
 		-- Define your formatters
 		formatters_by_ft = {
 			lua = { "stylua" },
+			graphql = { "prettier" },
 			python = { "isort", "black" },
 			javascript = { { "prettier" } },
 			typescript = { { "prettier" } },
