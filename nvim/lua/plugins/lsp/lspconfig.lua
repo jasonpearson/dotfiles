@@ -32,6 +32,7 @@ return {
 				builtin.lsp_definitions({ jump_type = "split" })
 			end, opts)
 
+			vim.keymap.set("n", "<leader>dd", vim.diagnostic.open_float)
 			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
 			vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 			vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
@@ -45,7 +46,7 @@ return {
 		-- used to enable autocompletion (assign to every lsp server config)
 		local capabilities = cmp_nvim_lsp.default_capabilities()
 
-		local signs = { Error = " ", Warn = " ", Hint = "󰠠 ", Info = " " }
+		local signs = { Error = "☠️ ", Warn = "😭", Hint = "🤔", Info = "🤓" }
 		for type, icon in pairs(signs) do
 			local hl = "DiagnosticSign" .. type
 			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
