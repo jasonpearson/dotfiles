@@ -1,13 +1,6 @@
-require("me.options")
-require("me.keymaps")
-require("me.netrw")
-
-vim.cmd(
-	[[                                                                                                                                                                                                                                                                                                                                                                
-   autocmd WinEnter * setlocal cursorline                                                                                                                                                                                                                                                                                                                                  
-   autocmd WinLeave * setlocal nocursorline                                                                                                                                                                                                                                                                                                                                
- ]]
-)
+require("options")
+require("keymaps")
+require("netrw")
 
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 
@@ -24,10 +17,7 @@ end
 
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup({
-	{ import = "plugins" },
-	{ import = "plugins.lsp" },
-}, {
+require("lazy").setup({ { import = "plugins" } }, {
 	ui = {
 		icons = {
 			cmd = "⌘",
