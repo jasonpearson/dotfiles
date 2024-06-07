@@ -1,4 +1,5 @@
 alias e="$EDITOR $1"
+alias rs="$RUN_SCRIPT $1"
 alias glo='git log --date=format:"%Y-%m-%d %H:%M %z" --pretty=format:"%h%x09%as%x09%ar%x09%an%x09%s"'
 alias gac="git add -A && git commit -m $1"
 alias gaca='git add -A && git commit --amend --no-edit'
