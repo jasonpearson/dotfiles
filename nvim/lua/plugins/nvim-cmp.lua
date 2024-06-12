@@ -7,17 +7,30 @@ return {
 		"L3MON4D3/LuaSnip", -- snippet engine
 		"saadparwaiz1/cmp_luasnip", -- for autocompletion
 		"rafamadriz/friendly-snippets", -- useful snippets
+		"onsails/lspkind.nvim",
 	},
 	config = function()
 		local cmp = require("cmp")
-
 		local luasnip = require("luasnip")
+		local lspkind = require("lspkind")
 
 		require("luasnip.loaders.from_vscode").lazy_load()
 
 		cmp.setup({
 			completion = {
 				completeopt = "menu,menuone,preview,noselect",
+			},
+			formatting = {
+				format = lspkind.cmp_format({
+					mode = "text",
+					menu = {
+						buffer = "[Buffer]",
+						nvim_lsp = "[LSP]",
+						luasnip = "[LuaSnip]",
+						nvim_lua = "[Lua]",
+						latex_symbols = "[Latex]",
+					},
+				}),
 			},
 			snippet = { -- configure how nvim-cmp interacts with snippet engine
 				expand = function(args)
@@ -31,13 +44,39 @@ return {
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
 				["<C-Space>"] = cmp.mapping.confirm({ select = true }),
 				["<C-e>"] = cmp.mapping.abort(),
-				["<CR>"] = cmp.mapping.confirm({ select = false }),
+				["<C-y>"] = cmp.mapping(function(fallback)
+					if cmp.visible() then
+						if luasnip.expandable() then
+							luasnip.expand()
+						else
+							cmp.confirm({ select = true })
+						end
+					else
+						fallback()
+					end
+				end),
+
+				["<Tab>"] = cmp.mapping(function(fallback)
+					if luasnip.locally_jumpable(1) then
+						luasnip.jump(1)
+					else
+						fallback()
+					end
+				end, { "i", "s" }),
+
+				["<S-Tab>"] = cmp.mapping(function(fallback)
+					if luasnip.locally_jumpable(-1) then
+						luasnip.jump(-1)
+					else
+						fallback()
+					end
+				end, { "i", "s" }),
 			}),
 			sources = cmp.config.sources({
-				{ name = "nvim_lsp" },
-				{ name = "luasnip" },
 				{ name = "buffer" },
 				{ name = "path" },
+				{ name = "luasnip" },
+				{ name = "nvim_lsp" },
 			}),
 		})
 	end,
