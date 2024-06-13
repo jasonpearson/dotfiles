@@ -16,6 +16,34 @@ return {
 
 		require("luasnip.loaders.from_vscode").lazy_load()
 
+		local function confirm_or_copilot(fallback)
+			if cmp.visible() then
+				local entry = cmp.get_selected_entry()
+				if entry then
+					-- Confirm the selected completion item
+					cmp.confirm({ select = true })
+
+					-- Dismiss Copilot suggestion if it is active
+					local copilot_status, copilot_result = pcall(vim.fn["copilot#Dismiss"])
+					if not copilot_status then
+						print("Error dismissing Copilot: " .. copilot_result)
+					end
+				else
+					-- No entry selected, fallback to Copilot or default action
+					fallback()
+				end
+			else
+				-- Accept Copilot's suggestion if no completion is visible
+				local copilot_status, copilot_result = pcall(vim.fn["copilot#Accept"])
+				if not copilot_status then
+					print("Error accepting Copilot: " .. copilot_result)
+					fallback() -- If Copilot is not available or fails, use fallback action
+				elseif copilot_result == "" then
+					fallback() -- If Copilot has no suggestion, use fallback action
+				end
+			end
+		end
+
 		cmp.setup({
 			completion = {
 				completeopt = "menu,menuone,preview,noselect",
@@ -42,9 +70,9 @@ return {
 				["<C-j>"] = cmp.mapping.select_next_item(),
 				["<C-b>"] = cmp.mapping.scroll_docs(-4),
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
-				["<C-Space>"] = cmp.mapping.confirm({ select = true }),
-				["<C-e>"] = cmp.mapping.abort(),
-				["<C-y>"] = cmp.mapping(function(fallback)
+				["<C-y>"] = cmp.mapping(confirm_or_copilot, { "i", "s" }),
+				["<C-n>"] = cmp.mapping.abort(),
+				["<C-Space>"] = cmp.mapping(function(fallback)
 					if cmp.visible() then
 						if luasnip.expandable() then
 							luasnip.expand()

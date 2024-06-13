@@ -26,13 +26,9 @@ return {
 		},
 		-- Set up format-on-save
 		--format_on_save = { async = true, lsp_fallback = true },
-		format_on_save = function(bufnr)
-			-- Disable with a global or buffer-local variable
-			if vim.g.disable_autoformat or vim.b[bufnr].disable_autoformat then
-				return
-			end
-			return { async = true, lsp_fallback = true }
-		end,
+		format_after_save = {
+			lsp_fallback = true,
+		},
 		log_level = vim.log.levels.DEBUG,
 		-- Customize formatters
 		formatters = {
