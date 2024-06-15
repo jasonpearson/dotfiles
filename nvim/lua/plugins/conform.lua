@@ -5,7 +5,7 @@ return {
 	keys = {
 		{
 			-- Customize or remove this keymap to your liking
-			"<leader>mp",
+			"<leader>l",
 			function()
 				require("conform").format({ async = true, lsp_fallback = true })
 			end,
@@ -17,6 +17,7 @@ return {
 	opts = {
 		-- Define your formatters
 		formatters_by_ft = {
+			kotlin = { "ktlint" },
 			lua = { "stylua" },
 			graphql = { "prettier" },
 			python = { "isort", "black" },

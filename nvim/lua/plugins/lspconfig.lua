@@ -14,7 +14,7 @@ return {
 			local builtin = require("telescope.builtin")
 			opts.buffer = bufnr
 
-			vim.keymap.set("n", "gk", function()
+			vim.keymap.set("n", "gr", function()
 				builtin.lsp_references({ path_display = { "truncate" } })
 			end, opts)
 
