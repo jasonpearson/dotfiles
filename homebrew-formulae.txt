@@ -6,5 +6,6 @@ neovim
 pnpm
 python
 ripgrep
+tinty
 tmux
 zsh

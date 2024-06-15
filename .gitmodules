@@ -1,6 +1,3 @@
-[submodule "zsh/base16-shell"]
-  path = zsh/base16-shell
-  url = https://github.com/tinted-theming/base16-shell.git
 [submodule "zsh/pure"]
 	path = zsh/pure
 	url = https://github.com/sindresorhus/pure.git
