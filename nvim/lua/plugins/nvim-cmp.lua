@@ -8,6 +8,7 @@ return {
 		"saadparwaiz1/cmp_luasnip", -- for autocompletion
 		"rafamadriz/friendly-snippets", -- useful snippets
 		"onsails/lspkind.nvim",
+		"github/copilot.vim", -- GitHub Copilot plugin
 	},
 	config = function()
 		local cmp = require("cmp")
@@ -17,31 +18,25 @@ return {
 		require("luasnip.loaders.from_vscode").lazy_load()
 
 		local function confirm_or_copilot(fallback)
-			if cmp.visible() then
-				local entry = cmp.get_selected_entry()
-				if entry then
-					-- Confirm the selected completion item
-					cmp.confirm({ select = true })
+			local entry = cmp.visible() and cmp.get_selected_entry()
+			if entry then
+				-- Confirm the selected completion item
+				cmp.confirm({ select = true })
 
-					-- Dismiss Copilot suggestion if it is active
-					local copilot_status, copilot_result = pcall(vim.fn["copilot#Dismiss"])
-					if not copilot_status then
-						print("Error dismissing Copilot: " .. copilot_result)
-					end
-				else
-					-- No entry selected, fallback to Copilot or default action
-					fallback()
-				end
+				-- Dismiss Copilot suggestion if it is active
+				vim.cmd("silent! Copilot dismiss")
 			else
 				-- Accept Copilot's suggestion if no completion is visible
-				local copilot_status, copilot_result = pcall(vim.fn["copilot#Accept"])
-				if not copilot_status then
-					print("Error accepting Copilot: " .. copilot_result)
-					fallback() -- If Copilot is not available or fails, use fallback action
-				elseif copilot_result == "" then
+				local copilot_status = vim.fn["copilot#Accept"]()
+				if copilot_status == 1 then
+					-- Copilot suggestion accepted
+					-- No further action needed, Copilot already inserts text
+				else
 					fallback() -- If Copilot has no suggestion, use fallback action
 				end
 			end
+
+			vim.api.nvim_feedkeys(vim.api.nvim_replace_termcodes("<Esc>", true, false, true), "n", true)
 		end
 
 		cmp.setup({
@@ -60,7 +55,7 @@ return {
 					},
 				}),
 			},
-			snippet = { -- configure how nvim-cmp interacts with snippet engine
+			snippet = {
 				expand = function(args)
 					luasnip.lsp_expand(args.body)
 				end,
@@ -70,7 +65,9 @@ return {
 				["<C-j>"] = cmp.mapping.select_next_item(),
 				["<C-b>"] = cmp.mapping.scroll_docs(-4),
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
-				["<C-y>"] = cmp.mapping(confirm_or_copilot, { "i", "s" }),
+				["<C-y>"] = cmp.mapping(function(fallback)
+					confirm_or_copilot(fallback)
+				end, { "i", "s" }),
 				["<C-n>"] = cmp.mapping.abort(),
 				["<C-Space>"] = cmp.mapping(function(fallback)
 					if cmp.visible() then
