@@ -1,0 +1,16 @@
+default-scheme = "base16-pasque"
+
+[[items]]
+name = "tinted-shell"
+path = "https://github.com/tinted-theming/tinted-shell"
+hook = ". %f"
+supported-systems = ["base16"]
+themes-dir = "scripts"
+
+[[items]]
+path = "https://github.com/tinted-theming/tinted-tmux"
+name = "tinted-tmux"
+# Check if tmux is in use and if it is, reload the config file
+hook = "tmux run 2> /dev/null && tmux source-file %f"
+supported-systems = ["base16"]
+themes-dir = "colors"

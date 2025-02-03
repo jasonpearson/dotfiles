@@ -1,0 +1,32 @@
+theme = dark:catppuccin-macchiato,light:catppuccin-frappe
+
+keybind = control+b=toggle_quick_terminal
+
+quick-terminal-position = bottom
+
+###############
+### splits ####
+###############
+unfocused-split-opacity = 0.8
+
+keybind = super+control+f=toggle_split_zoom
+
+keybind = super+s=new_split:down
+keybind = super+;=new_split:right
+
+keybind = super+k=goto_split:top
+keybind = super+l=goto_split:right
+keybind = super+j=goto_split:bottom
+keybind = super+h=goto_split:left
+
+keybind = control+shift+k=resize_split:up,15
+keybind = control+shift+l=resize_split:right,15
+keybind = control+shift+j=resize_split:down,15
+keybind = control+shift+h=resize_split:left,15
+
+###############
+### scroll ####
+###############
+keybind = super+u=scroll_page_up
+keybind = super+d=scroll_page_down
+keybind = super+f=write_screen_file:paste

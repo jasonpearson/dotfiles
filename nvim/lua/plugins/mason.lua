@@ -31,7 +31,7 @@ return {
 				"lua_ls",
 				"pyright",
 				"tailwindcss",
-				"tsserver",
+				"ts_ls",
 			},
 			automatic_installation = true,
 		})

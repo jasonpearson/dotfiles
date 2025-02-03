@@ -32,7 +32,9 @@ return {
 				builtin.lsp_definitions({ jump_type = "split" })
 			end, opts)
 
-			vim.keymap.set("n", "<leader>dd", vim.diagnostic.open_float)
+			vim.keymap.set("n", "<leader>dd", function()
+				vim.diagnostic.open_float(nil, { source = "always" })
+			end, { noremap = true, silent = true })
 			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
 			vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
 			vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
@@ -114,7 +116,7 @@ return {
 			on_attach = on_attach,
 		})
 
-		lspconfig["tsserver"].setup({
+		lspconfig["ts_ls"].setup({
 			capabilities = capabilities,
 			on_attach = on_attach,
 			root_dir = lspconfig.util.root_pattern("package.json"),

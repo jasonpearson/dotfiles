@@ -7,3 +7,6 @@
 [submodule "zsh/zsh-z"]
 	path = zsh/zsh-z
 	url = https://github.com/agkozak/zsh-z.git
+[submodule "tinted-theming/tinted-tmux"]
+	path = tinted-theming/tinted-tmux
+	url = https://github.com/tinted-theming/tinted-tmux.git
