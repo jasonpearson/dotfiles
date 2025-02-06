@@ -1,4 +1,4 @@
-# default-scheme = "base16-apathy"
+# default-scheme = "base16-material-palenight"
 default-scheme = "base16-nebula"
 # default-scheme = "base16-pasque"
 # default-scheme = "base16-sandcastle"
@@ -12,9 +12,17 @@ supported-systems = ["base16"]
 themes-dir = "scripts"
 
 [[items]]
+path = "https://github.com/tinted-theming/tinted-terminal"
+name = "tinted-terminal"
+themes-dir = "themes/ghostty"
+# With `theme` set to "tinted-theming", this will be where Ghostty looks for the theme file:
+hook = "command cp -f %f ~/.config/ghostty/themes/tinted-theming"
+supported-systems = ["base16", "base24"]
+
+[[items]]
 path = "https://github.com/tinted-theming/tinted-tmux"
 name = "tinted-tmux"
 # Check if tmux is in use and if it is, reload the config file
 hook = "tmux run 2> /dev/null && tmux source-file %f"
-supported-systems = ["base16"]
+supported-systems = ["base16", "base24"]
 themes-dir = "colors"

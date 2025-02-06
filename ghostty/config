@@ -1,4 +1,4 @@
-theme = dark:catppuccin-macchiato,light:catppuccin-frappe
+theme = "tinted-theming"
 
 keybind = control+b=toggle_quick_terminal
 
