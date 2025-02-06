@@ -1,4 +1,8 @@
-default-scheme = "base16-pasque"
+# default-scheme = "base16-apathy"
+default-scheme = "base16-nebula"
+# default-scheme = "base16-pasque"
+# default-scheme = "base16-sandcastle"
+# default-scheme = "base16-stella"
 
 [[items]]
 name = "tinted-shell"
