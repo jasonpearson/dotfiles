@@ -1,9 +1,10 @@
 [core]
 	excludesfiles = /.gitignore
 [user]
-	name = jsonp
-	email = jason@jasonpearson.me
+	name = jasonpearson.me
+	email = me@jasonpearson.me
 [init]
 	defaultBranch = main
 [color "diff"]
 	old = "#e86b6b"
+  new = "#226f68"
