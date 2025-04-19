@@ -24,6 +24,29 @@ vim.opt.updatetime = 1000
 vim.opt.wildignorecase = true
 vim.opt.wrap = false
 
+vim.diagnostic.config({
+	signs = {
+		text = {
+			[vim.diagnostic.severity.ERROR] = "☠️", -- Error
+			[vim.diagnostic.severity.WARN] = "😭", -- Warning
+			[vim.diagnostic.severity.INFO] = "🤓", -- Information
+			[vim.diagnostic.severity.HINT] = "🤔", -- Hint
+		},
+		numhl = {
+			[vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+			[vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+			[vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+			[vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
+		},
+		texthl = {
+			[vim.diagnostic.severity.ERROR] = "DiagnosticSignError",
+			[vim.diagnostic.severity.WARN] = "DiagnosticSignWarn",
+			[vim.diagnostic.severity.INFO] = "DiagnosticSignInfo",
+			[vim.diagnostic.severity.HINT] = "DiagnosticSignHint",
+		},
+	},
+})
+
 vim.cmd(
 	[[                                                                                                                                                                                                                                                                                                                                                                
    autocmd WinEnter * setlocal cursorline                                                                                                                                                                                                                                                                                                                                  

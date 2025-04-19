@@ -20,3 +20,10 @@ vim.keymap.set("n", "<leader>t", "<cmd>tabe %:p:h<cr>")
 vim.keymap.set("n", "<leader>T", "<cmd>tabe .<cr>")
 vim.keymap.set("n", "<leader>w", "<cmd>write<cr>")
 vim.keymap.set("n", "<leader>Y", '<cmd>let @*=expand("%")<cr>') -- copy filename to clipboard
+
+vim.keymap.set("n", "<leader>dd", function()
+	vim.diagnostic.open_float(nil, { source = "always" })
+end)
+vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
+vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
+vim.keymap.set("n", "<leader>dl", vim.diagnostic.setloclist)
