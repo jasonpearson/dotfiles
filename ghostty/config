@@ -1,7 +1,7 @@
-theme = "tinted-theming"
+theme = "rose-pine-moon"
 
 keybind = control+b=toggle_quick_terminal
-
+copy-on-select = true
 quick-terminal-position = bottom
 
 ###############

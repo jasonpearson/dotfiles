@@ -54,13 +54,13 @@ return {
 			end,
 			desc = "Command History",
 		},
-		{
-			"<leader>n",
-			function()
-				Snacks.picker.notifications()
-			end,
-			desc = "Notification History",
-		},
+		-- {
+		-- 	"<leader>n",
+		-- 	function()
+		-- 		Snacks.picker.notifications()
+		-- 	end,
+		-- 	desc = "Notification History",
+		-- },
 		{
 			"<leader>e",
 			function()

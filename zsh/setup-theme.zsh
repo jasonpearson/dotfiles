@@ -1,1 +1,0 @@
-tinty init
