@@ -3,6 +3,7 @@ deno
 fd
 fnm
 jq
+kotlin
 maven
 neovim
 pnpm
