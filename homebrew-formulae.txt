@@ -3,6 +3,7 @@ deno
 fd
 fnm
 jq
+maven
 neovim
 pnpm
 python

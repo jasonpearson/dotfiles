@@ -30,6 +30,7 @@ return {
 				"eslint",
 				"graphql",
 				"html",
+				"jdtls",
 				"kotlin_language_server",
 				"lua_ls",
 				"tailwindcss",
@@ -44,6 +45,11 @@ return {
 				"prettier",
 				"stylua",
 			},
+		})
+
+		lspconfig["jdtls"].setup({
+			capabilities = capabilities,
+			-- on_attach = on_attach,
 		})
 
 		lspconfig["lua_ls"].setup({
