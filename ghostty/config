@@ -1,4 +1,7 @@
 theme = "rose-pine-moon"
+font-family = "Geist Mono"
+font-feature = -calt, -liga, -dlig
+window-padding-color = extend-always
 
 keybind = control+b=toggle_quick_terminal
 copy-on-select = true

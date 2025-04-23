@@ -13,6 +13,21 @@ return {
 				["<C-e>"] = { "hide" },
 			},
 
+			cmdline = {
+				completion = {
+					menu = {
+						auto_show = true,
+					},
+				},
+				keymap = {
+					["<C-k>"] = { "select_prev", "fallback" },
+					["<C-j>"] = { "select_next", "fallback" },
+					["<C-p>"] = { "scroll_documentation_up", "fallback" },
+					["<C-n>"] = { "scroll_documentation_down", "fallback" },
+					["<C-e>"] = { "hide" },
+				},
+			},
+
 			appearance = {
 				nerd_font_variant = "mono",
 			},
