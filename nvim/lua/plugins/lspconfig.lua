@@ -47,6 +47,11 @@ return {
 			},
 		})
 
+		lspconfig["graphql"].setup({
+			capabilities = capabilities,
+			-- on_attach = on_attach,
+		})
+
 		lspconfig["kotlin_language_server"].setup({
 			capabilities = capabilities,
 			-- on_attach = on_attach,
