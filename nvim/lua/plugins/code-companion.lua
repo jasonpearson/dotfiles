@@ -17,7 +17,7 @@ return {
 		display = {
 			chat = {
 				window = {
-					position = "left",
+					position = "right",
 				},
 			},
 		},
