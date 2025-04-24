@@ -14,6 +14,14 @@ return {
 			end,
 		},
 
+		display = {
+			chat = {
+				window = {
+					position = "left",
+				},
+			},
+		},
+
 		strategies = {
 			chat = {
 				adapter = "copilot",
