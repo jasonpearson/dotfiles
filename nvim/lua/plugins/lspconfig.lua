@@ -92,7 +92,7 @@ return {
 
 				vim.keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
 				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-				vim.keymap.set({ "n" }, "<C-k>", vim.lsp.buf.signature_help, opts)
+				-- vim.keymap.set({ "n" }, "<C-k>", vim.lsp.buf.signature_help, opts)
 				vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 				vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
 				vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, opts)
@@ -127,6 +127,87 @@ return {
 				vim.keymap.set("n", "gD", function()
 					Snacks.picker.lsp_declarations()
 				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Declaration" }))
+
+				vim.keymap.set("n", "<leader>gdt", function()
+					Snacks.picker.lsp_definitions({
+						jump = {
+							tagstack = true,
+							reuse_win = false, -- Don't reuse existing windows
+							close = true,
+						},
+						confirm = function(picker, item)
+							if not item then
+								return
+							end
+							picker:close()
+							vim.schedule(function()
+								-- Open in new tab
+								vim.cmd("tabnew")
+								-- Jump to the file and location
+								if item.file then
+									vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+									if item.pos then
+										vim.api.nvim_win_set_cursor(0, item.pos)
+									end
+								end
+							end)
+						end,
+					})
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Definition in new tab" }))
+
+				vim.keymap.set("n", "<leader>gds", function()
+					Snacks.picker.lsp_definitions({
+						jump = {
+							tagstack = true,
+							reuse_win = false,
+							close = true,
+						},
+						confirm = function(picker, item)
+							if not item then
+								return
+							end
+							picker:close()
+							vim.schedule(function()
+								-- Open in a horizontal split
+								vim.cmd("split")
+								-- Jump to the file and location
+								if item.file then
+									vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+									if item.pos then
+										vim.api.nvim_win_set_cursor(0, item.pos)
+									end
+								end
+							end)
+						end,
+					})
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Definition in split" }))
+
+				vim.keymap.set("n", "<leader>gdv", function()
+					Snacks.picker.lsp_definitions({
+						jump = {
+							tagstack = true,
+							reuse_win = false,
+							close = true,
+						},
+						confirm = function(picker, item)
+							if not item then
+								return
+							end
+							picker:close()
+							vim.schedule(function()
+								-- Open in a horizontal split
+								vim.cmd("vsplit")
+								-- Jump to the file and location
+								if item.file then
+									vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+									if item.pos then
+										vim.api.nvim_win_set_cursor(0, item.pos)
+									end
+								end
+							end)
+						end,
+					})
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Definition in split" }))
 
 				vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts)
 				vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts)

@@ -35,6 +35,7 @@ return {
 			sources = {
 				default = {
 					"copilot",
+					"codecompanion",
 					"lsp",
 					"path",
 					-- "snippets",
