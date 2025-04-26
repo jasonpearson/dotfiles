@@ -20,6 +20,9 @@ return {
 					position = "right",
 				},
 			},
+			diff = {
+				provider = "mini_diff", -- default|mini_diff
+			},
 		},
 
 		strategies = {
@@ -34,6 +37,16 @@ return {
 	dependencies = {
 		"nvim-lua/plenary.nvim",
 		"nvim-treesitter/nvim-treesitter",
+		{
+			"echasnovski/mini.diff",
+			version = false,
+			config = function()
+				local diff = require("mini.diff")
+				diff.setup({
+					source = diff.gen_source.none(),
+				})
+			end,
+		},
 	},
 
 	init = function()
