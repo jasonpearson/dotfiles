@@ -109,7 +109,7 @@ return {
 			sections = {
 				lualine_a = { "mode" },
 				lualine_b = { "branch", "diff", "diagnostics", CodeCompanion },
-				lualine_c = { "filename" },
+				lualine_c = { { "filename", path = 1, file_status = true } },
 				lualine_x = { "lsp_status" },
 				lualine_y = { "progress" },
 				lualine_z = { "location" },

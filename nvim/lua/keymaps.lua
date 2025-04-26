@@ -1,5 +1,4 @@
 vim.keymap.set({ "i" }, "kj", "<Esc>")
-vim.keymap.set({ "n", "x" }, "<leader>y", '"+y') -- yank to system clipboard
 vim.keymap.set("n", "<C-c>", "<cmd>:noh<cr>")
 vim.keymap.set("n", "<leader><space>", "<cmd>buffers<cr>:buffer<Space>")
 vim.keymap.set("n", "<leader>d", "<cmd>bd<cr>", { noremap = true, silent = true })
@@ -20,6 +19,9 @@ vim.keymap.set("n", "<leader>t", "<cmd>tabe %:p:h<cr>")
 vim.keymap.set("n", "<leader>T", "<cmd>tabe .<cr>")
 vim.keymap.set("n", "<leader>w", "<cmd>write<cr>")
 vim.keymap.set("n", "<leader>Y", '<cmd>let @*=expand("%")<cr>') -- copy filename to clipboard
+vim.keymap.set({ "v" }, "<leader>y", '"+y') -- yank to system clipboard
+vim.keymap.set({ "n" }, "<leader>y", '<cmd>let @* = fnamemodify(expand("%"), ":~:.")<cr>') -- yank full path to clipboard
+vim.keymap.set({ "n" }, "<leader>Y", '<cmd>let @* = fnamemodify(expand("%"), ":t")<cr>') -- yank filename to clipboard
 
 vim.keymap.set("n", "<leader>dd", function()
 	vim.diagnostic.open_float(nil, { source = "always" })

@@ -11,11 +11,14 @@ return {
 		input = { enabled = false },
 		picker = {
 			enabled = true,
-			-- icons = {
-			-- 	files = {
-			-- 		enabled = false,
-			-- 	},
-			-- },
+			win = {
+				input = {
+					keys = {
+						["<c-n>"] = { "preview_scroll_down", mode = { "i", "n" } },
+						["<c-p>"] = { "preview_scroll_up", mode = { "i", "n" } },
+					},
+				},
+			},
 		},
 		notifier = { enabled = false },
 		quickfile = { enabled = false },
