@@ -11,7 +11,17 @@ vim.keymap.set("n", "<leader>Q", "<cmd>quitall<cr>")
 vim.keymap.set("n", "<leader>q", "<cmd>quit<cr>")
 vim.keymap.set("n", "<leader>v", "<cmd>vsp %:p:h<cr>")
 vim.keymap.set("n", "<leader>V", "<cmd>vsp .<cr>")
-vim.keymap.set("n", "<leader>h", "<cmd>Ve<cr>")
+vim.keymap.set("n", "<leader>h", function()
+	-- Temporarily disable splitright
+	local original_splitright = vim.o.splitright
+	vim.o.splitright = false
+
+	-- Execute Vexplore
+	vim.cmd("Ve")
+
+	-- Restore original splitright setting
+	vim.o.splitright = original_splitright
+end)
 vim.keymap.set("n", "<leader>H", "<cmd>topleft vsplit .<cr>")
 vim.keymap.set("n", "<leader>s", "<cmd>Se<cr>")
 vim.keymap.set("n", "<leader>S", "<cmd>sp .<cr>")
@@ -29,3 +39,25 @@ end)
 vim.keymap.set("n", "[d", vim.diagnostic.goto_prev)
 vim.keymap.set("n", "]d", vim.diagnostic.goto_next)
 vim.keymap.set("n", "<leader>dl", vim.diagnostic.setloclist)
+vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>")
+vim.keymap.set("n", "<C-p>", "<cmd>cprev<cr>")
+
+vim.keymap.set("n", "<leader>fq", function()
+	local wins = vim.api.nvim_list_wins()
+	local qf_open = false
+
+	for _, win in ipairs(wins) do
+		local buf = vim.api.nvim_win_get_buf(win)
+
+		if vim.bo[buf].filetype == "qf" then
+			qf_open = true
+			break
+		end
+	end
+
+	if qf_open then
+		vim.cmd("cclose")
+	else
+		vim.cmd("copen")
+	end
+end)
