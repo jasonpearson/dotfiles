@@ -10,4 +10,5 @@ pnpm
 python
 ripgrep
 tmux
+uv
 zsh
