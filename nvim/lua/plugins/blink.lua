@@ -32,6 +32,17 @@ return {
 				nerd_font_variant = "mono",
 			},
 
+			completion = {
+				menu = {
+					draw = {
+						columns = {
+							{ "label", "label_description", gap = 1 },
+							{ "kind_icon", "kind" },
+						},
+					},
+				},
+			},
+
 			sources = {
 				default = {
 					"copilot",

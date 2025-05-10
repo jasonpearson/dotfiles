@@ -11,17 +11,7 @@ vim.keymap.set("n", "<leader>Q", "<cmd>quitall<cr>")
 vim.keymap.set("n", "<leader>q", "<cmd>quit<cr>")
 vim.keymap.set("n", "<leader>v", "<cmd>vsp %:p:h<cr>")
 vim.keymap.set("n", "<leader>V", "<cmd>vsp .<cr>")
-vim.keymap.set("n", "<leader>h", function()
-	-- Temporarily disable splitright
-	local original_splitright = vim.o.splitright
-	vim.o.splitright = false
-
-	-- Execute Vexplore
-	vim.cmd("Ve")
-
-	-- Restore original splitright setting
-	vim.o.splitright = original_splitright
-end)
+vim.keymap.set("n", "<leader>h", "<cmd>Ve<cr>")
 vim.keymap.set("n", "<leader>H", "<cmd>topleft vsplit .<cr>")
 vim.keymap.set("n", "<leader>s", "<cmd>Se<cr>")
 vim.keymap.set("n", "<leader>S", "<cmd>sp .<cr>")
