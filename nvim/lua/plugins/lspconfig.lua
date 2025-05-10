@@ -107,7 +107,7 @@ return {
 				-- vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, opts)
 				vim.keymap.set("n", "gd", function()
 					Snacks.picker.lsp_definitions()
-				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Defintiion" }))
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Definition" }))
 
 				vim.keymap.set("n", "gr", function()
 					Snacks.picker.lsp_references()
