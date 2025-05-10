@@ -3,10 +3,12 @@ deno
 fd
 fnm
 jq
+kotlin
+maven
 neovim
 pnpm
 python
 ripgrep
-tinty
 tmux
+uv
 zsh

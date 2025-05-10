@@ -7,8 +7,8 @@ source $ZDOTDIR/setup-homebrew.zsh
 
 source $ZDOTDIR/aliases.zsh
 source $ZDOTDIR/secrets.zsh
-source $ZDOTDIR/setup-theme.zsh
 source $ZDOTDIR/setup-fnm.zsh
+source $ZDOTDIR/setup-java.zsh
 source $ZDOTDIR/setup-pure.zsh
 source $ZDOTDIR/setup-python.zsh
 source $ZDOTDIR/setup-autosuggestions.zsh

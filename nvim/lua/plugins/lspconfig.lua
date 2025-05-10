@@ -1,126 +1,223 @@
 return {
 	"neovim/nvim-lspconfig",
-	event = { "BufReadPre", "BufNewFile" },
 	dependencies = {
-		"hrsh7th/cmp-nvim-lsp",
-		{ "antosha417/nvim-lsp-file-operations", config = true },
+		"folke/snacks.nvim",
+		"saghen/blink.cmp",
+		"williamboman/mason.nvim",
+		"williamboman/mason-lspconfig.nvim",
+		"WhoIsSethDaniel/mason-tool-installer.nvim",
 	},
 	config = function()
+		local capabilities = require("blink.cmp").get_lsp_capabilities()
 		local lspconfig = require("lspconfig")
-		local cmp_nvim_lsp = require("cmp_nvim_lsp")
-		local opts = { noremap = true, silent = true }
+		local mason = require("mason")
+		local mason_lspconfig = require("mason-lspconfig")
+		local mason_tool_installer = require("mason-tool-installer")
 
-		local on_attach = function(client, bufnr)
-			local builtin = require("telescope.builtin")
-			opts.buffer = bufnr
-
-			vim.keymap.set("n", "gr", function()
-				builtin.lsp_references({ path_display = { "truncate" } })
-			end, opts)
-
-			vim.keymap.set("n", "gd", builtin.lsp_definitions, opts)
-
-			vim.keymap.set("n", "<leader>gdv", function()
-				builtin.lsp_definitions({ jump_type = "vsplit" })
-			end, opts)
-
-			vim.keymap.set("n", "<leader>gdt", function()
-				builtin.lsp_definitions({ jump_type = "tab" })
-			end, opts)
-
-			vim.keymap.set("n", "<leader>gds", function()
-				builtin.lsp_definitions({ jump_type = "split" })
-			end, opts)
-
-			vim.keymap.set("n", "<leader>dd", function()
-				vim.diagnostic.open_float(nil, { source = "always" })
-			end, { noremap = true, silent = true })
-			vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-			vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-			vim.keymap.set("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
-			vim.keymap.set("n", "gH", "<cmd>Telescope lsp_type_definitions<CR>", opts)
-			vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-			vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
-			vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
-			vim.keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
-		end
-
-		-- used to enable autocompletion (assign to every lsp server config)
-		local capabilities = cmp_nvim_lsp.default_capabilities()
-
-		local signs = { Error = "☠️ ", Warn = "😭", Hint = "🤔", Info = "🤓" }
-		for type, icon in pairs(signs) do
-			local hl = "DiagnosticSign" .. type
-			vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-		end
-
-		lspconfig["cssls"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
+		mason.setup({
+			ui = {
+				icons = {
+					package_installed = "✓",
+					package_pending = "➜",
+					package_uninstalled = "✗",
+				},
+			},
 		})
 
-		lspconfig["denols"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-			root_dir = lspconfig.util.root_pattern("deno.json", "deno.jsonc"),
+		mason_lspconfig.setup({
+			ensure_installed = {
+				"cssls",
+				"eslint",
+				"graphql",
+				"html",
+				"jdtls",
+				"kotlin_language_server",
+				"lua_ls",
+				"tailwindcss",
+				"ts_ls",
+			},
+			automatic_installation = true,
 		})
 
-		lspconfig["eslint"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
+		mason_tool_installer.setup({
+			ensure_installed = {
+				"eslint",
+				"prettier",
+				"stylua",
+			},
 		})
 
 		lspconfig["graphql"].setup({
 			capabilities = capabilities,
-			on_attach = on_attach,
-			filetypes = { "graphql", "gql", "svelte", "typescriptreact", "javascriptreact" },
-		})
-
-		lspconfig["html"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
+			-- on_attach = on_attach,
 		})
 
 		lspconfig["kotlin_language_server"].setup({
 			capabilities = capabilities,
-			on_attach = on_attach,
+			-- on_attach = on_attach,
+		})
+
+		lspconfig["jdtls"].setup({
+			capabilities = capabilities,
+			-- on_attach = on_attach,
 		})
 
 		lspconfig["lua_ls"].setup({
 			capabilities = capabilities,
-			on_attach = on_attach,
-			settings = { -- custom settings for lua
+			-- on_attach = on_attach,
+			settings = {
 				Lua = {
-					-- make the language server recognize "vim" global
 					diagnostics = {
 						globals = { "vim" },
-					},
-					workspace = {
-						-- make language server aware of runtime files
-						library = {
-							[vim.fn.expand("$VIMRUNTIME/lua")] = true,
-							[vim.fn.stdpath("config") .. "/lua"] = true,
-						},
 					},
 				},
 			},
 		})
 
-		lspconfig["pyright"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
-		lspconfig["tailwindcss"].setup({
-			capabilities = capabilities,
-			on_attach = on_attach,
-		})
-
 		lspconfig["ts_ls"].setup({
 			capabilities = capabilities,
-			on_attach = on_attach,
 			root_dir = lspconfig.util.root_pattern("package.json"),
-			single_file_support = false,
+			-- single_file_support = false,
+		})
+
+		vim.api.nvim_create_autocmd("LspAttach", {
+
+			group = vim.api.nvim_create_augroup("UserLspConfig", {}),
+			callback = function(ev)
+				-- Enable completion triggered by <c-x><c-o>
+				vim.bo[ev.buf].omnifunc = "v:lua.vim.lsp.omnifunc"
+
+				local Snacks = require("snacks")
+				local opts = { buffer = ev.buf }
+
+				vim.keymap.set("n", "<leader>rs", ":LspRestart<CR>", opts)
+				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+				-- vim.keymap.set({ "n" }, "<C-k>", vim.lsp.buf.signature_help, opts)
+				vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
+				vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
+				vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, opts)
+				vim.keymap.set("n", "<leader>f", function()
+					vim.lsp.buf.format({ async = true })
+				end, opts)
+
+				vim.keymap.set("n", "<leader>ss", function()
+					Snacks.picker.lsp_symbols()
+				end, vim.tbl_deep_extend("force", opts, { desc = "LSP Symbols" }))
+
+				-- vim.keymap.set("n", "<leader>gd", vim.lsp.buf.definition, opts)
+				vim.keymap.set("n", "gd", function()
+					Snacks.picker.lsp_definitions()
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Definition" }))
+
+				vim.keymap.set("n", "gr", function()
+					Snacks.picker.lsp_references()
+				end, vim.tbl_deep_extend("force", opts, { desc = "References", nowait = true }))
+
+				-- vim.keymap.set("n", "<leader>gy", vim.lsp.buf.type_definition, opts)
+				vim.keymap.set("n", "gy", function()
+					Snacks.picker.lsp_type_definitions()
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto T[y]pe Definition" }))
+
+				-- vim.keymap.set("n", "<leader>gi", vim.lsp.buf.implementation, opts)
+				vim.keymap.set("n", "gi", function()
+					Snacks.picker.lsp_implementations()
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Implementation" }))
+
+				-- vim.keymap.set("n", "<leader>gD", vim.lsp.buf.declaration, opts)
+				vim.keymap.set("n", "gD", function()
+					Snacks.picker.lsp_declarations()
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Declaration" }))
+
+				vim.keymap.set("n", "<leader>gdt", function()
+					Snacks.picker.lsp_definitions({
+						jump = {
+							tagstack = true,
+							reuse_win = false, -- Don't reuse existing windows
+							close = true,
+						},
+						confirm = function(picker, item)
+							if not item then
+								return
+							end
+							picker:close()
+							vim.schedule(function()
+								-- Open in new tab
+								vim.cmd("tabnew")
+								-- Jump to the file and location
+								if item.file then
+									vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+									if item.pos then
+										vim.api.nvim_win_set_cursor(0, item.pos)
+									end
+								end
+							end)
+						end,
+					})
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Definition in new tab" }))
+
+				vim.keymap.set("n", "<leader>gds", function()
+					Snacks.picker.lsp_definitions({
+						jump = {
+							tagstack = true,
+							reuse_win = false,
+							close = true,
+						},
+						confirm = function(picker, item)
+							if not item then
+								return
+							end
+							picker:close()
+							vim.schedule(function()
+								-- Open in a horizontal split
+								vim.cmd("split")
+								-- Jump to the file and location
+								if item.file then
+									vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+									if item.pos then
+										vim.api.nvim_win_set_cursor(0, item.pos)
+									end
+								end
+							end)
+						end,
+					})
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Definition in split" }))
+
+				vim.keymap.set("n", "<leader>gdv", function()
+					Snacks.picker.lsp_definitions({
+						jump = {
+							tagstack = true,
+							reuse_win = false,
+							close = true,
+						},
+						confirm = function(picker, item)
+							if not item then
+								return
+							end
+							picker:close()
+							vim.schedule(function()
+								-- Open in a horizontal split
+								vim.cmd("vsplit")
+								-- Jump to the file and location
+								if item.file then
+									vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+									if item.pos then
+										vim.api.nvim_win_set_cursor(0, item.pos)
+									end
+								end
+							end)
+						end,
+					})
+				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Definition in split" }))
+
+				vim.keymap.set("n", "<leader>wa", vim.lsp.buf.add_workspace_folder, opts)
+				vim.keymap.set("n", "<leader>wr", vim.lsp.buf.remove_workspace_folder, opts)
+				vim.keymap.set("n", "<leader>wl", function()
+					print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+				end, opts)
+				vim.keymap.set("n", "<leader>ws", function()
+					Snacks.picker.lsp_workspace_symbols()
+				end, vim.tbl_deep_extend("force", opts, { desc = "LSP Workspace Symbols" }))
+			end,
 		})
 	end,
 }
