@@ -1,5 +1,8 @@
 return {
 	"olimorris/codecompanion.nvim",
+	cond = function()
+		return not vim.g.vscode
+	end,
 	opts = {},
 	dependencies = {
 		"ravitemer/mcphub.nvim",

@@ -2,9 +2,7 @@
   "nativeMCPServers": {
     "mcphub": {
       "disabled": false,
-      "disabled_tools": [
-        
-      ]
+      "disabled_tools": []
     }
   },
   "env": {
@@ -12,7 +10,6 @@
   },
   "mcpServers": {
     "github.com/modelcontextprotocol/servers/tree/main/src/postgres": {
-      "disabled": false,
       "command": "docker",
       "args": [
         "run",

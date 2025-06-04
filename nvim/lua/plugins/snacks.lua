@@ -1,5 +1,8 @@
 return {
 	"folke/snacks.nvim",
+	cond = function()
+		return not vim.g.vscode
+	end,
 	priority = 1000,
 	lazy = false,
 	---@type snacks.Config

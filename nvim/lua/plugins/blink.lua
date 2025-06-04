@@ -1,6 +1,9 @@
 return {
 	{
 		"saghen/blink.cmp",
+		cond = function()
+			return not vim.g.vscode
+		end,
 		version = "1.*",
 		dependencies = { "fang2hou/blink-copilot" },
 		opts = {

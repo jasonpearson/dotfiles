@@ -1,5 +1,8 @@
 return {
 	"neovim/nvim-lspconfig",
+	cond = function()
+		return not vim.g.vscode
+	end,
 	dependencies = {
 		"folke/snacks.nvim",
 		"saghen/blink.cmp",
