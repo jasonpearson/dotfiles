@@ -14,6 +14,7 @@ return {
 		input = { enabled = false },
 		picker = {
 			enabled = true,
+			layout = "vertical",
 			win = {
 				input = {
 					keys = {

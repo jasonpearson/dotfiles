@@ -2,6 +2,7 @@ cocoapods
 deno
 fd
 fnm
+gh
 jq
 kotlin
 maven
