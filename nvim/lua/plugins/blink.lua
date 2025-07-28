@@ -41,6 +41,7 @@ return {
 						columns = {
 							{ "label", "label_description", gap = 1 },
 							{ "kind_icon", "kind" },
+							{ "source_name" },
 						},
 					},
 				},
@@ -48,12 +49,12 @@ return {
 
 			sources = {
 				default = {
-					"copilot",
-					"codecompanion",
-					"lsp",
-					"path",
-					-- "snippets",
+					-- "copilot",
+					-- "codecompanion",
 					"buffer",
+					"path",
+					"lsp",
+					-- "snippets",
 				},
 				providers = {
 					copilot = {

@@ -12,4 +12,5 @@ source $ZDOTDIR/setup-java.zsh
 source $ZDOTDIR/setup-pure.zsh
 source $ZDOTDIR/setup-python.zsh
 source $ZDOTDIR/setup-autosuggestions.zsh
+source $ZDOTDIR/setup-rust.zsh
 source $ZDOTDIR/setup-z.zsh

@@ -8,6 +8,9 @@ vim.opt.breakindent = true
 vim.opt.cursorline = true
 vim.opt.equalalways = true
 vim.opt.expandtab = true
+vim.opt.foldmethod = "syntax"
+vim.opt.foldlevelstart = 99
+vim.opt.foldenable = false
 vim.opt.hlsearch = true
 vim.opt.ignorecase = false
 vim.opt.mouse = "a"
@@ -47,8 +50,16 @@ vim.diagnostic.config({
 	},
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "yaml", "yml" },
+	callback = function()
+		vim.opt_local.foldmethod = "indent"
+	end,
+})
+
 vim.cmd(
 	[[                                                                                                                                                                                                                                                                                                                                                                
+   autocmd BufNewFile,BufRead *.template set filetype=nginx
    autocmd WinEnter * setlocal cursorline                                                                                                                                                                                                                                                                                                                                  
    autocmd WinLeave * setlocal nocursorline                                                                                                                                                                                                                                                                                                                                
  ]]

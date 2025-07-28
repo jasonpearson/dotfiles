@@ -40,7 +40,7 @@ return {
 			desc = "Smart Find Files",
 		},
 		{
-			"<leader>,",
+			"<leader>b",
 			function()
 				Snacks.picker.buffers()
 			end,
@@ -90,7 +90,7 @@ return {
 			desc = "Find Config File",
 		},
 		{
-			"<leader>ff",
+			"<leader>f",
 			function()
 				Snacks.picker.files()
 			end,
