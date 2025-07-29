@@ -17,18 +17,21 @@ return {
 			},
 
 			cmdline = {
-				completion = {
-					menu = {
-						auto_show = true,
-					},
-				},
 				keymap = {
-					["<C-k>"] = { "select_prev", "fallback" },
-					["<C-j>"] = { "select_next", "fallback" },
-					["<C-p>"] = { "scroll_documentation_up", "fallback" },
-					["<C-n>"] = { "scroll_documentation_down", "fallback" },
-					["<C-e>"] = { "hide" },
+					preset = "none",
 				},
+				-- completion = {
+				-- 	menu = {
+				-- 		auto_show = true,
+				-- 	},
+				-- },
+				-- keymap = {
+				-- 	["<C-k>"] = { "select_prev", "fallback" },
+				-- 	["<C-j>"] = { "select_next", "fallback" },
+				-- 	["<C-p>"] = { "scroll_documentation_up", "fallback" },
+				-- 	["<C-n>"] = { "scroll_documentation_down", "fallback" },
+				-- 	["<C-e>"] = { "hide" },
+				-- },
 			},
 
 			appearance = {
@@ -36,6 +39,11 @@ return {
 			},
 
 			completion = {
+				accept = {
+					auto_brackets = {
+						enabled = false,
+					},
+				},
 				menu = {
 					draw = {
 						columns = {

@@ -8,7 +8,7 @@ return {
 	---@type snacks.Config
 	opts = {
 		bigfile = { enabled = false },
-		dashboard = { enabled = false },
+		dashboard = { enabled = true },
 		explorer = { enabled = false },
 		indent = { enabled = false },
 		input = { enabled = false },
@@ -76,13 +76,6 @@ return {
 			desc = "File Explorer",
 		},
 		-- find
-		{
-			"<leader>fb",
-			function()
-				Snacks.picker.buffers()
-			end,
-			desc = "Buffers",
-		},
 		{
 			"<leader>fc",
 			function()
@@ -184,13 +177,6 @@ return {
 			desc = "Grep Open Buffers",
 		},
 		{
-			"<leader>sg",
-			function()
-				Snacks.picker.grep()
-			end,
-			desc = "Grep",
-		},
-		{
 			"<leader>sw",
 			function()
 				Snacks.picker.grep_word()
@@ -200,7 +186,7 @@ return {
 		},
 		-- search
 		{
-			'<leader>s"',
+			'<leader>"',
 			function()
 				Snacks.picker.registers()
 			end,
@@ -219,13 +205,6 @@ return {
 				Snacks.picker.autocmds()
 			end,
 			desc = "Autocmds",
-		},
-		{
-			"<leader>sb",
-			function()
-				Snacks.picker.lines()
-			end,
-			desc = "Buffer Lines",
 		},
 		{
 			"<leader>sc",
