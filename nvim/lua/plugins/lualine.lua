@@ -130,11 +130,11 @@ return {
 
 		require("lualine").setup({
 			options = {
+				always_show_tabline = false,
 				globalstatus = true,
 				theme = unified_theme,
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
-				-- ... rest of your options
 			},
 			sections = {
 				lualine_a = { "diff", "diagnostics", CodeCompanion },
@@ -159,7 +159,58 @@ return {
 				lualine_z = {},
 			},
 			tabline = {
-				-- lualine_a = { { "filename", path = 0 } },
+				lualine_a = {
+					{
+						"tabs",
+						mode = 2, -- Using mode 2 (shows tab name + index)
+						max_length = vim.o.columns, -- Use exactly all available columns
+						tab_max_length = 100,
+						show_modified_status = true,
+						tabs_color = {
+							active = { fg = "white", bg = accent, gui = "bold" },
+							inactive = { fg = "gray", bg = accent },
+						},
+						fmt = function(name, context)
+							-- Get the buflist for this tab
+							local buflist = vim.fn.tabpagebuflist(context.tabnr)
+							if not buflist or #buflist == 0 then
+								return name -- Fallback to default name if no buffer found
+							end
+
+							-- Get the current buffer in this tab
+							local winnr = vim.fn.tabpagewinnr(context.tabnr)
+							local bufnr = buflist[winnr]
+
+							-- Get the full path of the buffer
+							local buf_name = vim.api.nvim_buf_get_name(bufnr)
+
+							-- If there's a valid path
+							if buf_name and buf_name ~= "" and not buf_name:match("^%w+://") then
+								-- Get the relative path from the current working directory
+								local rel_path = vim.fn.fnamemodify(buf_name, ":.")
+
+								-- Extract directory part from the relative path (remove filename)
+								local dir_part = vim.fn.fnamemodify(rel_path, ":h")
+
+								-- If we're in the current directory or just one level deep
+								if dir_part == "." or not string.find(dir_part, "/") then
+									return "./"
+								else
+									-- Remove the last directory segment
+									local parent_dir = vim.fn.fnamemodify(dir_part, ":h")
+									return parent_dir .. "/"
+								end
+							else
+								-- For special buffers or unnamed files
+								return name
+							end
+						end,
+					},
+				},
+				lualine_b = {},
+				lualine_c = {},
+				lualine_x = {},
+				lualine_y = {},
 			},
 			winbar = {
 				lualine_a = {
