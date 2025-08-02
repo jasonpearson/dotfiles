@@ -15,6 +15,11 @@ return {
 		picker = {
 			enabled = true,
 			layout = "vertical",
+			formatters = {
+				file = {
+					truncate = 200,
+				},
+			},
 			win = {
 				input = {
 					keys = {
@@ -84,7 +89,7 @@ return {
 			desc = "Find Config File",
 		},
 		{
-			"<leader>f",
+			"<c-p>",
 			function()
 				Snacks.picker.files()
 			end,

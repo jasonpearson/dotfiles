@@ -75,57 +75,113 @@ return {
 			end
 		end
 
+		local accent = "#51376D"
+
+		local unified_theme = {
+			normal = {
+				a = { bg = accent, fg = "white", gui = "bold" },
+				b = { bg = accent, fg = "white" },
+				c = { bg = accent, fg = "white" },
+				x = { bg = accent, fg = "white" },
+				y = { bg = accent, fg = "white" },
+				z = { bg = accent, fg = "white" },
+			},
+			insert = {
+				a = { bg = accent, fg = "white", gui = "bold" },
+				b = { bg = accent, fg = "white" },
+				c = { bg = accent, fg = "white" },
+				x = { bg = accent, fg = "white" },
+				y = { bg = accent, fg = "white" },
+				z = { bg = accent, fg = "white" },
+			},
+			visual = {
+				a = { bg = accent, fg = "white", gui = "bold" },
+				b = { bg = accent, fg = "white" },
+				c = { bg = accent, fg = "white" },
+				x = { bg = accent, fg = "white" },
+				y = { bg = accent, fg = "white" },
+				z = { bg = accent, fg = "white" },
+			},
+			replace = {
+				a = { bg = accent, fg = "white", gui = "bold" },
+				b = { bg = accent, fg = "white" },
+				c = { bg = accent, fg = "white" },
+				x = { bg = accent, fg = "white" },
+				y = { bg = accent, fg = "white" },
+				z = { bg = accent, fg = "white" },
+			},
+			command = {
+				a = { bg = accent, fg = "white", gui = "bold" },
+				b = { bg = accent, fg = "white" },
+				c = { bg = accent, fg = "white" },
+				x = { bg = accent, fg = "white" },
+				y = { bg = accent, fg = "white" },
+				z = { bg = accent, fg = "white" },
+			},
+			inactive = {
+				a = { bg = accent, fg = "gray" },
+				b = { bg = accent, fg = "gray" },
+				c = { bg = accent, fg = "gray" },
+				x = { bg = accent, fg = "gray" },
+				y = { bg = accent, fg = "gray" },
+				z = { bg = accent, fg = "gray" },
+			},
+		}
+
 		require("lualine").setup({
-			-- 	tabline = {
-			-- 		lualine_a = {
-			-- 			{
-			-- 				"tabs",
-			-- 				tab_max_length = 50,
-			-- 				max_length = 2000,
-			-- 				mode = 2,
-			-- 				path = 1,
-			-- 			},
-			-- 		},
-			-- 	},
 			options = {
-				icons_enabled = true,
-				theme = "auto",
-				component_separators = { left = "|", right = "|" },
-				section_separators = { left = "", right = "" },
-				disabled_filetypes = {
-					statusline = {},
-					winbar = {},
-				},
-				ignore_focus = {},
-				always_divide_middle = true,
-				always_show_tabline = true,
-				globalstatus = false,
-				refresh = {
-					statusline = 100,
-					tabline = 100,
-					winbar = 100,
-				},
+				globalstatus = true,
+				theme = unified_theme,
+				component_separators = { left = "", right = "" },
+				section_separators = { left = "", right = "" },
+				-- ... rest of your options
 			},
 			sections = {
-				lualine_a = {},
-				lualine_b = { "diff", "diagnostics", CodeCompanion },
-				lualine_c = { { "filename", path = 1, file_status = true } },
+				lualine_a = { "diff", "diagnostics", CodeCompanion },
+				lualine_b = {
+					{
+						"filename",
+						path = 1,
+						file_status = true,
+					},
+				},
+				lualine_c = {},
 				lualine_x = {},
 				lualine_y = {},
-				lualine_z = {},
+				lualine_z = { "lsp_status" },
 			},
 			inactive_sections = {
 				lualine_a = {},
 				lualine_b = {},
-				lualine_c = { { "filename", path = 1, file_status = true } },
+				lualine_c = { { "filename", path = 0, file_status = true } },
 				lualine_x = {},
 				lualine_y = {},
 				lualine_z = {},
 			},
-			tabline = {},
-			winbar = {},
-			inactive_winbar = {},
+			tabline = {
+				-- lualine_a = { { "filename", path = 0 } },
+			},
+			winbar = {
+				lualine_a = {
+					{
+						"filename",
+						path = 4,
+						color = { fg = "white", bg = accent, gui = "bold" },
+					},
+				},
+			},
+			inactive_winbar = {
+				lualine_a = {
+					{
+						"filename",
+						path = 4,
+						color = { fg = "8057AB", bg = "none", gui = "none" },
+					},
+				},
+			},
 			extensions = {},
 		})
+
+		vim.opt.laststatus = 3
 	end,
 }
