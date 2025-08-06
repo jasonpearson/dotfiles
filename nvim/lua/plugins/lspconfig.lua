@@ -1,3 +1,5 @@
+---@diagnostic disable: undefined-global
+
 return {
 	"neovim/nvim-lspconfig",
 	cond = function()
@@ -40,6 +42,7 @@ return {
 				"ts_ls",
 			},
 			automatic_installation = true,
+			automatic_enable = false,
 		})
 
 		mason_tool_installer.setup({

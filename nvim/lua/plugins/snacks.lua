@@ -22,6 +22,7 @@ return {
 		explorer = {
 			replace_netrw = false,
 		},
+		gitbrowse = {},
 		indent = { enabled = false },
 		input = { enabled = false },
 		picker = {
@@ -61,11 +62,26 @@ return {
 		notifier = { enabled = false },
 		quickfile = { enabled = false },
 		scope = { enabled = false },
+		scratch = {},
 		scroll = { enabled = false },
 		statuscolumn = { enabled = false },
 		words = { enabled = false },
 	},
 	keys = {
+		{
+			"<leader>.",
+			function()
+				Snacks.scratch()
+			end,
+			desc = "Toggle Scratch Buffer",
+		},
+		{
+			"<leader>S",
+			function()
+				Snacks.scratch.select()
+			end,
+			desc = "Select Scratch Buffer",
+		},
 		-- Top Pickers & Explorer
 		{
 			"<leader><space>",
@@ -152,6 +168,13 @@ return {
 				Snacks.picker.git_branches()
 			end,
 			desc = "Git Branches",
+		},
+		{
+			"<leader>gB",
+			function()
+				Snacks.gitbrowse()
+			end,
+			desc = "Git Browse",
 		},
 		{
 			"<leader>gl",
