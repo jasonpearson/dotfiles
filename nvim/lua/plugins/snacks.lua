@@ -8,13 +8,42 @@ return {
 	---@type snacks.Config
 	opts = {
 		bigfile = { enabled = false },
-		dashboard = { enabled = true },
-		explorer = { enabled = false },
+		dashboard = {
+			preset = {
+				header = [[
+███████╗███████╗██████╗  ██████╗  ██████╗ ██████╗  ██████╗ ██╗     
+╚══███╔╝██╔════╝██╔══██╗██╔═══██╗██╔════╝██╔═══██╗██╔═══██╗██║     
+  ███╔╝ █████╗  ██████╔╝██║   ██║██║     ██║   ██║██║   ██║██║     
+ ███╔╝  ██╔══╝  ██╔══██╗██║   ██║██║     ██║   ██║██║   ██║██║     
+███████╗███████╗██║  ██║╚██████╔╝╚██████╗╚██████╔╝╚██████╔╝███████╗
+╚══════╝╚══════╝╚═╝  ╚═╝ ╚═════╝  ╚═════╝ ╚═════╝  ╚═════╝ ╚══════╝]],
+			},
+		},
+		explorer = {
+			replace_netrw = false,
+		},
 		indent = { enabled = false },
 		input = { enabled = false },
 		picker = {
-			enabled = true,
-			layout = "vertical",
+			layouts = {
+				wide = {
+					layout = {
+						box = "vertical",
+						width = 0.8,
+						min_width = 160,
+						height = 0.8,
+						{
+							box = "vertical",
+							border = "rounded",
+							title = "{title} {live} {flags}",
+							{ win = "input", height = 1, border = "bottom" },
+							{ win = "list", border = "none" },
+						},
+						{ win = "preview", title = "{preview}", border = "rounded" },
+					},
+				},
+			},
+			layout = { preset = "wide" },
 			formatters = {
 				file = {
 					truncate = 200,
@@ -175,11 +204,22 @@ return {
 			desc = "Buffer Lines",
 		},
 		{
-			"<leader>sB",
+			"<leader>?",
 			function()
 				Snacks.picker.grep_buffers()
 			end,
 			desc = "Grep Open Buffers",
+		},
+		{
+			"<leader>sB",
+			function()
+				Snacks.picker.grep_buffers({
+					search = function(picker)
+						return picker:word()
+					end,
+				})
+			end,
+			desc = "Grep Open Buffers (word under cursor)",
 		},
 		{
 			"<leader>sw",

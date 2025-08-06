@@ -128,6 +128,34 @@ return {
 			},
 		}
 
+		local filename_and_two_parents = {
+			"filename",
+			path = 1, -- Use relative path as base
+			color = { fg = "white", bg = accent, gui = "bold" },
+			fmt = function(str)
+				-- Split the path
+				local path_parts = {}
+				for part in string.gmatch(str, "[^/]+") do
+					table.insert(path_parts, part)
+				end
+
+				-- If we have at least 3 parts (2 dirs + filename), show last 3 parts
+				if #path_parts >= 3 then
+					return path_parts[#path_parts - 2]
+						.. "/"
+						.. path_parts[#path_parts - 1]
+						.. "/"
+						.. path_parts[#path_parts]
+				elseif #path_parts == 2 then
+					-- If we have 2 parts (1 dir + filename), show both
+					return path_parts[1] .. "/" .. path_parts[2]
+				else
+					-- Just filename
+					return str
+				end
+			end,
+		}
+
 		require("lualine").setup({
 			options = {
 				always_show_tabline = false,
@@ -214,20 +242,14 @@ return {
 			},
 			winbar = {
 				lualine_a = {
-					{
-						"filename",
-						path = 4,
-						color = { fg = "white", bg = accent, gui = "bold" },
-					},
+					filename_and_two_parents,
 				},
 			},
 			inactive_winbar = {
 				lualine_a = {
-					{
-						"filename",
-						path = 4,
+					vim.tbl_extend("force", filename_and_two_parents, {
 						color = { fg = "8057AB", bg = "none", gui = "none" },
-					},
+					}),
 				},
 			},
 			extensions = {},

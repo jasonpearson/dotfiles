@@ -78,6 +78,23 @@ return {
 					diagnostics = {
 						globals = { "vim" },
 					},
+					workspace = {
+						-- Make the server aware of Neovim runtime files and plugins
+						library = {
+							[vim.fn.expand("$VIMRUNTIME/lua")] = true,
+							[vim.fn.stdpath("config") .. "/lua"] = true,
+							-- Add snacks.nvim plugin path to the library
+							[vim.fn.stdpath("data") .. "/lazy/snacks.nvim/lua"] = true,
+						},
+					},
+					-- This helps with completion and type checking
+					completion = {
+						callSnippet = "Replace",
+					},
+					-- Tell lua_ls to recognize the `---@type snacks.Config` annotation
+					typeFormat = {
+						enable = true,
+					},
 				},
 			},
 		})
