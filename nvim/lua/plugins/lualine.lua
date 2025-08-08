@@ -4,13 +4,11 @@ return {
 	config = function()
 		vim.opt.showmode = false
 
-		-- Define the CodeCompanion component
 		local CodeCompanion = require("lualine.component"):extend()
-
-		CodeCompanion.processing = false
-		CodeCompanion.spinner_index = 1
-
-		local spinner_symbols = {
+		CodeCompanion.state = {
+			processing = false,
+		}
+		CodeCompanion.spinner_symbols = {
 			"🌕",
 			"🌖",
 			"🌗",
@@ -44,34 +42,54 @@ return {
 			"😵",
 			"☠️",
 		}
-		local spinner_symbols_len = 32
 
 		-- Initializer
 		function CodeCompanion:init(options)
 			CodeCompanion.super.init(self, options)
 
-			local group = vim.api.nvim_create_augroup("CodeCompanionHooks", {})
+			local group = vim.api.nvim_create_augroup("CodeCompanionLualine", { clear = true })
 
-			vim.api.nvim_create_autocmd({ "User" }, {
-				pattern = "CodeCompanionRequest*",
+			-- Listen for CodeCompanion events
+			vim.api.nvim_create_autocmd("User", {
+				pattern = "CodeCompanion*",
 				group = group,
-				callback = function(request)
-					if request.match == "CodeCompanionRequestStarted" then
-						self.processing = true
-					elseif request.match == "CodeCompanionRequestFinished" then
-						self.processing = false
+				callback = function(event)
+					if event.match == "CodeCompanionRequestStarted" then
+						self.state.processing = true
+					elseif event.match == "CodeCompanionRequestFinished" then
+						self.state.processing = false
 					end
+
+					require("lualine").refresh()
 				end,
 			})
 		end
 
-		-- Function that runs every time statusline is updated
 		function CodeCompanion:update_status()
-			if self.processing then
-				self.spinner_index = (self.spinner_index % spinner_symbols_len) + 1
-				return spinner_symbols[self.spinner_index]
-			else
-				return nil
+			if self.state.processing then
+				if not self.start_time then
+					self.start_time = os.time()
+					self.spinner_count = 1
+				else
+					-- Calculate how many spinners to show based on elapsed time
+					local elapsed = os.time() - self.start_time
+					self.spinner_count = math.min(1 + math.floor(elapsed / 2), 20) -- Add one every 2 seconds, max 20
+				end
+
+				-- Create text with random spinners
+				local text = ""
+				for i = 1, self.spinner_count do
+					-- Choose a random index for each spinner
+					local random_index = math.random(#self.spinner_symbols)
+					text = text .. self.spinner_symbols[random_index] .. " "
+				end
+
+				-- Reset if we've reached the maximum
+				if self.spinner_count >= 20 then
+					self.start_time = nil -- Reset to start over
+				end
+
+				return text
 			end
 		end
 
@@ -163,20 +181,38 @@ return {
 				theme = unified_theme,
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
+				refresh = {
+					statusline = 500,
+					tabline = 1000,
+					winbar = 1000,
+				},
 			},
 			sections = {
-				lualine_a = { "diff", "diagnostics", CodeCompanion },
-				lualine_b = {
+				lualine_a = {
+					{ "branch", icon = "", color = { fg = "D6C8DE", gui = "none" }, padding = 0 },
 					{
 						"filename",
 						path = 1,
 						file_status = true,
+						padding = { left = 1, right = 0 },
+					},
+					{
+						function()
+							return "%l:%c" -- Line:Column format
+						end,
+						padding = 0,
+						icon = "",
+						color = { fg = "D6C8DE", gui = "none" },
 					},
 				},
-				lualine_c = {},
-				lualine_x = {},
-				lualine_y = {},
-				lualine_z = { "lsp_status" },
+				lualine_b = {
+					"diff",
+					"diagnostics",
+				},
+				lualine_c = { "searchcount" },
+				lualine_x = { CodeCompanion },
+				lualine_y = { "lsp_status" },
+				lualine_z = {},
 			},
 			inactive_sections = {
 				lualine_a = {},
@@ -213,7 +249,7 @@ return {
 							local buf_name = vim.api.nvim_buf_get_name(bufnr)
 
 							-- If there's a valid path
-							if buf_name and buf_name ~= "" and not buf_name:match("^%w+://") then
+							if buf_name and buf_name ~= "" and not buf_name:match("^%%w+://") then
 								-- Get the relative path from the current working directory
 								local rel_path = vim.fn.fnamemodify(buf_name, ":.")
 
