@@ -5,7 +5,6 @@ vim.g.netrw_bufsettings = "noma nomod nu nobl nowrap ro"
 
 vim.opt.backspace = "indent,eol,start"
 vim.opt.breakindent = true
-vim.opt.cmdheight = 0
 vim.opt.cursorline = true
 vim.opt.equalalways = true
 vim.opt.expandtab = true

@@ -182,14 +182,13 @@ return {
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
 				refresh = {
-					statusline = 500,
-					tabline = 1000,
-					winbar = 1000,
+					statusline = 200,
+					tabline = 200,
+					winbar = 200,
 				},
 			},
 			sections = {
 				lualine_a = {
-					{ "branch", icon = "", color = { fg = "D6C8DE", gui = "none" }, padding = 0 },
 					{
 						"filename",
 						path = 1,
@@ -209,9 +208,11 @@ return {
 					"diff",
 					"diagnostics",
 				},
-				lualine_c = { "searchcount" },
+				lualine_c = {},
 				lualine_x = { CodeCompanion },
-				lualine_y = { "lsp_status" },
+				lualine_y = {
+					{ "branch", icon = "", color = { fg = "D6C8DE", gui = "none" }, padding = 0 },
+				},
 				lualine_z = {},
 			},
 			inactive_sections = {
@@ -280,6 +281,7 @@ return {
 				lualine_a = {
 					filename_and_two_parents,
 				},
+				lualine_z = { "searchcount" },
 			},
 			inactive_winbar = {
 				lualine_a = {

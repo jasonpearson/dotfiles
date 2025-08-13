@@ -170,7 +170,11 @@ return {
 								vim.cmd("tabnew")
 								-- Jump to the file and location
 								if item.file then
-									vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+									local fname = type(item.file) == "string"
+											and item.file:match("^file://")
+											and vim.uri_to_fname(item.file)
+										or item.file
+									vim.api.nvim_command("edit! " .. vim.fn.fnameescape(fname))
 									if item.pos then
 										vim.api.nvim_win_set_cursor(0, item.pos)
 									end
@@ -197,7 +201,11 @@ return {
 								vim.cmd("split")
 								-- Jump to the file and location
 								if item.file then
-									vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+									local fname = type(item.file) == "string"
+											and item.file:match("^file://")
+											and vim.uri_to_fname(item.file)
+										or item.file
+									vim.api.nvim_command("edit! " .. vim.fn.fnameescape(fname))
 									if item.pos then
 										vim.api.nvim_win_set_cursor(0, item.pos)
 									end
@@ -220,11 +228,15 @@ return {
 							end
 							picker:close()
 							vim.schedule(function()
-								-- Open in a horizontal split
+								-- Open in a vertical split
 								vim.cmd("vsplit")
 								-- Jump to the file and location
 								if item.file then
-									vim.cmd("edit " .. vim.fn.fnameescape(item.file))
+									local fname = type(item.file) == "string"
+											and item.file:match("^file://")
+											and vim.uri_to_fname(item.file)
+										or item.file
+									vim.api.nvim_command("edit! " .. vim.fn.fnameescape(fname))
 									if item.pos then
 										vim.api.nvim_win_set_cursor(0, item.pos)
 									end
