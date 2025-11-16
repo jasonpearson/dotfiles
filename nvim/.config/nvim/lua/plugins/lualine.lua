@@ -93,7 +93,7 @@ return {
 			end
 		end
 
-		local accent = "#51376D"
+		local accent = "#b04393"
 
 		local unified_theme = {
 			normal = {
@@ -149,7 +149,8 @@ return {
 		local filename_and_two_parents = {
 			"filename",
 			path = 1, -- Use relative path as base
-			color = { fg = "white", bg = accent, gui = "bold" },
+			color = { fg = "d152af", bg = "none", gui = "none" },
+			-- color = { fg = "white", bg = accent, gui = "bold" },
 			fmt = function(str)
 				-- Split the path
 				local path_parts = {}
@@ -213,7 +214,7 @@ return {
 				lualine_y = {
 					{ "branch", icon = "", color = { fg = "D6C8DE", gui = "none" }, padding = 0 },
 				},
-				lualine_z = {},
+				lualine_z = { "searchcount" },
 			},
 			inactive_sections = {
 				lualine_a = {},
@@ -285,9 +286,10 @@ return {
 			},
 			inactive_winbar = {
 				lualine_a = {
-					vim.tbl_extend("force", filename_and_two_parents, {
-						color = { fg = "8057AB", bg = "none", gui = "none" },
-					}),
+					filename_and_two_parents,
+					-- vim.tbl_extend("force", filename_and_two_parents, {
+					-- 	color = { fg = "d152af", bg = "none", gui = "none" },
+					-- }),
 				},
 			},
 			extensions = {},

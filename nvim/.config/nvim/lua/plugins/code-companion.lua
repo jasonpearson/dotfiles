@@ -5,7 +5,7 @@ return {
 	end,
 	opts = {},
 	dependencies = {
-		"ravitemer/mcphub.nvim",
+		-- "ravitemer/mcphub.nvim",
 		"nvim-lua/plenary.nvim",
 		"nvim-treesitter/nvim-treesitter",
 		"echasnovski/mini.diff",
@@ -16,19 +16,19 @@ return {
 			source = diff.gen_source.none(),
 		})
 
-		require("mcphub").setup({
-			config = vim.fn.expand("~/.config/ai/mcpServers.json"),
-			extensions = {
-				codecompanion = {
-					-- Show the mcp tool result in the chat buffer
-					show_result_in_chat = true,
-					-- Make chat #variables from MCP server resources
-					make_vars = true,
-					-- Create slash commands for prompts
-					make_slash_commands = true,
-				},
-			},
-		})
+		-- require("mcphub").setup({
+		-- 	config = vim.fn.expand("~/.config/ai/mcpServers.json"),
+		-- 	extensions = {
+		-- 		codecompanion = {
+		-- 			-- Show the mcp tool result in the chat buffer
+		-- 			show_result_in_chat = true,
+		-- 			-- Make chat #variables from MCP server resources
+		-- 			make_vars = true,
+		-- 			-- Create slash commands for prompts
+		-- 			make_slash_commands = true,
+		-- 		},
+		-- 	},
+		-- })
 
 		require("codecompanion").setup({
 			adapters = {
@@ -53,14 +53,14 @@ return {
 				},
 			},
 			extensions = {
-				mcphub = {
-					callback = "mcphub.extensions.codecompanion",
-					opts = {
-						make_vars = true,
-						make_slash_commands = true,
-						show_result_in_chat = true,
-					},
-				},
+				-- mcphub = {
+				-- 	callback = "mcphub.extensions.codecompanion",
+				-- 	opts = {
+				-- 		make_vars = true,
+				-- 		make_slash_commands = true,
+				-- 		show_result_in_chat = true,
+				-- 	},
+				-- },
 			},
 			strategies = {
 				chat = {

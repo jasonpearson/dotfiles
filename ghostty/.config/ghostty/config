@@ -1,7 +1,9 @@
-theme = "rose-pine"
-font-family = "Geist Mono"
-font-size = 16
-font-feature = -calt, -liga, -dlig
+background-opacity = 0.95
+# font-family = "Geist Mono"
+font-size = 14
+theme = Catppuccin Mocha
+# theme = Rose Pine
+# font-feature = -calt, -liga, -dlig
 window-padding-color = extend-always
 
 keybind = global:control+b=toggle_quick_terminal
