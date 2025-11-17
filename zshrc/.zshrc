@@ -1,17 +1,25 @@
 eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
+eval "$(mise activate zsh)"
+
+# only used in macos
+if [[ -f /opt/homebrew/bin/brew ]]; then
+  eval "$(/opt/homebrew/bin/brew shellenv)"
+fi
 
 export CONFIG="~/.config"
 export EDITOR="nvim"
 export SUDO_EDITOR="$EDITOR"
 export KEYTIMEOUT=20
+
+# claude
+export PATH="$HOME/.local/bin:$PATH"
+
 HISTFILE=~/.history
 HISTSIZE=10000
 SAVEHIST=50000
 
 setopt inc_append_history
-
-eval "$(~/.local/bin/mise activate zsh)"
 
 autoload -U compinit; compinit
 
@@ -27,6 +35,7 @@ alias gaca='git add -A && git commit --amend --no-edit'
 alias gs='git status'
 alias gd="git diff $1"
 alias gp='git push'
+alias k='kubectl'
 alias ll='ls -la'
 
 function ed() {
