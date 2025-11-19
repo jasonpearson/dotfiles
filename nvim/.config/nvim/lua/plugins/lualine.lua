@@ -93,87 +93,87 @@ return {
 			end
 		end
 
-		local accent = "#b04393"
+		local accent = "#94e2d5"
 
 		local unified_theme = {
 			normal = {
-				a = { bg = accent, fg = "white", gui = "bold" },
-				b = { bg = accent, fg = "white" },
-				c = { bg = accent, fg = "white" },
-				x = { bg = accent, fg = "white" },
-				y = { bg = accent, fg = "white" },
-				z = { bg = accent, fg = "white" },
+				a = { bg = "black", fg = accent, gui = "bold" },
+				b = { bg = "black", fg = accent },
+				c = { bg = "black", fg = accent },
+				x = { bg = "black", fg = accent },
+				y = { bg = "black", fg = accent },
+				z = { bg = "none", fg = accent },
 			},
 			insert = {
-				a = { bg = accent, fg = "white", gui = "bold" },
-				b = { bg = accent, fg = "white" },
-				c = { bg = accent, fg = "white" },
-				x = { bg = accent, fg = "white" },
-				y = { bg = accent, fg = "white" },
-				z = { bg = accent, fg = "white" },
+				a = { bg = accent, fg = "black", gui = "bold" },
+				b = { bg = "black", fg = accent },
+				c = { bg = "black", fg = accent },
+				x = { bg = "black", fg = accent },
+				y = { bg = "black", fg = accent },
+				z = { bg = "none", fg = accent },
 			},
 			visual = {
-				a = { bg = accent, fg = "white", gui = "bold" },
-				b = { bg = accent, fg = "white" },
-				c = { bg = accent, fg = "white" },
-				x = { bg = accent, fg = "white" },
-				y = { bg = accent, fg = "white" },
-				z = { bg = accent, fg = "white" },
+				a = { bg = "black", fg = accent, gui = "bold" },
+				b = { bg = "black", fg = accent },
+				c = { bg = "black", fg = accent },
+				x = { bg = "black", fg = accent },
+				y = { bg = "black", fg = accent },
+				z = { bg = "none", fg = accent },
 			},
 			replace = {
-				a = { bg = accent, fg = "white", gui = "bold" },
-				b = { bg = accent, fg = "white" },
-				c = { bg = accent, fg = "white" },
-				x = { bg = accent, fg = "white" },
-				y = { bg = accent, fg = "white" },
-				z = { bg = accent, fg = "white" },
+				a = { bg = "black", fg = accent, gui = "bold" },
+				b = { bg = "black", fg = accent },
+				c = { bg = "black", fg = accent },
+				x = { bg = "black", fg = accent },
+				y = { bg = "black", fg = accent },
+				z = { bg = "none", fg = accent },
 			},
 			command = {
-				a = { bg = accent, fg = "white", gui = "bold" },
-				b = { bg = accent, fg = "white" },
-				c = { bg = accent, fg = "white" },
-				x = { bg = accent, fg = "white" },
-				y = { bg = accent, fg = "white" },
-				z = { bg = accent, fg = "white" },
+				a = { bg = "black", fg = accent, gui = "bold" },
+				b = { bg = "black", fg = accent },
+				c = { bg = "black", fg = accent },
+				x = { bg = "black", fg = accent },
+				y = { bg = "black", fg = accent },
+				z = { bg = "none", fg = accent },
 			},
 			inactive = {
-				a = { bg = accent, fg = "gray" },
-				b = { bg = accent, fg = "gray" },
-				c = { bg = accent, fg = "gray" },
-				x = { bg = accent, fg = "gray" },
-				y = { bg = accent, fg = "gray" },
-				z = { bg = accent, fg = "gray" },
+				a = { bg = "black", fg = "gray" },
+				b = { bg = "black", fg = "gray" },
+				c = { bg = "black", fg = "gray" },
+				x = { bg = "black", fg = "gray" },
+				y = { bg = "black", fg = "gray" },
+				z = { bg = "none", fg = "gray" },
 			},
 		}
 
-		local filename_and_two_parents = {
-			"filename",
-			path = 1, -- Use relative path as base
-			color = { fg = "d152af", bg = "none", gui = "none" },
-			-- color = { fg = "white", bg = accent, gui = "bold" },
-			fmt = function(str)
-				-- Split the path
-				local path_parts = {}
-				for part in string.gmatch(str, "[^/]+") do
-					table.insert(path_parts, part)
-				end
-
-				-- If we have at least 3 parts (2 dirs + filename), show last 3 parts
-				if #path_parts >= 3 then
-					return path_parts[#path_parts - 2]
-						.. "/"
-						.. path_parts[#path_parts - 1]
-						.. "/"
-						.. path_parts[#path_parts]
-				elseif #path_parts == 2 then
-					-- If we have 2 parts (1 dir + filename), show both
-					return path_parts[1] .. "/" .. path_parts[2]
-				else
-					-- Just filename
-					return str
-				end
-			end,
-		}
+		-- local filename_and_two_parents = {
+		-- 	"filename",
+		-- 	path = 1, -- Use relative path as base
+		-- 	color = { fg = accent, bg = "none", gui = "none" },
+		-- 	-- color = { fg = "white", bg = "black", gui = "bold" },
+		-- 	fmt = function(str)
+		-- 		-- Split the path
+		-- 		local path_parts = {}
+		-- 		for part in string.gmatch(str, "[^/]+") do
+		-- 			table.insert(path_parts, part)
+		-- 		end
+		--
+		-- 		-- If we have at least 3 parts (2 dirs + filename), show last 3 parts
+		-- 		if #path_parts >= 3 then
+		-- 			return path_parts[#path_parts - 2]
+		-- 				.. "/"
+		-- 				.. path_parts[#path_parts - 1]
+		-- 				.. "/"
+		-- 				.. path_parts[#path_parts]
+		-- 		elseif #path_parts == 2 then
+		-- 			-- If we have 2 parts (1 dir + filename), show both
+		-- 			return path_parts[1] .. "/" .. path_parts[2]
+		-- 		else
+		-- 			-- Just filename
+		-- 			return str
+		-- 		end
+		-- 	end,
+		-- }
 
 		require("lualine").setup({
 			options = {
@@ -194,9 +194,13 @@ return {
 						"filename",
 						path = 1,
 						file_status = true,
-						padding = { left = 1, right = 0 },
+						padding = { left = 1, right = 1 },
 					},
+				},
+				lualine_b = {
 					{
+						"diff",
+						"diagnostics",
 						function()
 							return "%l:%c" -- Line:Column format
 						end,
@@ -204,17 +208,14 @@ return {
 						icon = "",
 						color = { fg = "D6C8DE", gui = "none" },
 					},
-				},
-				lualine_b = {
-					"diff",
-					"diagnostics",
+					"searchcount",
 				},
 				lualine_c = {},
 				lualine_x = { CodeCompanion },
-				lualine_y = {
-					{ "branch", icon = "", color = { fg = "D6C8DE", gui = "none" }, padding = 0 },
+				lualine_y = {},
+				lualine_z = {
+					{ "branch", color = { bg = "black", fg = "7f849c", gui = "none" }, padding = 0 },
 				},
-				lualine_z = { "searchcount" },
 			},
 			inactive_sections = {
 				lualine_a = {},
@@ -233,8 +234,8 @@ return {
 						tab_max_length = 100,
 						show_modified_status = true,
 						tabs_color = {
-							active = { fg = "white", bg = accent, gui = "bold" },
-							inactive = { fg = "gray", bg = accent },
+							active = { fg = "white", bg = "black", gui = "bold" },
+							inactive = { fg = "gray", bg = "black" },
 						},
 						fmt = function(name, context)
 							-- Get the buflist for this tab
@@ -279,19 +280,16 @@ return {
 				lualine_y = {},
 			},
 			winbar = {
-				lualine_a = {
-					filename_and_two_parents,
-				},
-				lualine_z = { "searchcount" },
+				-- lualine_a = {
+				-- 	filename_and_two_parents,
+				-- },
+				lualine_z = {},
 			},
-			inactive_winbar = {
-				lualine_a = {
-					filename_and_two_parents,
-					-- vim.tbl_extend("force", filename_and_two_parents, {
-					-- 	color = { fg = "d152af", bg = "none", gui = "none" },
-					-- }),
-				},
-			},
+			-- inactive_winbar = {
+			-- 	lualine_a = {
+			-- 		filename_and_two_parents,
+			-- 	},
+			-- },
 			extensions = {},
 		})
 

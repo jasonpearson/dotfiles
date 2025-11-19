@@ -50,7 +50,9 @@ function ed() {
 
 function eg() { e $(rg -l $@) };
 
-function ef() { e $(rg --files | rg $@) };
+function ef() { e $(rg -uu --files | rg $@) };
+
+function efz() { e $(fzf) };
 
 function tm() {
   session_dir=$(zoxide query --list | fzf)

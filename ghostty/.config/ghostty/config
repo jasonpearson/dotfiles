@@ -1,6 +1,6 @@
 background-opacity = 0.95
 # font-family = "Geist Mono"
-font-size = 14
+font-size = 16
 theme = Catppuccin Mocha
 # theme = Rose Pine
 # font-feature = -calt, -liga, -dlig
