@@ -5,6 +5,7 @@ eval "$(mise activate zsh)"
 # only used in macos
 if [[ -f /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
+  source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 
 export CONFIG="~/.config"
@@ -18,13 +19,15 @@ export PATH="$HOME/.local/bin:$PATH"
 HISTFILE=~/.history
 HISTSIZE=10000
 SAVEHIST=50000
+ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 
 setopt inc_append_history
 
 autoload -U compinit; compinit
 
-bindkey -v
 bindkey -M viins 'kj' vi-cmd-mode
+bindkey -v
+bindkey '^y' autosuggest-accept
 
 source <(fzf --zsh)
 

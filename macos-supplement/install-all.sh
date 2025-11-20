@@ -3,6 +3,7 @@
 # Install all packages in order
 ./install-brew.sh
 ./install-zsh.sh
+./install-zsh.sh
 ./install-zoxide.sh
 ./install-starship.sh
 ./install-tmux.sh

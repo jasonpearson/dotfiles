@@ -2,5 +2,5 @@
 
 # Install Zsh
 if ! command -v zsh &>/dev/null; then
-  brew install zsh
+  brew install zsh zsh-autosuggestions
 fi
