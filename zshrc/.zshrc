@@ -28,15 +28,7 @@ bindkey -M viins 'kj' vi-cmd-mode
 
 source <(fzf --zsh)
 
-alias e="$EDITOR $1"
-alias glo='git log --date=format:"%Y-%m-%d %H:%M %z" --pretty=format:"%h%x09%as%x09%ar%x09%an%x09%s"'
-alias gac="git add -A && git commit -m $1"
-alias gaca='git add -A && git commit --amend --no-edit'
-alias gs='git status'
-alias gd="git diff $1"
-alias gp='git push'
-alias k='kubectl'
-alias ll='ls -la'
+function e() { "$EDITOR" "$@"; }
 
 function ed() {
   if [[ $# -eq 0 ]]; then
@@ -48,11 +40,24 @@ function ed() {
   echo $files | xargs nvim
 }
 
+function ef() {
+  local file
+  file=$(fzf) || return
+  [[ -n "$file" ]] || return
+  e "$file"
+};
+
 function eg() { e $(rg -l $@) };
-
-function ef() { e $(rg -uu --files | rg $@) };
-
-function efz() { e $(fzf) };
+function egf() { e $(rg -uu --files | rg $@) };
+function ga() { git add "$@"; }
+function gc() { git commit "$@"; }
+function gd() { git diff "$@"; }
+function glo() { git log --oneline "$@"; }
+function gs() { git status "$@"; }
+function gp() { git push "$@"; }
+function k() { kubectl "$@"; }
+function ll() { ls -la "$@"; }
+function oc() { opencode "$@"; }
 
 function tm() {
   session_dir=$(zoxide query --list | fzf)
