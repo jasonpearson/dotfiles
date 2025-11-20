@@ -52,7 +52,14 @@ function egf() { e $(rg -uu --files | rg $@) };
 function ga() { git add "$@"; }
 function gc() { git commit "$@"; }
 function gd() { git diff "$@"; }
-function glo() { git log --oneline "$@"; }
+
+function glo() {
+  git log  \
+    --color=always \
+    --date=iso-local \
+    --pretty=format:'%C(yellow)%h%Creset  %<(55,trunc)%s  %C(blue)@%<(15,trunc)%al%Creset  %C(magenta)%ad%Creset' "$@"
+}
+
 function gs() { git status "$@"; }
 function gp() { git push "$@"; }
 function k() { kubectl "$@"; }

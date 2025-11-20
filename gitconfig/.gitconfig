@@ -2,6 +2,6 @@
 	excludesfiles = /.gitignore
 [user]
 	name = jasonpearson.me
-	email = jason@jasonpearson.me
+	email = me@jasonpearson.me
 [init]
 	defaultBranch = main
