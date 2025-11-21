@@ -29,6 +29,7 @@ if [ $? -eq 0 ]; then
     ~/.cache/nvim/ \
     ~/.config/ghostty/config \
     ~/.config/nvim \
+    ~/.config/opencode \
     ~/.config/starship.toml \
     ~/.gitconfig \
     ~/.local/share/nvim/
@@ -40,6 +41,7 @@ if [ $? -eq 0 ]; then
   stow nvim
   stow starship
   stow gitconfig
+  stow opencode
 else
   echo "Failed to clone the repository."
   exit 1
