@@ -97,7 +97,7 @@ return {
 
 		local unified_theme = {
 			normal = {
-				a = { bg = "black", fg = accent, gui = "bold" },
+				a = { bg = "black", fg = accent },
 				b = { bg = "black", fg = accent },
 				c = { bg = "black", fg = accent },
 				x = { bg = "black", fg = accent },
@@ -105,7 +105,7 @@ return {
 				z = { bg = "none", fg = accent },
 			},
 			insert = {
-				a = { bg = accent, fg = "black", gui = "bold" },
+				a = { bg = accent, fg = "black" },
 				b = { bg = "black", fg = accent },
 				c = { bg = "black", fg = accent },
 				x = { bg = "black", fg = accent },
@@ -113,7 +113,7 @@ return {
 				z = { bg = "none", fg = accent },
 			},
 			visual = {
-				a = { bg = "black", fg = accent, gui = "bold" },
+				a = { bg = "black", fg = accent },
 				b = { bg = "black", fg = accent },
 				c = { bg = "black", fg = accent },
 				x = { bg = "black", fg = accent },
@@ -121,7 +121,7 @@ return {
 				z = { bg = "none", fg = accent },
 			},
 			replace = {
-				a = { bg = "black", fg = accent, gui = "bold" },
+				a = { bg = "black", fg = accent },
 				b = { bg = "black", fg = accent },
 				c = { bg = "black", fg = accent },
 				x = { bg = "black", fg = accent },
@@ -129,7 +129,7 @@ return {
 				z = { bg = "none", fg = accent },
 			},
 			command = {
-				a = { bg = "black", fg = accent, gui = "bold" },
+				a = { bg = "black", fg = accent },
 				b = { bg = "black", fg = accent },
 				c = { bg = "black", fg = accent },
 				x = { bg = "black", fg = accent },
@@ -146,34 +146,33 @@ return {
 			},
 		}
 
-		-- local filename_and_two_parents = {
-		-- 	"filename",
-		-- 	path = 1, -- Use relative path as base
-		-- 	color = { fg = accent, bg = "none", gui = "none" },
-		-- 	-- color = { fg = "white", bg = "black", gui = "bold" },
-		-- 	fmt = function(str)
-		-- 		-- Split the path
-		-- 		local path_parts = {}
-		-- 		for part in string.gmatch(str, "[^/]+") do
-		-- 			table.insert(path_parts, part)
-		-- 		end
-		--
-		-- 		-- If we have at least 3 parts (2 dirs + filename), show last 3 parts
-		-- 		if #path_parts >= 3 then
-		-- 			return path_parts[#path_parts - 2]
-		-- 				.. "/"
-		-- 				.. path_parts[#path_parts - 1]
-		-- 				.. "/"
-		-- 				.. path_parts[#path_parts]
-		-- 		elseif #path_parts == 2 then
-		-- 			-- If we have 2 parts (1 dir + filename), show both
-		-- 			return path_parts[1] .. "/" .. path_parts[2]
-		-- 		else
-		-- 			-- Just filename
-		-- 			return str
-		-- 		end
-		-- 	end,
-		-- }
+		local filename_and_two_parents = {
+			"filename",
+			path = 1, -- Use relative path as base
+			color = { bg = "none", fg = "b4befe", gui = "none" },
+			fmt = function(str)
+				-- Split the path
+				local path_parts = {}
+				for part in string.gmatch(str, "[^/]+") do
+					table.insert(path_parts, part)
+				end
+
+				-- If we have at least 3 parts (2 dirs + filename), show last 3 parts
+				if #path_parts >= 3 then
+					return path_parts[#path_parts - 2]
+						.. "/"
+						.. path_parts[#path_parts - 1]
+						.. "/"
+						.. path_parts[#path_parts]
+				elseif #path_parts == 2 then
+					-- If we have 2 parts (1 dir + filename), show both
+					return path_parts[1] .. "/" .. path_parts[2]
+				else
+					-- Just filename
+					return str
+				end
+			end,
+		}
 
 		require("lualine").setup({
 			options = {
@@ -214,7 +213,7 @@ return {
 				lualine_x = { CodeCompanion },
 				lualine_y = {},
 				lualine_z = {
-					{ "branch", color = { bg = "black", fg = "7f849c", gui = "none" }, padding = 0 },
+					{ "branch", color = { bg = "black", fg = "7f849c", gui = "none" }, padding = 1 },
 				},
 			},
 			inactive_sections = {
@@ -280,16 +279,16 @@ return {
 				lualine_y = {},
 			},
 			winbar = {
-				-- lualine_a = {
-				-- 	filename_and_two_parents,
-				-- },
+				lualine_a = {
+					filename_and_two_parents,
+				},
 				lualine_z = {},
 			},
-			-- inactive_winbar = {
-			-- 	lualine_a = {
-			-- 		filename_and_two_parents,
-			-- 	},
-			-- },
+			inactive_winbar = {
+				lualine_a = {
+					filename_and_two_parents,
+				},
+			},
 			extensions = {},
 		})
 

@@ -51,7 +51,7 @@ function ef() {
 };
 
 function eg() { e $(rg -l $@) };
-function egf() { e $(rg -uu --files | rg $@) };
+function egf() { e $(rg -u --files | rg $@) };
 function ga() { git add "$@"; }
 function gc() { git commit "$@"; }
 function gd() { git diff "$@"; }
