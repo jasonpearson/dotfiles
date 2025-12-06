@@ -1,0 +1,3 @@
+# Override default stow ignore patterns
+# Don't ignore .env.zsh
+!\.env.zsh

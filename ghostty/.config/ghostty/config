@@ -1,14 +1,17 @@
 background-opacity = 0.95
 # font-family = "Geist Mono"
+# font-feature = -calt, -liga, -dlig
 font-size = 16
+macos-titlebar-proxy-icon = hidden
 theme = Catppuccin Mocha
 # theme = Rose Pine
-# font-feature = -calt, -liga, -dlig
+title = " "
 window-padding-color = extend-always
 
 keybind = global:control+b=toggle_quick_terminal
 copy-on-select = true
 quick-terminal-position = bottom
+quick-terminal-size = 60%
 
 ###############
 ### splits ####

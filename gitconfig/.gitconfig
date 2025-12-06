@@ -1,5 +1,5 @@
 [core]
-	excludesfiles = /.gitignore
+	excludesFile = ~/.gitignore
 [user]
 	name = jasonpearson.me
 	email = me@jasonpearson.me

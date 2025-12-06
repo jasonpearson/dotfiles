@@ -2,6 +2,10 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 eval "$(mise activate zsh)"
 
+if [[ -f ~/.env.zsh ]]; then
+  source ~/.env.zsh
+fi
+
 # only used in macos
 if [[ -f /opt/homebrew/bin/brew ]]; then
   eval "$(/opt/homebrew/bin/brew shellenv)"
