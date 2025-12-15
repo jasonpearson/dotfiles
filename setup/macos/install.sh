@@ -28,7 +28,7 @@ brew_cask_install() {
   fi
 }
 
-# 1. Install Homebrew
+# Install Homebrew
 if ! command -v brew &>/dev/null; then
   echo "Installing Homebrew..."
   /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
@@ -37,7 +37,7 @@ else
   echo "Homebrew already installed"
 fi
 
-# 2. Install packages
+# Install packages
 brew_install zsh "zsh zsh-autosuggestions"
 brew_install zoxide
 brew_install starship
@@ -47,14 +47,19 @@ brew_install nvim
 brew_install stow
 brew_install mise
 brew_install opencode
+brew_install kind
+brew_install fluxcd/tap/flux
 
-# 3. Install cask apps
+# Install cask apps
 brew_cask_install ghostty
 
-# 4. Install Tmux Plugin Manager
+# Install bun
+install_bun
+
+# Install Tmux Plugin Manager
 install_tpm
 
-# 5. Install Claude Code
+# Install Claude Code
 if ! command -v claude &>/dev/null; then
   echo "Installing Claude Code..."
   curl -fsSL https://claude.ai/install.sh | bash
@@ -62,10 +67,10 @@ else
   echo "Claude Code already installed"
 fi
 
-# 6. Stow dotfiles
+# Stow dotfiles
 stow_dotfiles
 
-# 7. Set zsh as default shell
+# Set zsh as default shell
 set_default_shell_zsh
 
 echo "Done!"

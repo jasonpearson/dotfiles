@@ -14,16 +14,23 @@ fi
 
 export CONFIG="~/.config"
 export EDITOR="nvim"
-export SUDO_EDITOR="$EDITOR"
 export KEYTIMEOUT=20
-
-# claude
-export PATH="$HOME/.local/bin:$PATH"
+export SUDO_EDITOR="$EDITOR"
 
 HISTFILE=~/.history
 HISTSIZE=10000
 SAVEHIST=50000
 ZSH_AUTOSUGGEST_STRATEGY=(history completion)
+
+# bun completions
+[ -s "$HOME/.bun/_bun" ] && source "$HOME/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# claude
+export PATH="$HOME/.local/bin:$PATH"
 
 setopt inc_append_history
 
@@ -34,6 +41,8 @@ bindkey -v
 bindkey '^y' autosuggest-accept
 
 source <(fzf --zsh)
+
+function cc() { claude "$@"; }
 
 function e() { "$EDITOR" "$@"; }
 
@@ -61,10 +70,7 @@ function gc() { git commit "$@"; }
 function gd() { git diff "$@"; }
 
 function glo() {
-  git log  \
-    --color=always \
-    --date=iso-local \
-    --pretty=format:'%C(yellow)%h%Creset  %<(55,trunc)%s  %C(blue)@%<(15,trunc)%al%Creset  %C(magenta)%ad%Creset' "$@"
+  git log --color --decorate --pretty=format:"%h %an %Cgreen(%cr)%Creset - %s%C(yellow)%d%Creset" --abbrev-commit "$@"
 }
 
 function gs() { git status "$@"; }
@@ -98,4 +104,7 @@ function tm() {
     notify-send "$notification"
   fi
 }
+
+# quick ask
+function qa() { claude --model haiku -p "$@"; }
 

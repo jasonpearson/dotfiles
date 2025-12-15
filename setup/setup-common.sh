@@ -2,6 +2,15 @@
 
 # Shared setup functions
 
+install_bun() {
+  if ! command -v bun &>/dev/null; then
+    echo "Installing bun..."
+    curl -fsSL https://bun.sh/install | bash
+  else
+    echo "bun already installed"
+  fi
+}
+
 install_tpm() {
   TPM_DIR="$HOME/.tmux/plugins/tpm"
   if [ ! -d "$TPM_DIR" ]; then
