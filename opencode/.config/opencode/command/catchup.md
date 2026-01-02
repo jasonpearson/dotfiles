@@ -1,0 +1,1 @@
+In order to get more context about what is currently being worked on, review the diff of the current branch compared to the lastest main branch (or master branch if main does not exist). Also take a look at the diff in the working directory.

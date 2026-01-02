@@ -40,7 +40,7 @@ stow_dotfiles() {
 
   cd "$DOTFILES_DIR"
   echo "Stowing dotfiles..."
-  stow zshrc ghostty tmux nvim starship gitconfig opencode
+  stow zshrc ghostty tmux nvim starship gitconfig opencode claude
 }
 
 set_default_shell_zsh() {
