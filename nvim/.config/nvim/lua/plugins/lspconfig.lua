@@ -14,7 +14,6 @@ return {
 	},
 	config = function()
 		local capabilities = require("blink.cmp").get_lsp_capabilities()
-		local lspconfig = require("lspconfig")
 		local mason = require("mason")
 		local mason_lspconfig = require("mason-lspconfig")
 		local mason_tool_installer = require("mason-tool-installer")
@@ -53,27 +52,31 @@ return {
 			},
 		})
 
-		lspconfig["eslint"].setup({
+		vim.lsp.config("eslint", {
 			capabilities = capabilities,
 			-- on_attach = on_attach,
 		})
+		vim.lsp.enable("eslint")
 
-		lspconfig["graphql"].setup({
+		vim.lsp.config("graphql", {
 			capabilities = capabilities,
 			-- on_attach = on_attach,
 		})
+		vim.lsp.enable("graphql")
 
-		lspconfig["kotlin_language_server"].setup({
+		vim.lsp.config("kotlin_language_server", {
 			capabilities = capabilities,
 			-- on_attach = on_attach,
 		})
+		vim.lsp.enable("kotlin_language_server")
 
-		lspconfig["jdtls"].setup({
+		vim.lsp.config("jdtls", {
 			capabilities = capabilities,
 			-- on_attach = on_attach,
 		})
+		vim.lsp.enable("jdtls")
 
-		lspconfig["lua_ls"].setup({
+		vim.lsp.config("lua_ls", {
 			capabilities = capabilities,
 			-- on_attach = on_attach,
 			settings = {
@@ -101,12 +104,14 @@ return {
 				},
 			},
 		})
+		vim.lsp.enable("lua_ls")
 
-		lspconfig["ts_ls"].setup({
+		vim.lsp.config("ts_ls", {
 			capabilities = capabilities,
-			root_dir = lspconfig.util.root_pattern("package.json"),
+			-- root_dir = vim.lsp.config.util.root_pattern("package.json"),
 			-- single_file_support = false,
 		})
+		vim.lsp.enable("ts_ls")
 
 		vim.api.nvim_create_autocmd("LspAttach", {
 
