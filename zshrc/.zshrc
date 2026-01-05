@@ -66,6 +66,8 @@ function ef() {
 function eg() { e $(rg -l $@) };
 function egf() { e $(rg -u --files | rg $@) };
 function ga() { git add "$@"; }
+function gac() { ga "-A" && gc "$@" }
+function gaca() { ga "-A" && gc --amend }
 function gc() { git commit "$@"; }
 function gd() { git diff "$@"; }
 
@@ -107,4 +109,3 @@ function tm() {
 
 # quick ask
 function qa() { claude --model haiku -p "$@"; }
-
