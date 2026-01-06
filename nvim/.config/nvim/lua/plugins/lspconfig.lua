@@ -67,6 +67,9 @@ return {
 		vim.lsp.config("kotlin_language_server", {
 			capabilities = capabilities,
 			-- on_attach = on_attach,
+			init_options = {
+				storagePath = vim.fn.stdpath("cache") .. "/kotlin_language_server",
+			},
 		})
 		vim.lsp.enable("kotlin_language_server")
 
