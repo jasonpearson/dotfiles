@@ -131,7 +131,18 @@ return {
 				-- vim.keymap.set({ "n" }, "<C-k>", vim.lsp.buf.signature_help, opts)
 				vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, opts)
 				vim.keymap.set({ "n", "v" }, "<leader>ca", vim.lsp.buf.code_action, opts)
-				vim.keymap.set("n", "<leader>gr", vim.lsp.buf.references, opts)
+				vim.keymap.set("n", "<leader>gr", function()
+					Snacks.picker.lsp_references({
+						filter = {
+							filter = function(item)
+								return not (item.file and item.file:lower():match("test"))
+							end,
+						},
+					})
+				end, vim.tbl_deep_extend("force", opts, { desc = "References (no tests)" }))
+				vim.keymap.set("n", "<leader>gR", function()
+					Snacks.picker.lsp_references()
+				end, vim.tbl_deep_extend("force", opts, { desc = "References (all)" }))
 
 				vim.keymap.set("n", "<leader>ss", function()
 					Snacks.picker.lsp_symbols()
@@ -143,8 +154,18 @@ return {
 				end, vim.tbl_deep_extend("force", opts, { desc = "Goto Definition" }))
 
 				vim.keymap.set("n", "gr", function()
+					Snacks.picker.lsp_references({
+						filter = {
+							filter = function(item)
+								return not (item.file and item.file:lower():match("test"))
+							end,
+						},
+					})
+				end, vim.tbl_deep_extend("force", opts, { desc = "References (no tests)", nowait = true }))
+
+				vim.keymap.set("n", "gR", function()
 					Snacks.picker.lsp_references()
-				end, vim.tbl_deep_extend("force", opts, { desc = "References", nowait = true }))
+				end, vim.tbl_deep_extend("force", opts, { desc = "References (all)", nowait = true }))
 
 				-- vim.keymap.set("n", "<leader>gy", vim.lsp.buf.type_definition, opts)
 				vim.keymap.set("n", "gy", function()

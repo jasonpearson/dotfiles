@@ -248,9 +248,19 @@ return {
     {
       "<leader>sw",
       function()
+        Snacks.picker.grep_word({
+          args = { "--word-regexp", "--glob=!*test*", "--glob=!*__tests__*",}
+        })
+      end,
+      desc = "Visual selection or word (no tests)",
+      mode = { "n", "x" },
+    },
+    {
+      "<leader>sW",
+      function()
         Snacks.picker.grep_word()
       end,
-      desc = "Visual selection or word",
+      desc = "Visual selection or word (all)",
       mode = { "n", "x" },
     },
     -- search
