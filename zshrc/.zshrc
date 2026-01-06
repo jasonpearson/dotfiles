@@ -7,9 +7,14 @@ if [[ -f ~/.env.zsh ]]; then
 fi
 
 # only used in macos
+# platform-specific zsh-autosuggestions
 if [[ -f /opt/homebrew/bin/brew ]]; then
+  # macOS with Homebrew
   eval "$(/opt/homebrew/bin/brew shellenv)"
   source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+elif [[ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
+  # Ubuntu/Debian
+  source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
 fi
 
 export CONFIG="~/.config"
@@ -40,7 +45,13 @@ bindkey -M viins 'kj' vi-cmd-mode
 bindkey -v
 bindkey '^y' autosuggest-accept
 
-source <(fzf --zsh)
+# fzf shell integration (0.48+ uses --zsh, older versions use separate files)
+if fzf --zsh &>/dev/null; then
+  source <(fzf --zsh)
+elif [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
+  source /usr/share/doc/fzf/examples/key-bindings.zsh
+  source /usr/share/doc/fzf/examples/completion.zsh
+fi
 
 function cc() { claude "$@"; }
 
