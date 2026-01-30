@@ -1,0 +1,5 @@
+^.claude/.*
+
+# ...EXCEPT for the files you actually want to keep
+!.claude/CLAUDE.md
+!.claude/settings.json

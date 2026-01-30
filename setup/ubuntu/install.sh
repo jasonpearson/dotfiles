@@ -34,11 +34,15 @@ apt_install fzf
 apt_install ripgrep
 
 # Install Neovim (latest stable from PPA)
-if ! command -v nvim &>/dev/null || [[ $(nvim --version | head -1 | grep -oP '\d+\.\d+') < "0.9" ]]; then
+# Install Neovim (latest stable from AppImage)
+if ! command -v nvim &>/dev/null; then
   echo "Installing Neovim..."
-  sudo add-apt-repository -y ppa:neovim-ppa/unstable
-  sudo apt-get update
-  sudo apt-get install -y neovim
+  curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim-linux-x86_64.appimage
+  chmod u+x nvim-linux-x86_64.appimage
+  ./nvim-linux-x86_64.appimage --appimage-extract
+  sudo mv squashfs-root /
+  sudo ln -s /squashfs-root/AppRun /usr/bin/nvim
+  rm nvim-linux-x86_64.appimage
 else
   echo "Neovim already installed"
 fi
