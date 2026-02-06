@@ -24,7 +24,7 @@ $time\
 
 [hostname]
 ssh_only = true
-format = '[$hostname](bold red)'
+format = '[$hostname](bold red) '
 disabled = false
 
 [os]
@@ -61,7 +61,7 @@ format = '[ $user ]($style)'
 [directory]
 style = "fg:#94e2d5 bg:#394260"
 format = "[ $path ]($style)"
-truncation_length = 3
+truncation_length = 12
 truncation_symbol = "…/"
 truncate_to_repo = false
 

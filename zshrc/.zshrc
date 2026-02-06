@@ -92,6 +92,29 @@ function k() { kubectl "$@"; }
 function ll() { ls -la "$@"; }
 function oc() { opencode "$@"; }
 
+function play_sound() {
+  local file="${1:-}"
+
+  # Find a default sound if none provided
+  if [[ -z "$file" ]]; then
+    if [[ -f /System/Library/Sounds/Pop.aiff ]]; then
+      file="/System/Library/Sounds/Pop.aiff"
+    else
+      printf '\a'  # terminal bell as last resort
+      return
+    fi
+  fi
+
+  # Play the sound
+  if command -v afplay &>/dev/null; then
+    afplay "$file"
+  elif command -v paplay &>/dev/null; then
+    paplay "$file"
+  elif command -v aplay &>/dev/null; then
+    aplay "$file"
+  fi
+}
+
 function tm() {
   session_dir=$(zoxide query --list | fzf)
   session_name=$(basename "$session_dir")
