@@ -90,6 +90,16 @@ function gs() { git status "$@"; }
 function gp() { git push "$@"; }
 function k() { kubectl "$@"; }
 function ll() { ls -la "$@"; }
+
+function n() {
+  [[ $# -eq 0 ]] && echo "Usage: n <command>" && return 1
+  "$@"
+  local exit_code=$?
+  ~/.tmux/bin/tmux-notify.sh await
+  play_sound
+  return $exit_code
+}
+
 function oc() { opencode "$@"; }
 
 function play_sound() {
