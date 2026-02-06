@@ -116,7 +116,7 @@ function play_sound() {
 }
 
 function tm() {
-  session_dir=$(zoxide query --list | fzf) || return
+  session_dir=$(zoxide query --list | fzf --header 'create session') || return
   session_name=$(basename "$session_dir")
 
   if tmux has-session -t $session_name 2>/dev/null; then
