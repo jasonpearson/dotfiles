@@ -116,7 +116,7 @@ function play_sound() {
 }
 
 function tm() {
-  session_dir=$(zoxide query --list | fzf)
+  session_dir=$(zoxide query --list | fzf) || return
   session_name=$(basename "$session_dir")
 
   if tmux has-session -t $session_name 2>/dev/null; then
@@ -128,15 +128,21 @@ function tm() {
     notification="tmux attached to $session_name"
   else
     if [ -n "$TMUX" ]; then
-      tmux new-session -d -c "$session_dir" -s "$session_name" && tmux switch-client -t "$session_name"
+      tmux new-session -d -c "$session_dir" -s "$session_name" -n "tools"
+      tmux new-window -t "$session_name" -c "$session_dir" -n "code"
+      tmux select-window -t "$session_name:code"
+      tmux switch-client -t "$session_name"
       notification="new tmux session INSIDE TMUX: $session_name"
     else
-      tmux new-session -c "$session_dir" -s "$session_name"
+      tmux new-session -d -c "$session_dir" -s "$session_name" -n "tools"
+      tmux new-window -t "$session_name" -c "$session_dir" -n "code"
+      tmux select-window -t "$session_name:code"
+      tmux attach -t "$session_name"
       notification="new tmux session: $session_name"
     fi
   fi
 
-  if [-s "$session_name" ]; then
+  if [ -n "$session_name" ]; then
     notify-send "$notification"
   fi
 }
