@@ -4,23 +4,13 @@
     "SessionStart": [
       {
         "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.tmux/bin/tmux-notify.sh complete"
-          }
-        ]
+        "hooks": []
       }
     ],
     "UserPromptSubmit": [
       {
         "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.tmux/bin/tmux-notify.sh running"
-          }
-        ]
+        "hooks": []
       }
     ],
     "PreToolUse": [
@@ -35,21 +25,19 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.tmux/bin/tmux-notify.sh complete"
+            "command": "~/.tmux/bin/tmux-notify.sh await"
           },
-          { "type": "command", "command": "zsh -ic 'play_sound'" }
+          {
+            "type": "command",
+            "command": "zsh -ic 'play_sound'"
+          }
         ]
       }
     ],
     "PostToolUse": [
       {
         "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "~/.tmux/bin/tmux-notify.sh running"
-          }
-        ]
+        "hooks": []
       }
     ],
     "Stop": [
@@ -58,9 +46,12 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.tmux/bin/tmux-notify.sh complete"
+            "command": "~/.tmux/bin/tmux-notify.sh await"
           },
-          { "type": "command", "command": "zsh -ic 'play_sound'" }
+          {
+            "type": "command",
+            "command": "zsh -ic 'play_sound'"
+          }
         ]
       }
     ],

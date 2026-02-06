@@ -125,25 +125,19 @@ function tm() {
     else
       tmux attach -t "$session_name"
     fi
-    notification="tmux attached to $session_name"
+
   else
     if [ -n "$TMUX" ]; then
       tmux new-session -d -c "$session_dir" -s "$session_name" -n "tools"
       tmux new-window -t "$session_name" -c "$session_dir" -n "code"
-      tmux select-window -t "$session_name:code"
+      tmux select-window -t "${session_name}:tools"
       tmux switch-client -t "$session_name"
-      notification="new tmux session INSIDE TMUX: $session_name"
     else
       tmux new-session -d -c "$session_dir" -s "$session_name" -n "tools"
       tmux new-window -t "$session_name" -c "$session_dir" -n "code"
-      tmux select-window -t "$session_name:code"
+      tmux select-window -t "${session_name}:tools"
       tmux attach -t "$session_name"
-      notification="new tmux session: $session_name"
     fi
-  fi
-
-  if [ -n "$session_name" ]; then
-    notify-send "$notification"
   fi
 }
 
