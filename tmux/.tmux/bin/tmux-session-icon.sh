@@ -18,5 +18,5 @@ for PANE_ID in $(tmux list-panes -s -t "$SESSION" -F '#{pane_id}'); do
 done
 
 if $HAS_AWAIT; then
-    echo " 🟠"
+    echo "🟠 "
 fi

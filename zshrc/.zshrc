@@ -41,8 +41,8 @@ setopt inc_append_history
 
 autoload -U compinit; compinit
 
-bindkey -M viins 'kj' vi-cmd-mode
 bindkey -v
+bindkey -M viins 'kj' vi-cmd-mode
 bindkey '^y' autosuggest-accept
 
 # fzf shell integration (0.48+ uses --zsh, older versions use separate files)
