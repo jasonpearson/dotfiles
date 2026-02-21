@@ -32,7 +32,7 @@
           },
           {
             "type": "command",
-            "command": "zsh -ic 'play_sound'"
+            "command": "afplay /System/Library/Sounds/Pop.aiff &"
           }
         ]
       }
@@ -53,7 +53,7 @@
           },
           {
             "type": "command",
-            "command": "zsh -ic 'play_sound'"
+            "command": "afplay /System/Library/Sounds/Pop.aiff &"
           }
         ]
       }
