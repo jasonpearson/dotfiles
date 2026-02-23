@@ -13,6 +13,7 @@ return {
 			local renderMarkdown = require("render-markdown")
 			renderMarkdown.setup({
 				anti_conceal = { enabled = false },
+				enabled = false,
 			})
 
 			vim.keymap.set("n", "<leader>md", function()

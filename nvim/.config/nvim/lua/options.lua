@@ -57,6 +57,13 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "markdown" },
+	callback = function()
+		vim.opt_local.wrap = true
+	end,
+})
+
 vim.cmd(
 	[[                                                                                                                                                                                                                                                                                                                                                                
    autocmd BufNewFile,BufRead *.template set filetype=nginx
