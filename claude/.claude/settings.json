@@ -7,7 +7,12 @@
     "SessionStart": [
       {
         "matcher": "",
-        "hooks": []
+        "hooks": [
+          {
+            "type": "command",
+            "command": "tmux set-option -p @claude_pane 1 && tmux set-option -p pane-border-format ' #{pane_current_path} ' && tmux set-option pane-border-status top"
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -65,9 +70,14 @@
           {
             "type": "command",
             "command": "~/.tmux/bin/tmux-notify.sh clear"
+          },
+          {
+            "type": "command",
+            "command": "tmux set-option -p -u @claude_pane && tmux set-option -p -u pane-border-format && tmux set-option -u pane-border-status"
           }
         ]
       }
     ]
   }
 }
+
