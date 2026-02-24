@@ -11,5 +11,5 @@ STATE_FILE="/tmp/tmux-state${PANE_ID//\//-}"
 STATE=$(cat "$STATE_FILE" 2>/dev/null)
 
 case "$STATE" in
-    await) echo " 🟠" ;;
+    await) echo " 🔥" ;;
 esac

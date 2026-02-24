@@ -9,5 +9,5 @@ for f in /tmp/tmux-state*; do
         PANE_SESSION=$(tmux display-message -t "$PANE_ID" -p '#{session_name}' 2>/dev/null)
         [[ "$PANE_SESSION" == "$CURRENT_SESSION" ]] && continue
     fi
-    echo " 🟠" && exit 0
+    echo " 🔥" && exit 0
 done

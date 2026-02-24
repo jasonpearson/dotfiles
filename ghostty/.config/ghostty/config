@@ -8,7 +8,7 @@ theme = Catppuccin Mocha
 title = " "
 window-padding-color = extend-always
 
-keybind = global:control+b=toggle_quick_terminal
+keybind = global:control+`=toggle_quick_terminal
 copy-on-select = true
 quick-terminal-position = bottom
 quick-terminal-size = 60%
