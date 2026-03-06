@@ -91,6 +91,42 @@ function glo() {
 function gs() { git status "$@"; }
 function gp() { git push "$@"; }
 function gw() { git worktree "$@"; }
+
+function review() {
+  if [[ -z "$1" ]]; then
+    echo "usage: review <commit-or-branch>" >&2
+    return 1
+  fi
+
+  local ref="$1"
+  local base
+
+  if git show-ref --verify --quiet "refs/heads/$ref" || \
+     git show-ref --verify --quiet "refs/remotes/origin/$ref" || \
+     git show-ref --verify --quiet "refs/remotes/$ref"; then
+    # Branch — find merge-base
+    if git rev-parse --verify "origin/main" &>/dev/null; then
+      base=$(git merge-base origin/main "$ref")
+    elif git rev-parse --verify "origin/master" &>/dev/null; then
+      base=$(git merge-base origin/master "$ref")
+    else
+      echo "error: could not find origin/main or origin/master" >&2
+      return 1
+    fi
+  else
+    # Single commit
+    base="${ref}^"
+  fi
+
+  git checkout "$base" && git diff "$base" "$ref" | git apply && git add -N .
+}
+
+function reviewed() {
+  git reset HEAD .
+  git checkout -- .
+  git clean -fd
+  git checkout -
+}
 function k() { kubectl "$@"; }
 function ll() { ls -la "$@"; }
 
