@@ -53,6 +53,8 @@ elif [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
   source /usr/share/doc/fzf/examples/completion.zsh
 fi
 
+alias tf=terraform
+
 function cc() { claude "$@"; }
 
 function e() { "$EDITOR" "$@"; }
@@ -88,6 +90,7 @@ function glo() {
 
 function gs() { git status "$@"; }
 function gp() { git push "$@"; }
+function gw() { git worktree "$@"; }
 function k() { kubectl "$@"; }
 function ll() { ls -la "$@"; }
 
@@ -125,29 +128,106 @@ function play_sound() {
   fi
 }
 
-function tm() {
-  session_dir=$(zoxide query --list | fzf --header 'create session') || return
-  session_name=$(basename "$session_dir")
+# Create or attach to a tmux session for the given directory
+function _tm_session() {
+  local session_dir="$1"
+  # For worktree dirs (.worktrees/$REPO/$BRANCH), use "$REPO-$BRANCH" as name
+  if [[ "$session_dir" == */.worktrees/*/* ]]; then
+    local session_name="$(basename "$(dirname "$session_dir")")-$(basename "$session_dir")"
+  else
+    local session_name=$(basename "$session_dir")
+  fi
 
   if tmux has-session -t $session_name 2>/dev/null; then
+    # Session exists — switch or attach depending on whether we're in tmux
     if [ -n "$TMUX" ]; then
       tmux switch-client -t "$session_name"
     else
       tmux attach -t "$session_name"
     fi
-
   else
+    # New session — create detached with "tools" and "code" windows, then connect
+    tmux new-session -d -c "$session_dir" -s "$session_name" -n "tools"
+    tmux new-window -t "$session_name" -c "$session_dir" -n "code"
+    tmux select-window -t "${session_name}:tools"
     if [ -n "$TMUX" ]; then
-      tmux new-session -d -c "$session_dir" -s "$session_name" -n "tools"
-      tmux new-window -t "$session_name" -c "$session_dir" -n "code"
-      tmux select-window -t "${session_name}:tools"
       tmux switch-client -t "$session_name"
     else
-      tmux new-session -d -c "$session_dir" -s "$session_name" -n "tools"
-      tmux new-window -t "$session_name" -c "$session_dir" -n "code"
-      tmux select-window -t "${session_name}:tools"
       tmux attach -t "$session_name"
     fi
+  fi
+}
+
+# Pick a project directory via zoxide+fzf and open a tmux session for it
+function tm() {
+  local session_dir=$(zoxide query --list | fzf --header 'create session') || return
+  _tm_session "$session_dir"
+}
+
+# Open a tmux session for the current working directory
+function tmc() {
+  _tm_session "$(pwd)"
+}
+
+# add a git worktree at ../.worktrees/$REPO/$BRANCH and cd into it
+# default creates a new branch; -e checks out an existing one
+function wt() {
+  local existing=false
+  if [ "$1" = "-e" ]; then
+    existing=true
+    shift
+  fi
+  if [ -z "$1" ]; then
+    echo "usage: wta [-e] <branch-name>" >&2
+    return 1
+  fi
+  local branch="$1"
+  local repo=$(basename "$(git rev-parse --show-toplevel)")
+  local worktree_path="../.worktrees/${repo}/${branch}"
+  if $existing; then
+    git worktree add "$worktree_path" "$branch"
+  else
+    git worktree add "$worktree_path" -b "$branch"
+  fi && _tm_session "$(cd "$worktree_path" && pwd)"
+}
+
+# Remove the current git worktree and kill its tmux session
+function wtr() {
+  local wt_dir=$(git rev-parse --show-toplevel 2>/dev/null)
+  # Worktrees have a .git file; main repos have a .git directory
+  if [ ! -f "$wt_dir/.git" ]; then
+    echo "error: not inside a git worktree" >&2
+    return 1
+  fi
+  local main_dir=$(git rev-parse --git-common-dir | sed 's|/\.git$||')
+
+  # Derive tmux session name using same logic as _tm_session
+  if [[ "$wt_dir" == */.worktrees/*/* ]]; then
+    local session_name="$(basename "$(dirname "$wt_dir")")-$(basename "$wt_dir")"
+  else
+    local session_name=$(basename "$wt_dir")
+  fi
+
+  # Confirm with user
+  echo "Will remove worktree: $wt_dir"
+  if tmux has-session -t "$session_name" 2>/dev/null; then
+    echo "Will kill tmux session: $session_name"
+  fi
+  read -q "reply?Proceed? [y/N] " || { echo; return 1; }
+  echo
+
+  # cd to main repo before removing (can't remove while inside the worktree)
+  cd "$main_dir"
+
+  # Remove the worktree first (kill-session would terminate this shell)
+  git worktree remove "$wt_dir" || return 1
+
+  # Switch to another tmux session before killing, or just kill
+  if tmux has-session -t "$session_name" 2>/dev/null; then
+    if [ -n "$TMUX" ]; then
+      tmux switch-client -n 2>/dev/null
+    fi
+    tmux kill-session -t "$session_name"
   fi
 }
 
