@@ -10,7 +10,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "tmux set-option -p @claude_pane 1 && tmux set pane-border-status top"
+            "command": "[ -n \"$TMUX\" ] && tmux rename-window claude && tmux set-option -p @claude_pane 1 && tmux set pane-border-status top || true"
           }
         ]
       }
@@ -37,7 +37,7 @@
           },
           {
             "type": "command",
-            "command": "afplay /System/Library/Sounds/Pop.aiff &"
+            "command": "if command -v afplay >/dev/null; then afplay /System/Library/Sounds/Pop.aiff & else printf '\\a'; fi"
           }
         ]
       }
@@ -58,7 +58,7 @@
           },
           {
             "type": "command",
-            "command": "afplay /System/Library/Sounds/Pop.aiff &"
+            "command": "if command -v afplay >/dev/null; then afplay /System/Library/Sounds/Pop.aiff & else printf '\\a'; fi"
           }
         ]
       }
@@ -73,10 +73,11 @@
           },
           {
             "type": "command",
-            "command": "tmux set-option -p -u @claude_pane && tmux set-option -p -u pane-border-style && tmux set-option -p -u pane-active-border-style && tmux set-option -p -u pane-border-format && ~/.tmux/bin/tmux-pane-border.sh $(tmux display -p '#{window_id}')"
+            "command": "[ -n \"$TMUX\" ] && tmux set-option -p -u @claude_pane && tmux set-option -p -u pane-border-style && tmux set-option -p -u pane-active-border-style && tmux set-option -p -u pane-border-format && ~/.tmux/bin/tmux-pane-border.sh $(tmux display -p '#{window_id}') || true"
           }
         ]
       }
     ]
   }
 }
+

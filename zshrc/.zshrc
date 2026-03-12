@@ -66,7 +66,7 @@ function ed() {
     files=$(git diff --name-only --diff-filter=$1)
   fi
 
-  echo $files | xargs nvim
+  nvim ${(f)files}
 }
 
 function ef() {
@@ -127,7 +127,29 @@ function reviewed() {
   git clean -fd
   git checkout -
 }
-function k() { kubectl "$@"; }
+k() {
+  local match="$1"
+  if [[ -z "$match" ]]; then
+    echo "Usage: k <context-match> <kubectl args...>" >&2
+    kubectl config get-contexts -o name >&2
+    return 1
+  fi
+  shift
+  local -a matches=(${(f)"$(kubectl config get-contexts -o name | grep "$match")"})
+  if (( ${#matches} == 0 )); then
+    echo "No context matching '$match'" >&2
+    return 1
+  elif (( ${#matches} > 1 )); then
+    echo "Multiple contexts match '$match':" >&2
+    printf '  %s\n' "${matches[@]}" >&2
+    return 1
+  fi
+  kubectl --context="${matches[1]}" "$@"
+}
+
+kd() { k "$(basename "$PWD")-development" "$@"; }
+ks() { k "$(basename "$PWD")-staging" "$@"; }
+kp() { k "$(basename "$PWD")-production" "$@"; }
 function ll() { ls -la "$@"; }
 
 function n() {
@@ -183,9 +205,7 @@ function _tm_session() {
     fi
   else
     # New session — create detached with "tools" and "code" windows, then connect
-    tmux new-session -d -c "$session_dir" -s "$session_name" -n "tools"
-    tmux new-window -t "$session_name" -c "$session_dir" -n "code"
-    tmux select-window -t "${session_name}:tools"
+    tmux new-session -d -c "$session_dir" -s "$session_name"
     if [ -n "$TMUX" ]; then
       tmux switch-client -t "$session_name"
     else
