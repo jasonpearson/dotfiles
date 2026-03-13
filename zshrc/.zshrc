@@ -189,8 +189,8 @@ function play_sound() {
 # Create or attach to a tmux session for the given directory
 function _tm_session() {
   local session_dir="$1"
-  # For worktree dirs (.worktrees/$REPO/$BRANCH), use "$REPO-$BRANCH" as name
-  if [[ "$session_dir" == */.worktrees/*/* ]]; then
+  # For worktree dirs (.wt/$REPO/$BRANCH), use "$REPO-$BRANCH" as name
+  if [[ "$session_dir" == */.wt/*/* ]]; then
     local session_name="$(basename "$(dirname "$session_dir")")-$(basename "$session_dir")"
   else
     local session_name=$(basename "$session_dir")
@@ -225,7 +225,15 @@ function tmc() {
   _tm_session "$(pwd)"
 }
 
-# add a git worktree at ../.worktrees/$REPO/$BRANCH and cd into it
+function tma() {
+  tmux a "$@"
+}
+
+function tml() {
+  tmux ls "$@"
+}
+
+# add a git worktree at ../.wt/$REPO/$BRANCH and cd into it
 # default creates a new branch; -e checks out an existing one
 function wt() {
   local existing=false
@@ -239,7 +247,7 @@ function wt() {
   fi
   local branch="$1"
   local repo=$(basename "$(git rev-parse --show-toplevel)")
-  local worktree_path="../.worktrees/${repo}/${branch}"
+  local worktree_path="../.wt/${repo}/${branch}"
   if $existing; then
     git worktree add "$worktree_path" "$branch"
   else
@@ -258,7 +266,7 @@ function wtr() {
   local main_dir=$(git rev-parse --git-common-dir | sed 's|/\.git$||')
 
   # Derive tmux session name using same logic as _tm_session
-  if [[ "$wt_dir" == */.worktrees/*/* ]]; then
+  if [[ "$wt_dir" == */.wt/*/* ]]; then
     local session_name="$(basename "$(dirname "$wt_dir")")-$(basename "$wt_dir")"
   else
     local session_name=$(basename "$wt_dir")

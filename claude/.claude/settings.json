@@ -73,11 +73,10 @@
           },
           {
             "type": "command",
-            "command": "[ -n \"$TMUX\" ] && tmux set-option -p -u @claude_pane && tmux set-option -p -u pane-border-style && tmux set-option -p -u pane-active-border-style && tmux set-option -p -u pane-border-format && ~/.tmux/bin/tmux-pane-border.sh $(tmux display -p '#{window_id}') || true"
+            "command": "[ -n \"$TMUX\" ] && tmux set-option -p -u @claude_pane && tmux set-option -p -u pane-border-style && tmux set-option -p -u pane-active-border-style && tmux set-option -p -u pane-border-format && tmux set-window-option automatic-rename on && ~/.tmux/bin/tmux-pane-border.sh $(tmux display -p '#{window_id}') || true"
           }
         ]
       }
     ]
   }
 }
-
