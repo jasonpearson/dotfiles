@@ -1,0 +1,14 @@
+backups
+cache
+debug
+file-history
+image-cache
+paste-cache
+plans
+projects
+session-env
+shell-snapshots
+tasks
+todos
+stats-cache.json
+history.jsonl

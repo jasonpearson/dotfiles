@@ -78,5 +78,16 @@
         ]
       }
     ]
+  },
+  "permissions": {
+    "allow": [],
+    "ask": [
+      "Bash(git add *)",
+      "Bash(git checkout *)",
+      "Bash(git commit *)",
+      "Bash(git push *)",
+      "Bash(git rebase *)"
+    ]
   }
 }
+

@@ -146,33 +146,42 @@ return {
 			},
 		}
 
-		local filename_and_two_parents = {
-			"filename",
-			path = 1, -- Use relative path as base
-			color = { bg = "none", fg = "b4befe", gui = "none" },
-			fmt = function(str)
-				-- Split the path
-				local path_parts = {}
-				for part in string.gmatch(str, "[^/]+") do
-					table.insert(path_parts, part)
-				end
+		local function cwd_short()
+			local cwd = vim.fn.fnamemodify(vim.fn.getcwd(), ":~")
+			return cwd
+		end
 
-				-- If we have at least 3 parts (2 dirs + filename), show last 3 parts
-				if #path_parts >= 3 then
-					return path_parts[#path_parts - 2]
-						.. "/"
-						.. path_parts[#path_parts - 1]
-						.. "/"
-						.. path_parts[#path_parts]
-				elseif #path_parts == 2 then
-					-- If we have 2 parts (1 dir + filename), show both
-					return path_parts[1] .. "/" .. path_parts[2]
-				else
-					-- Just filename
-					return str
-				end
-			end,
-		}
+		-- local filename_and_two_parents = {
+		-- 	"filename",
+		-- 	path = 1, -- Use relative path as base
+		-- 	color = { bg = "none", fg = "b4befe", gui = "none" },
+		-- 	fmt = function(str)
+		-- 		if str:find("%[No Name%]") then
+		-- 			return cwd_short()
+		-- 		end
+		--
+		-- 		-- Split the path
+		-- 		local path_parts = {}
+		-- 		for part in string.gmatch(str, "[^/]+") do
+		-- 			table.insert(path_parts, part)
+		-- 		end
+		--
+		-- 		-- If we have at least 3 parts (2 dirs + filename), show last 3 parts
+		-- 		if #path_parts >= 3 then
+		-- 			return path_parts[#path_parts - 2]
+		-- 				.. "/"
+		-- 				.. path_parts[#path_parts - 1]
+		-- 				.. "/"
+		-- 				.. path_parts[#path_parts]
+		-- 		elseif #path_parts == 2 then
+		-- 			-- If we have 2 parts (1 dir + filename), show both
+		-- 			return path_parts[1] .. "/" .. path_parts[2]
+		-- 		else
+		-- 			-- Just filename
+		-- 			return str
+		-- 		end
+		-- 	end,
+		-- }
 
 		require("lualine").setup({
 			options = {
@@ -194,6 +203,12 @@ return {
 						path = 1,
 						file_status = true,
 						padding = { left = 1, right = 1 },
+						fmt = function(str)
+							if str:find("%[No Name%]") then
+								return cwd_short()
+							end
+							return str
+						end,
 					},
 				},
 				lualine_b = {
@@ -268,7 +283,7 @@ return {
 								end
 							else
 								-- For special buffers or unnamed files
-								return name
+								return cwd_short()
 							end
 						end,
 					},
@@ -278,17 +293,17 @@ return {
 				lualine_x = {},
 				lualine_y = {},
 			},
-			winbar = {
-				lualine_a = {
-					filename_and_two_parents,
-				},
-				lualine_z = {},
-			},
-			inactive_winbar = {
-				lualine_a = {
-					filename_and_two_parents,
-				},
-			},
+			-- winbar = {
+			-- 	lualine_a = {
+			-- 		filename_and_two_parents,
+			-- 	},
+			-- 	lualine_z = {},
+			-- },
+			-- inactive_winbar = {
+			-- 	lualine_a = {
+			-- 		filename_and_two_parents,
+			-- 	},
+			-- },
 			extensions = {},
 		})
 

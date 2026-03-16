@@ -49,7 +49,7 @@ set_default_shell_zsh() {
     if ! grep -q "^$ZSH_PATH$" /etc/shells; then
       echo "$ZSH_PATH" | sudo tee -a /etc/shells >/dev/null
     fi
-    chsh -s "$ZSH_PATH"
+    sudo chsh -s "$ZSH_PATH"
     echo "Default shell changed to zsh. Log out and back in for it to take effect."
   else
     echo "zsh is already the default shell"

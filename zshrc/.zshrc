@@ -55,6 +55,8 @@ fi
 
 alias tf=terraform
 
+function br() { bun run "$@"; }
+
 function cc() { claude "$@"; }
 
 function e() { "$EDITOR" "$@"; }
@@ -82,6 +84,7 @@ function ga() { git add "$@"; }
 function gac() { ga "-A" && gc "$@" }
 function gaca() { ga "-A" && gc --amend }
 function gc() { git commit "$@"; }
+function gco() { git checkout "$@"; }
 function gd() { git diff "$@"; }
 
 function glo() {
