@@ -5,7 +5,7 @@
 STATE="${1:-}"
 [[ -z "${TMUX:-}" ]] && exit 0
 
-PANE_ID="${TMUX_PANE:-}"
+PANE_ID="${2:-${TMUX_PANE:-}}"
 [[ -z "$PANE_ID" ]] && exit 0
 
 STATE_FILE="/tmp/tmux-state${PANE_ID//\//-}"
