@@ -300,3 +300,13 @@ function wtr() {
 
 # quick ask
 function qa() { claude --model haiku -p "$@"; }
+
+# Set terminal title: hostname when SSH'd, current path when local
+function _set_title() {
+  if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
+    print -Pn "\e]0;%~ (${${HOST%%.*}#jason-pearson-})\a"
+  else
+    print -Pn "\e]0;%~\a"
+  fi
+}
+precmd_functions+=(_set_title)

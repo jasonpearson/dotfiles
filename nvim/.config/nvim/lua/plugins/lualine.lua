@@ -186,7 +186,7 @@ return {
 		require("lualine").setup({
 			options = {
 				always_show_tabline = false,
-				globalstatus = true,
+				globalstatus = false,
 				theme = unified_theme,
 				component_separators = { left = "", right = "" },
 				section_separators = { left = "", right = "" },
@@ -234,7 +234,7 @@ return {
 			inactive_sections = {
 				lualine_a = {},
 				lualine_b = {},
-				lualine_c = { { "filename", path = 0, file_status = true } },
+				lualine_c = { { "filename", path = 1, file_status = true } },
 				lualine_x = {},
 				lualine_y = {},
 				lualine_z = {},
@@ -307,6 +307,6 @@ return {
 			extensions = {},
 		})
 
-		vim.opt.laststatus = 3
+		vim.opt.laststatus = 2
 	end,
 }

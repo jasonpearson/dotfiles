@@ -3,7 +3,6 @@ command_timeout = 1500
 "$schema" = 'https://starship.rs/config-schema.json'
 
 format = """
-$hostname\
 [░▒▓](#94e2d5)\
 [ ](bg:#94e2d5 fg:#090c0c)\
 $os\
@@ -20,12 +19,16 @@ $golang\
 $php\
 $time\
 [](fg:#1d2230)\
+${custom.hostname}\
 \n$character"""
 
 [hostname]
-ssh_only = true
-format = '[$hostname](bold red) '
-disabled = false
+disabled = true
+
+[custom.hostname]
+command = 'echo "${HOSTNAME:-$(hostname)}" | sed "s/^jason-pearson-//"'
+when = 'test -n "$SSH_CLIENT" || test -n "$SSH_TTY"'
+format = '[$output](bold fg:#fab387) '
 
 [os]
 disabled = false
