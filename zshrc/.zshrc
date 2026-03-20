@@ -82,7 +82,7 @@ function eg() { e $(rg -l $@) };
 function egf() { e $(rg -u --files | rg $@) };
 function ga() { git add "$@"; }
 function gac() { ga "-A" && gc "$@" }
-function gaca() { ga "-A" && gc --amend }
+function gaca() { ga "-A" && gc --amend "$@" }
 function gc() { git commit "$@"; }
 function gco() { git checkout "$@"; }
 function gd() { git diff "$@"; }
@@ -304,7 +304,9 @@ function qa() { claude --model haiku -p "$@"; }
 # Set terminal title: hostname when SSH'd, current path when local
 function _set_title() {
   if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
-    print -Pn "\e]0;%~ (${${HOST%%.*}#jason-pearson-})\a"
+    local host="${${HOST%%.*}#jason-pearson-}"
+    print -Pn "\e]0;%~ ($host)\a"
+    [[ -n "$TMUX" ]] && tmux set-option -p @ssh_host "$host" 2>/dev/null
   else
     print -Pn "\e]0;%~\a"
   fi
