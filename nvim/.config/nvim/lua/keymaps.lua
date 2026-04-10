@@ -31,6 +31,7 @@ vim.keymap.set("n", "<leader>dl", vim.diagnostic.setloclist)
 vim.keymap.set("n", "<C-n>", "<cmd>cnext<cr>")
 vim.keymap.set("n", "<C-p>", "<cmd>cprev<cr>")
 vim.keymap.set("n", "<leader>r", "<cmd>set relativenumber!<cr>")
+vim.keymap.set("n", "<leader>W", "<cmd>set wrap!<cr>")
 
 vim.keymap.set("n", "<leader>fq", function()
 	local wins = vim.api.nvim_list_wins()

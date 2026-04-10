@@ -91,6 +91,7 @@ function glo() {
   git log --color --decorate --pretty=format:"%h %an %Cgreen(%cr)%Creset - %s%C(yellow)%d%Creset" --abbrev-commit "$@"
 }
 
+function gb() { git branch "$@"; }
 function gs() { git status "$@"; }
 function gp() { git push "$@"; }
 function gw() { git worktree "$@"; }
@@ -191,7 +192,17 @@ function play_sound() {
 
 # Create or attach to a tmux session for the given directory
 function _tm_session() {
-  local session_dir="$1"
+  local kill_pane=0
+  local -a rest
+  for arg in "$@"; do
+    if [[ "$arg" == "--kill-pane" || "$arg" == "-k" ]]; then
+      kill_pane=1
+    else
+      rest+=("$arg")
+    fi
+  done
+
+  local session_dir="${rest[1]}"
   # For worktree dirs (.wt/$REPO/$BRANCH), use "$REPO-$BRANCH" as name
   if [[ "$session_dir" == */.wt/*/* ]]; then
     local session_name="$(basename "$(dirname "$session_dir")")-$(basename "$session_dir")"
@@ -215,17 +226,21 @@ function _tm_session() {
       tmux attach -t "$session_name"
     fi
   fi
+
+  if (( kill_pane )) && [[ -n "$TMUX" ]]; then
+    tmux kill-pane
+  fi
 }
 
 # Pick a project directory via zoxide+fzf and open a tmux session for it
 function tm() {
   local session_dir=$(zoxide query --list | fzf --header 'create session') || return
-  _tm_session "$session_dir"
+  _tm_session "$session_dir" "$@"
 }
 
 # Open a tmux session for the current working directory
 function tmc() {
-  _tm_session "$(pwd)"
+  _tm_session "$(pwd)" "$@"
 }
 
 function tma() {
@@ -234,68 +249,6 @@ function tma() {
 
 function tml() {
   tmux ls "$@"
-}
-
-# add a git worktree at ../.wt/$REPO/$BRANCH and cd into it
-# default creates a new branch; -e checks out an existing one
-function wt() {
-  local existing=false
-  if [ "$1" = "-e" ]; then
-    existing=true
-    shift
-  fi
-  if [ -z "$1" ]; then
-    echo "usage: wta [-e] <branch-name>" >&2
-    return 1
-  fi
-  local branch="$1"
-  local repo=$(basename "$(git rev-parse --show-toplevel)")
-  local worktree_path="../.wt/${repo}/${branch}"
-  if $existing; then
-    git worktree add "$worktree_path" "$branch"
-  else
-    git worktree add "$worktree_path" -b "$branch"
-  fi && _tm_session "$(cd "$worktree_path" && pwd)"
-}
-
-# Remove the current git worktree and kill its tmux session
-function wtr() {
-  local wt_dir=$(git rev-parse --show-toplevel 2>/dev/null)
-  # Worktrees have a .git file; main repos have a .git directory
-  if [ ! -f "$wt_dir/.git" ]; then
-    echo "error: not inside a git worktree" >&2
-    return 1
-  fi
-  local main_dir=$(git rev-parse --git-common-dir | sed 's|/\.git$||')
-
-  # Derive tmux session name using same logic as _tm_session
-  if [[ "$wt_dir" == */.wt/*/* ]]; then
-    local session_name="$(basename "$(dirname "$wt_dir")")-$(basename "$wt_dir")"
-  else
-    local session_name=$(basename "$wt_dir")
-  fi
-
-  # Confirm with user
-  echo "Will remove worktree: $wt_dir"
-  if tmux has-session -t "$session_name" 2>/dev/null; then
-    echo "Will kill tmux session: $session_name"
-  fi
-  read -q "reply?Proceed? [y/N] " || { echo; return 1; }
-  echo
-
-  # cd to main repo before removing (can't remove while inside the worktree)
-  cd "$main_dir"
-
-  # Remove the worktree first (kill-session would terminate this shell)
-  git worktree remove "$wt_dir" || return 1
-
-  # Switch to another tmux session before killing, or just kill
-  if tmux has-session -t "$session_name" 2>/dev/null; then
-    if [ -n "$TMUX" ]; then
-      tmux switch-client -n 2>/dev/null
-    fi
-    tmux kill-session -t "$session_name"
-  fi
 }
 
 # quick ask
