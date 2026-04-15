@@ -1,6 +1,6 @@
 ---
+disable: true
 description: Reviews code for quality and best practices
-model: anthropic/claude-sonnet-4-5-20250929
 mode: subagent
 temperature: 0.1
 tools:

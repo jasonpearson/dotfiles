@@ -1,13 +1,9 @@
 {
-  "keybinds": {
-    "messages_page_up": "ctrl+u",
-    "messages_page_down": "ctrl+d",
-    "messages_half_page_up": "ctrl+y",
-    "messages_half_page_down": "ctrl+e",
-  },
+  "$schema": "https://opencode.ai/config.json",
+  "default_agent": "plan",
   "mcp": {
     "context7": {
-      "enabled": true,
+      "enabled": false,
       "type": "remote",
       "url": "https://mcp.context7.com/mcp",
       "headers": {
@@ -15,5 +11,5 @@
       },
     },
   },
-  "$schema": "https://opencode.ai/config.json",
+  "model": "opencode/gpt-5.3-codex",
 }
