@@ -1,17 +1,31 @@
 vim.g.base16colorspace = 256
 
-vim.g.clipboard = {
-	name = "pbcopy",
-	copy = {
-		["+"] = { "pbcopy" },
-		["*"] = { "pbcopy" },
-	},
-	paste = {
-		["+"] = { "pbpaste" },
-		["*"] = { "pbpaste" },
-	},
-	cache_enabled = 0,
-}
+if vim.fn.has("mac") == 1 then
+	vim.g.clipboard = {
+		name = "pbcopy",
+		copy = {
+			["+"] = { "pbcopy" },
+			["*"] = { "pbcopy" },
+		},
+		paste = {
+			["+"] = { "pbpaste" },
+			["*"] = { "pbpaste" },
+		},
+		cache_enabled = 0,
+	}
+else
+	vim.g.clipboard = {
+		name = "OSC 52",
+		copy = {
+			["+"] = require("vim.ui.clipboard.osc52").copy("+"),
+			["*"] = require("vim.ui.clipboard.osc52").copy("*"),
+		},
+		paste = {
+			["+"] = require("vim.ui.clipboard.osc52").paste("+"),
+			["*"] = require("vim.ui.clipboard.osc52").paste("*"),
+		},
+	}
+end
 
 vim.g.mapleader = " "
 vim.g.netrw_banner = 0
