@@ -1,5 +1,44 @@
 {
   "$schema": "https://opencode.ai/config.json",
+  "agent": {
+    "auto-build": {
+      "description": "Provided speedy answers to quick questions",
+      "permission": {
+        "bash": {
+          "*": "allow",
+        },
+        "edit": "allow",
+      },
+    },
+    "build": {
+      "permission": {
+        "edit": "ask",
+      },
+    },
+    "haiku": {
+      "description": "Provided speedy answers to quick questions",
+      "model": "opencode/claude-haiku-4-5",
+      "permission": {
+        "edit": "deny",
+        "write": "deny",
+      },
+    },
+    "plan": {
+      "permission": {
+        "bash": {
+          "ls *": "allow",
+          "rg *": "allow",
+        },
+        "edit": "deny",
+        "write": "deny",
+      },
+    },
+    "review": {
+      "description": "Reviews code for quality and best practices",
+      "model": "opencode/gpt-5.3-codex",
+      "prompt": "{file:./prompts/review.md}",
+    },
+  },
   "default_agent": "plan",
   "mcp": {
     "context7": {
@@ -11,5 +50,26 @@
       },
     },
   },
-  "model": "opencode/gpt-5.3-codex",
+  "model": "opencode/claude-opus-4-7",
+  "small_model": "opencode/claude-haiku-4-5",
+  "permission": {
+    "bash": {
+      "*": "ask",
+      "git *": "ask",
+      "git log *": "allow",
+      "git status *": "allow",
+    },
+    "edit": "ask",
+    "external_directory": {
+      "~/.config/**": "allow",
+      "~/dotfiles/**": "allow",
+    },
+    "glob": "allow",
+    "grep": "allow",
+    "list": "allow",
+    "lsp": "allow",
+    "question": "allow",
+    "webfetch": "ask",
+    "websearch": "ask",
+  },
 }
