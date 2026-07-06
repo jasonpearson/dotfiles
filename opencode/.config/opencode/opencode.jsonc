@@ -58,6 +58,12 @@
       "git *": "ask",
       "git log *": "allow",
       "git status *": "allow",
+      "ls *": "allow",
+      "rg *": "allow",
+      "head *": "allow",
+      "tail *": "allow",
+      "cat *": "allow",
+      "wc *": "allow",
     },
     "edit": "ask",
     "external_directory": {
