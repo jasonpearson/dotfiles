@@ -11,13 +11,18 @@ install_bun() {
   fi
 }
 
-install_tpm() {
-  TPM_DIR="$HOME/.tmux/plugins/tpm"
-  if [ ! -d "$TPM_DIR" ]; then
-    echo "Installing Tmux Plugin Manager..."
-    git clone https://github.com/tmux-plugins/tpm "$TPM_DIR"
+install_tpack() {
+  # tpack keeps TPM's directory for drop-in compatibility
+  TPACK_DIR="$HOME/.tmux/plugins/tpm"
+  if [ -d "$TPACK_DIR" ] && ! git -C "$TPACK_DIR" remote get-url origin 2>/dev/null | grep -q "tmuxpack/tpack"; then
+    echo "Migrating TPM -> tpack..."
+    rm -rf "$TPACK_DIR"
+  fi
+  if [ ! -d "$TPACK_DIR" ]; then
+    echo "Installing tpack (tmux plugin manager)..."
+    git clone https://github.com/tmuxpack/tpack "$TPACK_DIR"
   else
-    echo "TPM already installed"
+    echo "tpack already installed"
   fi
 }
 

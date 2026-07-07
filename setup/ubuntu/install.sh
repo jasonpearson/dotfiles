@@ -75,8 +75,8 @@ fi
 # Install bun
 install_bun
 
-# Install Tmux Plugin Manager
-install_tpm
+# Install tpack (tmux plugin manager)
+install_tpack
 
 # Install Claude Code
 if ! command -v claude &>/dev/null; then
@@ -97,5 +97,5 @@ echo "Installation complete!"
 echo ""
 echo "Notes:"
 echo "  - Log out and back in for zsh to become your default shell"
-echo "  - Run 'tmux' and press 'prefix + I' to install tmux plugins"
+echo "  - Run 'tmux' and press 'prefix + I' to install tmux plugins (prefix + T for the tpack TUI)"
 echo "  - Open nvim to let lazy.nvim install plugins automatically"

@@ -22,8 +22,8 @@ yay_install ghostty
 yay_install tmux
 yay_install stow
 
-# 2. Install Tmux Plugin Manager
-install_tpm
+# 2. Install tpack (tmux plugin manager)
+install_tpack
 
 # 3. Stow dotfiles
 stow_dotfiles

@@ -56,8 +56,8 @@ brew_cask_install ghostty
 # Install bun
 install_bun
 
-# Install Tmux Plugin Manager
-install_tpm
+# Install tpack (tmux plugin manager)
+install_tpack
 
 # Install Claude Code
 if ! command -v claude &>/dev/null; then
