@@ -14,7 +14,7 @@ pane_path=$(tmux display-message -p -t "$pane_id" '#{pane_current_path}' 2>/dev/
 if printf '%s' "$title" | grep -qE ' \([^()]+\)$'; then
     path=$(printf '%s' "$title" | sed 's/ ([^()]*)$//')
     host=$(printf '%s' "$title" | sed 's/.*(\([^()]*\))$/\1/' | sed 's/^jason-pearson-//')
-    printf '%s #[fg=%s]%s' "$path" "#{@thm_peach}" "$host"
+    printf '%s #[fg=%s]%s' "$path" "#{@peach}" "$host"
 else
     # Local/overridden pane: use tmux-tracked path (unaffected by app title overrides)
     # Note: ~ in replacement string would be tilde-expanded to $HOME (no-op), so use a variable
@@ -23,7 +23,7 @@ else
     # Fall back to cached SSH hostname (set by _set_title precmd) in case title was overridden
     ssh_host=$(tmux display-message -p -t "$pane_id" '#{@ssh_host}' 2>/dev/null)
     if [ -n "$ssh_host" ]; then
-        printf '%s #[fg=%s]%s' "$path" "#{@thm_peach}" "$ssh_host"
+        printf '%s #[fg=%s]%s' "$path" "#{@peach}" "$ssh_host"
     else
         printf '%s' "$path"
     fi
