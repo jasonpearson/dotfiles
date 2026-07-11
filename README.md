@@ -20,15 +20,19 @@ Personal configuration files managed with [GNU Stow](https://www.gnu.org/softwar
 ### macOS
 
 ```bash
-cd macos-supplement
-./install-all.sh
+./setup/macos/install.sh
 ```
 
 ### Linux (Arch/Omarchy)
 
 ```bash
-cd omarchy-supplement
-./install-all.sh
+./setup/omarchy/install.sh
+```
+
+### Ubuntu
+
+```bash
+./setup/ubuntu/install.sh
 ```
 
 ## Manual Setup
@@ -40,7 +44,7 @@ Install GNU Stow, then symlink configs to your home directory:
 brew install stow
 
 # Symlink all configs
-stow zshrc ghostty tmux nvim starship gitconfig opencode
+stow zshrc ghostty tmux nvim starship gitconfig opencode claude
 ```
 
 ## Key Bindings
