@@ -32,7 +32,12 @@
     "UserPromptSubmit": [
       {
         "matcher": "",
-        "hooks": []
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.tmux/plugins/tmux-attention/bin/tmux-attention working"
+          }
+        ]
       }
     ],
     "PreToolUse": [
@@ -47,7 +52,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.tmux/bin/tmux-notify.sh await"
+            "command": "~/.tmux/plugins/tmux-attention/bin/tmux-attention blocked"
           },
           {
             "type": "command",
@@ -68,7 +73,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.tmux/bin/tmux-notify.sh await"
+            "command": "~/.tmux/plugins/tmux-attention/bin/tmux-attention done"
           },
           {
             "type": "command",
@@ -83,7 +88,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.tmux/bin/tmux-notify.sh clear"
+            "command": "~/.tmux/plugins/tmux-attention/bin/tmux-attention clear"
           },
           {
             "type": "command",

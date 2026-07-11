@@ -158,9 +158,8 @@ function ll() { ls -la "$@"; }
 
 function n() {
   [[ $# -eq 0 ]] && echo "Usage: n <command>" && return 1
-  "$@"
+  ~/.tmux/plugins/tmux-attention/bin/tmux-attention run -- "$@"
   local exit_code=$?
-  ~/.tmux/bin/tmux-notify.sh await
   play_sound
   return $exit_code
 }
