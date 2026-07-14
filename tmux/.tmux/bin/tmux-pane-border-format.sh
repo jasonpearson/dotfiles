@@ -14,7 +14,7 @@ tilde_path='#{s|'"$HOME"'|~|:pane_current_path}'
 # remote "path (host)" and belongs to the left side).
 interesting='#{&&:#{!=:#{pane_title},#{host}},#{&&:#{!=:#{pane_title},'"$tilde_path"'},#{!=:#{pane_current_command},ssh}}}'
 
-left="#{attention_pane}#{?pane_active,#[fg=#{@crust}]#[bg=#{@teal}] ,#[fg=#{@overlay_0}]}#(~/.tmux/bin/tmux-pane-title.sh '#{pane_id}' '#{pane_current_command}')"
-right='#[align=right]#[default]#{?'"$interesting"', #[fg=#{@overlay_0}]#{=/40/…:pane_title} ,}'
+left="#{attention_pane}#{?pane_active,#[default]#[fg=#{@lavender}]#[bg=default]#[fg=#{@crust}]#[bg=#{@lavender}] ,#[fg=#{@overlay_2}]}#(~/.tmux/bin/tmux-pane-title.sh '#{pane_id}' '#{pane_current_command}')#{?pane_active, #[default]#[fg=#{@lavender}],}"
+right='#[align=right]#[default]#{?'"$interesting"', #[fg=#{@overlay_1}]#{=/40/…:pane_title} ,}'
 
 tmux set -g pane-border-format " $left $right"

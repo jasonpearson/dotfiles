@@ -6,7 +6,6 @@ macos-titlebar-proxy-icon = hidden
 theme = Catppuccin Mocha
 # theme = Rose Pine
 title = " "
-window-padding-color = extend-always
 
 keybind = global:control+`=toggle_quick_terminal
 copy-on-select = true

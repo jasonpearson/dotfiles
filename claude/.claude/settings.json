@@ -64,7 +64,34 @@
     "PostToolUse": [
       {
         "matcher": "",
-        "hooks": []
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.tmux/plugins/tmux-attention/bin/tmux-attention working"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.tmux/plugins/tmux-attention/bin/tmux-attention working"
+          }
+        ]
+      }
+    ],
+    "PermissionDenied": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "~/.tmux/plugins/tmux-attention/bin/tmux-attention working"
+          }
+        ]
       }
     ],
     "Stop": [
@@ -98,5 +125,6 @@
       }
     ]
   },
-  "editorMode": "vim"
+  "editorMode": "vim",
+  "effortLevel": "xhigh"
 }
