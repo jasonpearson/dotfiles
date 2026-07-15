@@ -37,5 +37,5 @@ fi
 # ( in @lavender) so the host lands outside; inactive panes have no pill,
 # so the border format renders this as plain overlay_2 text (no cap emitted).
 printf '%s' "$path"
-[ "$pane_active" = "1" ] && printf ' #[default]#[fg=%s]' "#{@lavender}"
-[ -n "$host" ] && printf ' #[fg=%s]%s' "#{@peach}" "$host"
+[ "$pane_active" = "1" ] && printf ' #[default]#[fg=%s]' "#{@teal}"
+[ -n "$host" ] && printf ' #[fg=%s]%s' "#{@red}" "$host"
