@@ -209,14 +209,14 @@ function tml() {
 # quick ask
 function qa() { claude --model haiku -p "$@"; }
 
-# Set terminal title: hostname when SSH'd, current path when local
+# Under SSH, emit "remote_pwd (host)" via the OSC title — the one channel that
+# crosses the ssh boundary — so the parent tmux can render the remote path and
+# host on the pane border. Locally the border reads pane_current_path directly,
+# so there is nothing to do (we no longer set a terminal-tab title at all).
 function _set_title() {
-  if [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]]; then
-    local host="${${HOST%%.*}#jason-pearson-}"
-    print -Pn "\e]0;%~ ($host)\a"
-    [[ -n "$TMUX" ]] && tmux set-option -p @ssh_host "$host" 2>/dev/null
-  else
-    print -Pn "\e]0;%~\a"
-  fi
+  [[ -n "$SSH_CLIENT" || -n "$SSH_TTY" ]] || return
+  local host="${${HOST%%.*}#jason-pearson-}"
+  print -Pn "\e]0;%~ ($host)\a"
+  [[ -n "$TMUX" ]] && tmux set-option -p @ssh_host "$host" 2>/dev/null
 }
 precmd_functions+=(_set_title)
