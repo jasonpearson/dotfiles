@@ -2,11 +2,7 @@
   "$schema": "https://json.schemastore.org/claude-code-settings.json",
   "env": {},
   "permissions": {
-    "allow": [
-      "Bash(find:*)",
-      "Bash(grep:*)",
-      "Bash(ls:*)"
-    ],
+    "allow": ["Bash(find:*)", "Bash(grep:*)", "Bash(ls:*)"],
     "ask": [
       "Bash(git add:*)",
       "Bash(git checkout:*)",
@@ -125,6 +121,7 @@
       }
     ]
   },
+  "effortLevel": "high",
   "editorMode": "vim",
-  "effortLevel": "xhigh"
+  "agentPushNotifEnabled": true
 }

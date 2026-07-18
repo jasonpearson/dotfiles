@@ -196,7 +196,7 @@ function play_sound() {
 # prefix+A inside tmux). These work from a bare shell too: inside tmux they
 # switch the client, outside they attach.
 alias tmc='tmux-attention new "$PWD"'  # session for the current directory
-alias tmf='tmux-attention new'         # fuzzy-find a dir; shift-tab -> session picker
+alias tm='tmux-attention'              # the picker: a dir, or shift-tab for sessions
 
 function tma() {
   tmux a "$@"
@@ -205,9 +205,6 @@ function tma() {
 function tml() {
   tmux ls "$@"
 }
-
-# quick ask
-function qa() { claude --model haiku -p "$@"; }
 
 # Under SSH, emit "remote_pwd (host)" via the OSC title — the one channel that
 # crosses the ssh boundary — so the parent tmux can render the remote path and
