@@ -37,6 +37,9 @@ export PATH="$BUN_INSTALL/bin:$PATH"
 # claude
 export PATH="$HOME/.local/bin:$PATH"
 
+# tmux-attention CLI (pick / new / run)
+export PATH="$HOME/.tmux/plugins/tmux-attention/bin:$PATH"
+
 setopt inc_append_history
 
 autoload -U compinit; compinit
@@ -158,7 +161,7 @@ function ll() { ls -la "$@"; }
 
 function n() {
   [[ $# -eq 0 ]] && echo "Usage: n <command>" && return 1
-  ~/.tmux/plugins/tmux-attention/bin/tmux-attention run -- "$@"
+  tmux-attention run -- "$@"
   local exit_code=$?
   play_sound
   return $exit_code
@@ -189,58 +192,11 @@ function play_sound() {
   fi
 }
 
-# Create or attach to a tmux session for the given directory
-function _tm_session() {
-  local kill_pane=0
-  local -a rest
-  for arg in "$@"; do
-    if [[ "$arg" == "--kill-pane" || "$arg" == "-k" ]]; then
-      kill_pane=1
-    else
-      rest+=("$arg")
-    fi
-  done
-
-  local session_dir="${rest[1]}"
-  # For worktree dirs (.wt/$REPO/$BRANCH), use "$REPO-$BRANCH" as name
-  if [[ "$session_dir" == */.wt/*/* ]]; then
-    local session_name="$(basename "$(dirname "$session_dir")")-$(basename "$session_dir")"
-  else
-    local session_name=$(basename "$session_dir")
-  fi
-
-  if tmux has-session -t $session_name 2>/dev/null; then
-    # Session exists — switch or attach depending on whether we're in tmux
-    if [ -n "$TMUX" ]; then
-      tmux switch-client -t "$session_name"
-    else
-      tmux attach -t "$session_name"
-    fi
-  else
-    # New session — create detached with "tools" and "code" windows, then connect
-    tmux new-session -d -c "$session_dir" -s "$session_name"
-    if [ -n "$TMUX" ]; then
-      tmux switch-client -t "$session_name"
-    else
-      tmux attach -t "$session_name"
-    fi
-  fi
-
-  if (( kill_pane )) && [[ -n "$TMUX" ]]; then
-    tmux kill-pane
-  fi
-}
-
-# Pick a project directory via zoxide+fzf and open a tmux session for it
-function tm() {
-  local session_dir=$(zoxide query --list | fzf --header 'create session') || return
-  _tm_session "$session_dir" "$@"
-}
-
-# Open a tmux session for the current working directory
-function tmc() {
-  _tm_session "$(pwd)" "$@"
-}
+# Session management lives in the tmux-attention CLI (also bound to prefix+a /
+# prefix+A inside tmux). These work from a bare shell too: inside tmux they
+# switch the client, outside they attach.
+alias tmc='tmux-attention new "$PWD"'  # session for the current directory
+alias tmf='tmux-attention new'         # fuzzy-find a dir; shift-tab -> session picker
 
 function tma() {
   tmux a "$@"
