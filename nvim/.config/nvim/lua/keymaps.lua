@@ -17,7 +17,6 @@ vim.keymap.set("n", "<leader>S", "<cmd>sp .<cr>")
 vim.keymap.set("n", "<leader>t", "<cmd>tabe %:p:h<cr>")
 vim.keymap.set("n", "<leader>T", "<cmd>tabe .<cr>")
 vim.keymap.set("n", "<leader>w", "<cmd>write<cr>")
-vim.keymap.set("n", "<leader>Y", '<cmd>let @*=expand("%")<cr>') -- copy filename to clipboard
 vim.keymap.set({ "v" }, "<leader>y", '"+y') -- yank to system clipboard
 vim.keymap.set({ "n" }, "<leader>y", '<cmd>let @* = fnamemodify(expand("%"), ":~:.")<cr>') -- yank full path to clipboard
 vim.keymap.set({ "n" }, "<leader>Y", '<cmd>let @* = fnamemodify(expand("%"), ":t")<cr>') -- yank filename to clipboard
@@ -34,21 +33,8 @@ vim.keymap.set("n", "<leader>r", "<cmd>set relativenumber!<cr>")
 vim.keymap.set("n", "<leader>W", "<cmd>set wrap!<cr>")
 
 vim.keymap.set("n", "<leader>fq", function()
-	local wins = vim.api.nvim_list_wins()
-	local qf_open = false
-
-	for _, win in ipairs(wins) do
-		local buf = vim.api.nvim_win_get_buf(win)
-
-		if vim.bo[buf].filetype == "qf" then
-			qf_open = true
-			break
-		end
-	end
-
-	if qf_open then
-		vim.cmd("cclose")
-	else
-		vim.cmd("copen")
-	end
-end)
+	local qf_open = vim.iter(vim.api.nvim_list_wins()):any(function(win)
+		return vim.bo[vim.api.nvim_win_get_buf(win)].filetype == "qf"
+	end)
+	vim.cmd(qf_open and "cclose" or "copen")
+end, { desc = "Toggle quickfix list" })

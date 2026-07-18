@@ -4,184 +4,31 @@ return {
 	config = function()
 		vim.opt.showmode = false
 
-		local CodeCompanion = require("lualine.component"):extend()
-		CodeCompanion.state = {
-			processing = false,
-		}
-		CodeCompanion.spinner_symbols = {
-			"🌕",
-			"🌖",
-			"🌗",
-			"🌘",
-			"🌑",
-			"🌒",
-			"🌓",
-			"🌔",
-			"😎",
-			"🔮",
-			"💪🏻",
-			"🦄",
-			"🙌🏻",
-			"🌈",
-			"🧐",
-			"🙏",
-			"🌕",
-			"🌖",
-			"🌗",
-			"🌘",
-			"🌑",
-			"🌒",
-			"🌓",
-			"🌔",
-			"🙈",
-			"👾",
-			"🔥",
-			"🙀",
-			"🤯",
-			"💥",
-			"😵",
-			"☠️",
-		}
-
-		-- Initializer
-		function CodeCompanion:init(options)
-			CodeCompanion.super.init(self, options)
-
-			local group = vim.api.nvim_create_augroup("CodeCompanionLualine", { clear = true })
-
-			-- Listen for CodeCompanion events
-			vim.api.nvim_create_autocmd("User", {
-				pattern = "CodeCompanion*",
-				group = group,
-				callback = function(event)
-					if event.match == "CodeCompanionRequestStarted" then
-						self.state.processing = true
-					elseif event.match == "CodeCompanionRequestFinished" then
-						self.state.processing = false
-					end
-
-					require("lualine").refresh()
-				end,
-			})
-		end
-
-		function CodeCompanion:update_status()
-			if self.state.processing then
-				if not self.start_time then
-					self.start_time = os.time()
-					self.spinner_count = 1
-				else
-					-- Calculate how many spinners to show based on elapsed time
-					local elapsed = os.time() - self.start_time
-					self.spinner_count = math.min(1 + math.floor(elapsed / 2), 20) -- Add one every 2 seconds, max 20
-				end
-
-				-- Create text with random spinners
-				local text = ""
-				for i = 1, self.spinner_count do
-					-- Choose a random index for each spinner
-					local random_index = math.random(#self.spinner_symbols)
-					text = text .. self.spinner_symbols[random_index] .. " "
-				end
-
-				-- Reset if we've reached the maximum
-				if self.spinner_count >= 20 then
-					self.start_time = nil -- Reset to start over
-				end
-
-				return text
-			end
-		end
-
 		local accent = "#94e2d5"
 
+		-- Every mode looks the same except insert, which inverts section a
+		local function mode_theme(fg)
+			local theme = { z = { bg = "none", fg = fg } }
+			for _, section in ipairs({ "a", "b", "c", "x", "y" }) do
+				theme[section] = { bg = "black", fg = fg }
+			end
+			return theme
+		end
+
 		local unified_theme = {
-			normal = {
-				a = { bg = "black", fg = accent },
-				b = { bg = "black", fg = accent },
-				c = { bg = "black", fg = accent },
-				x = { bg = "black", fg = accent },
-				y = { bg = "black", fg = accent },
-				z = { bg = "none", fg = accent },
-			},
-			insert = {
+			normal = mode_theme(accent),
+			visual = mode_theme(accent),
+			replace = mode_theme(accent),
+			command = mode_theme(accent),
+			inactive = mode_theme("gray"),
+			insert = vim.tbl_extend("force", mode_theme(accent), {
 				a = { bg = accent, fg = "black" },
-				b = { bg = "black", fg = accent },
-				c = { bg = "black", fg = accent },
-				x = { bg = "black", fg = accent },
-				y = { bg = "black", fg = accent },
-				z = { bg = "none", fg = accent },
-			},
-			visual = {
-				a = { bg = "black", fg = accent },
-				b = { bg = "black", fg = accent },
-				c = { bg = "black", fg = accent },
-				x = { bg = "black", fg = accent },
-				y = { bg = "black", fg = accent },
-				z = { bg = "none", fg = accent },
-			},
-			replace = {
-				a = { bg = "black", fg = accent },
-				b = { bg = "black", fg = accent },
-				c = { bg = "black", fg = accent },
-				x = { bg = "black", fg = accent },
-				y = { bg = "black", fg = accent },
-				z = { bg = "none", fg = accent },
-			},
-			command = {
-				a = { bg = "black", fg = accent },
-				b = { bg = "black", fg = accent },
-				c = { bg = "black", fg = accent },
-				x = { bg = "black", fg = accent },
-				y = { bg = "black", fg = accent },
-				z = { bg = "none", fg = accent },
-			},
-			inactive = {
-				a = { bg = "black", fg = "gray" },
-				b = { bg = "black", fg = "gray" },
-				c = { bg = "black", fg = "gray" },
-				x = { bg = "black", fg = "gray" },
-				y = { bg = "black", fg = "gray" },
-				z = { bg = "none", fg = "gray" },
-			},
+			}),
 		}
 
 		local function cwd_short()
-			local cwd = vim.fn.fnamemodify(vim.fn.getcwd(), ":~")
-			return cwd
+			return vim.fn.fnamemodify(vim.fn.getcwd(), ":~")
 		end
-
-		-- local filename_and_two_parents = {
-		-- 	"filename",
-		-- 	path = 1, -- Use relative path as base
-		-- 	color = { bg = "none", fg = "b4befe", gui = "none" },
-		-- 	fmt = function(str)
-		-- 		if str:find("%[No Name%]") then
-		-- 			return cwd_short()
-		-- 		end
-		--
-		-- 		-- Split the path
-		-- 		local path_parts = {}
-		-- 		for part in string.gmatch(str, "[^/]+") do
-		-- 			table.insert(path_parts, part)
-		-- 		end
-		--
-		-- 		-- If we have at least 3 parts (2 dirs + filename), show last 3 parts
-		-- 		if #path_parts >= 3 then
-		-- 			return path_parts[#path_parts - 2]
-		-- 				.. "/"
-		-- 				.. path_parts[#path_parts - 1]
-		-- 				.. "/"
-		-- 				.. path_parts[#path_parts]
-		-- 		elseif #path_parts == 2 then
-		-- 			-- If we have 2 parts (1 dir + filename), show both
-		-- 			return path_parts[1] .. "/" .. path_parts[2]
-		-- 		else
-		-- 			-- Just filename
-		-- 			return str
-		-- 		end
-		-- 	end,
-		-- }
 
 		require("lualine").setup({
 			options = {
@@ -216,7 +63,7 @@ return {
 						"diff",
 						"diagnostics",
 						function()
-							return "%l:%c" -- Line:Column format
+							return "%l:%c"
 						end,
 						padding = 0,
 						icon = "",
@@ -225,7 +72,7 @@ return {
 					"searchcount",
 				},
 				lualine_c = {},
-				lualine_x = { CodeCompanion },
+				lualine_x = {},
 				lualine_y = {},
 				lualine_z = {
 					{ "branch", color = { bg = "black", fg = "7f849c", gui = "none" }, padding = 1 },
@@ -243,48 +90,33 @@ return {
 				lualine_a = {
 					{
 						"tabs",
-						mode = 2, -- Using mode 2 (shows tab name + index)
-						max_length = vim.o.columns, -- Use exactly all available columns
+						mode = 2,
+						max_length = vim.o.columns,
 						tab_max_length = 100,
 						show_modified_status = true,
 						tabs_color = {
 							active = { fg = "white", bg = "black", gui = "bold" },
 							inactive = { fg = "gray", bg = "black" },
 						},
+						-- Label each tab with its buffer's parent directory
 						fmt = function(name, context)
-							-- Get the buflist for this tab
 							local buflist = vim.fn.tabpagebuflist(context.tabnr)
 							if not buflist or #buflist == 0 then
-								return name -- Fallback to default name if no buffer found
+								return name
 							end
 
-							-- Get the current buffer in this tab
-							local winnr = vim.fn.tabpagewinnr(context.tabnr)
-							local bufnr = buflist[winnr]
-
-							-- Get the full path of the buffer
+							local bufnr = buflist[vim.fn.tabpagewinnr(context.tabnr)]
 							local buf_name = vim.api.nvim_buf_get_name(bufnr)
 
-							-- If there's a valid path
-							if buf_name and buf_name ~= "" and not buf_name:match("^%%w+://") then
-								-- Get the relative path from the current working directory
-								local rel_path = vim.fn.fnamemodify(buf_name, ":.")
-
-								-- Extract directory part from the relative path (remove filename)
-								local dir_part = vim.fn.fnamemodify(rel_path, ":h")
-
-								-- If we're in the current directory or just one level deep
-								if dir_part == "." or not string.find(dir_part, "/") then
-									return "./"
-								else
-									-- Remove the last directory segment
-									local parent_dir = vim.fn.fnamemodify(dir_part, ":h")
-									return parent_dir .. "/"
-								end
-							else
-								-- For special buffers or unnamed files
+							if buf_name == "" or buf_name:match("^%%w+://") then
 								return cwd_short()
 							end
+
+							local dir_part = vim.fn.fnamemodify(vim.fn.fnamemodify(buf_name, ":."), ":h")
+							if dir_part == "." or not dir_part:find("/") then
+								return "./"
+							end
+							return vim.fn.fnamemodify(dir_part, ":h") .. "/"
 						end,
 					},
 				},
@@ -293,17 +125,6 @@ return {
 				lualine_x = {},
 				lualine_y = {},
 			},
-			-- winbar = {
-			-- 	lualine_a = {
-			-- 		filename_and_two_parents,
-			-- 	},
-			-- 	lualine_z = {},
-			-- },
-			-- inactive_winbar = {
-			-- 	lualine_a = {
-			-- 		filename_and_two_parents,
-			-- 	},
-			-- },
 			extensions = {},
 		})
 

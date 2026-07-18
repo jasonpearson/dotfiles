@@ -3,27 +3,16 @@ vim.g.base16colorspace = 256
 if vim.fn.has("mac") == 1 then
 	vim.g.clipboard = {
 		name = "pbcopy",
-		copy = {
-			["+"] = { "pbcopy" },
-			["*"] = { "pbcopy" },
-		},
-		paste = {
-			["+"] = { "pbpaste" },
-			["*"] = { "pbpaste" },
-		},
+		copy = { ["+"] = { "pbcopy" }, ["*"] = { "pbcopy" } },
+		paste = { ["+"] = { "pbpaste" }, ["*"] = { "pbpaste" } },
 		cache_enabled = 0,
 	}
 else
+	local osc52 = require("vim.ui.clipboard.osc52")
 	vim.g.clipboard = {
 		name = "OSC 52",
-		copy = {
-			["+"] = require("vim.ui.clipboard.osc52").copy("+"),
-			["*"] = require("vim.ui.clipboard.osc52").copy("*"),
-		},
-		paste = {
-			["+"] = require("vim.ui.clipboard.osc52").paste("+"),
-			["*"] = require("vim.ui.clipboard.osc52").paste("*"),
-		},
+		copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+		paste = { ["+"] = osc52.paste("+"), ["*"] = osc52.paste("*") },
 	}
 end
 
@@ -85,17 +74,11 @@ vim.api.nvim_create_autocmd("FileType", {
 	end,
 })
 
-vim.api.nvim_create_autocmd("FileType", {
-	pattern = { "markdown" },
-	callback = function()
-		vim.opt_local.wrap = false
+vim.filetype.add({ extension = { template = "nginx" } })
+
+-- Only highlight the cursor line in the focused window
+vim.api.nvim_create_autocmd({ "WinEnter", "WinLeave" }, {
+	callback = function(ev)
+		vim.opt_local.cursorline = ev.event == "WinEnter"
 	end,
 })
-
-vim.cmd(
-	[[                                                                                                                                                                                                                                                                                                                                                                
-   autocmd BufNewFile,BufRead *.template set filetype=nginx
-   autocmd WinEnter * setlocal cursorline                                                                                                                                                                                                                                                                                                                                  
-   autocmd WinLeave * setlocal nocursorline                                                                                                                                                                                                                                                                                                                                
- ]]
-)

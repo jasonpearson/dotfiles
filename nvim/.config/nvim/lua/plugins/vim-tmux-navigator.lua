@@ -1,8 +1,5 @@
 return {
 	"christoomey/vim-tmux-navigator",
-	cond = function()
-		return not vim.g.vscode
-	end,
 	config = function()
 		vim.keymap.set("t", "<C-h>", "<C-\\><C-n><C-h>", { desc = "Navigate left from terminal" })
 		vim.keymap.set("t", "<C-j>", "<C-\\><C-n><C-j>", { desc = "Navigate down from terminal" })

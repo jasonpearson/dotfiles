@@ -1,47 +1,55 @@
+local format_opts = {
+	lsp_fallback = true,
+	async = false,
+	timeout_ms = 1000,
+}
+
+local prettier_filetypes = {
+	"css",
+	"graphql",
+	"html",
+	"json",
+	"jsonc",
+	"liquid",
+	"markdown",
+	"yaml",
+}
+
+local formatters_by_ft = {
+	javascript = { "biome" },
+	javascriptreact = { "biome" },
+	typescript = { "biome" },
+	typescriptreact = { "biome" },
+	lua = { "stylua" },
+	python = { "isort", "black" },
+}
+
+for _, ft in ipairs(prettier_filetypes) do
+	formatters_by_ft[ft] = { "prettier" }
+end
+
 return {
 	"stevearc/conform.nvim",
-	cond = function()
-		return not vim.g.vscode
-	end,
 	event = { "BufReadPre", "BufNewFile" },
-	config = function()
-		local conform = require("conform")
-
-		conform.setup({
-			formatters_by_ft = {
-				javascript = { "biome" },
-				typescript = { "biome" },
-				javascriptreact = { "biome" },
-				typescriptreact = { "biome" },
-				css = { "prettier" },
-				html = { "prettier" },
-				json = { "prettier" },
-				jsonc = { "prettier" },
-				yaml = { "prettier" },
-				markdown = { "prettier" },
-				graphql = { "prettier" },
-				liquid = { "prettier" },
-				lua = { "stylua" },
-				python = { "isort", "black" },
-			},
-			format_on_save = function(bufnr)
-				if vim.bo[bufnr].filetype == "kotlin" or vim.bo[bufnr].filetype == "java" then
-					return nil
-				end
-				return {
-					lsp_fallback = true,
-					async = false,
-					timeout_ms = 1000,
-				}
+	opts = {
+		formatters_by_ft = formatters_by_ft,
+		format_on_save = function(bufnr)
+			-- Leave JVM languages to their own LSP formatting
+			local ft = vim.bo[bufnr].filetype
+			if ft == "kotlin" or ft == "java" then
+				return nil
+			end
+			return format_opts
+		end,
+	},
+	keys = {
+		{
+			"<leader>l",
+			function()
+				require("conform").format(format_opts)
 			end,
-		})
-
-		vim.keymap.set({ "n", "v" }, "<leader>l", function()
-			conform.format({
-				lsp_fallback = true,
-				async = false,
-				timeout_ms = 1000,
-			})
-		end, { desc = "Format file or range (in visual mode)" })
-	end,
+			mode = { "n", "v" },
+			desc = "Format file or range (in visual mode)",
+		},
+	},
 }

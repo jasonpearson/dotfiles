@@ -1,16 +1,129 @@
+---@diagnostic disable: undefined-global
+
+local accent = "#94e2d5"
+
+-- Straightforward `Snacks.picker.<name>()` bindings: lhs, picker, description
+local pickers = {
+	{ "<leader><space>", "smart", "Smart Find Files" },
+	{ "<c-p>", "files", "Find Files" },
+	{ "<leader>b", "buffers", "Buffers" },
+	{ "<leader>/", "grep", "Grep" },
+	{ "<leader>:", "command_history", "Command History" },
+	-- find
+	{ "<leader>fg", "git_files", "Find Git Files" },
+	{ "<leader>fp", "projects", "Projects" },
+	{ "<leader>fr", "recent", "Recent" },
+	-- git
+	{ "<leader>gb", "git_branches", "Git Branches" },
+	{ "<leader>gl", "git_log", "Git Log" },
+	{ "<leader>gL", "git_log_line", "Git Log Line" },
+	{ "<leader>gs", "git_status", "Git Status" },
+	{ "<leader>gS", "git_stash", "Git Stash" },
+	{ "<leader>gd", "git_diff", "Git Diff (Hunks)" },
+	{ "<leader>gf", "git_log_file", "Git Log File" },
+	-- grep
+	{ "<leader>sb", "lines", "Buffer Lines" },
+	{ "<leader>?", "grep_buffers", "Grep Open Buffers" },
+	-- search
+	{ '<leader>"', "registers", "Registers" },
+	{ "<leader>s/", "search_history", "Search History" },
+	{ "<leader>sa", "autocmds", "Autocmds" },
+	{ "<leader>sc", "command_history", "Command History" },
+	{ "<leader>sC", "commands", "Commands" },
+	{ "<leader>sd", "diagnostics", "Diagnostics" },
+	{ "<leader>sD", "diagnostics_buffer", "Buffer Diagnostics" },
+	{ "<leader>sh", "help", "Help Pages" },
+	{ "<leader>sH", "highlights", "Highlights" },
+	{ "<leader>si", "icons", "Icons" },
+	{ "<leader>sj", "jumps", "Jumps" },
+	{ "<leader>sk", "keymaps", "Keymaps" },
+	{ "<leader>sl", "loclist", "Location List" },
+	{ "<leader>sm", "marks", "Marks" },
+	{ "<leader>sM", "man", "Man Pages" },
+	{ "<leader>sp", "lazy", "Search for Plugin Spec" },
+	{ "<leader>sq", "qflist", "Quickfix List" },
+	{ "<leader>sR", "resume", "Resume" },
+	{ "<leader>su", "undo", "Undo History" },
+	{ "<leader>uC", "colorschemes", "Colorschemes" },
+}
+
+local function pick(name, opts)
+	return function()
+		Snacks.picker[name](opts)
+	end
+end
+
+-- Bindings that need arguments or a non-picker entry point
+local keys = {
+	{
+		"<leader>.",
+		function()
+			Snacks.scratch()
+		end,
+		desc = "Toggle Scratch Buffer",
+	},
+	{
+		"<leader>S",
+		function()
+			Snacks.scratch.select()
+		end,
+		desc = "Select Scratch Buffer",
+	},
+	{
+		"<leader>e",
+		function()
+			Snacks.explorer()
+		end,
+		desc = "File Explorer",
+	},
+	{
+		"<leader>gB",
+		function()
+			Snacks.gitbrowse()
+		end,
+		desc = "Git Browse",
+	},
+	{
+		"<leader>fc",
+		pick("files", { cwd = vim.fn.stdpath("config") }),
+		desc = "Find Config File",
+	},
+	{
+		"<leader>sB",
+		pick("grep_buffers", {
+			search = function(picker)
+				return picker:word()
+			end,
+		}),
+		desc = "Grep Open Buffers (word under cursor)",
+	},
+	{
+		"<leader>sw",
+		pick("grep_word", { args = { "--word-regexp", "--glob=!*test*", "--glob=!*__tests__*" } }),
+		desc = "Visual selection or word (no tests)",
+		mode = { "n", "x" },
+	},
+	{
+		"<leader>sW",
+		pick("grep_word"),
+		desc = "Visual selection or word (all)",
+		mode = { "n", "x" },
+	},
+}
+
+for _, spec in ipairs(pickers) do
+	local lhs, name, desc = spec[1], spec[2], spec[3]
+	table.insert(keys, { lhs, pick(name), desc = desc })
+end
+
 return {
 	"folke/snacks.nvim",
-	cond = function()
-		return not vim.g.vscode
-	end,
 	priority = 1000,
 	lazy = false,
 	init = function()
-		vim.api.nvim_set_hl(0, "SnacksDashboardHeader", { fg = "#94e2d5" })
-		vim.api.nvim_set_hl(0, "SnacksDashboardIcon", { fg = "#94e2d5" })
-		vim.api.nvim_set_hl(0, "SnacksDashboardKey", { fg = "#94e2d5" })
-		vim.api.nvim_set_hl(0, "SnacksDashboardDesc", { fg = "#94e2d5" })
-		vim.api.nvim_set_hl(0, "SnacksDashboardFooter", { fg = "#94e2d5" })
+		for _, group in ipairs({ "Header", "Icon", "Key", "Desc", "Footer" }) do
+			vim.api.nvim_set_hl(0, "SnacksDashboard" .. group, { fg = accent })
+		end
 	end,
 	---@type snacks.Config
 	opts = {
@@ -29,9 +142,7 @@ return {
         ]],
 			},
 		},
-		explorer = {
-			replace_netrw = false,
-		},
+		explorer = { replace_netrw = false },
 		gitbrowse = {},
 		indent = { enabled = false },
 		input = { enabled = false },
@@ -55,11 +166,7 @@ return {
 				},
 			},
 			layout = { preset = "wide" },
-			formatters = {
-				file = {
-					truncate = 200,
-				},
-			},
+			formatters = { file = { truncate = 200 } },
 			win = {
 				input = {
 					keys = {
@@ -78,341 +185,5 @@ return {
 		statuscolumn = { enabled = false },
 		words = { enabled = false },
 	},
-	keys = {
-		{
-			"<leader>.",
-			function()
-				Snacks.scratch()
-			end,
-			desc = "Toggle Scratch Buffer",
-		},
-		{
-			"<leader>S",
-			function()
-				Snacks.scratch.select()
-			end,
-			desc = "Select Scratch Buffer",
-		},
-		-- Top Pickers & Explorer
-		{
-			"<leader><space>",
-			function()
-				Snacks.picker.smart()
-			end,
-			desc = "Smart Find Files",
-		},
-		{
-			"<leader>b",
-			function()
-				Snacks.picker.buffers()
-			end,
-			desc = "Buffers",
-		},
-		{
-			"<leader>/",
-			function()
-				Snacks.picker.grep()
-			end,
-			desc = "Grep",
-		},
-		{
-			"<leader>:",
-			function()
-				Snacks.picker.command_history()
-			end,
-			desc = "Command History",
-		},
-		-- {
-		-- 	"<leader>n",
-		-- 	function()
-		-- 		Snacks.picker.notifications()
-		-- 	end,
-		-- 	desc = "Notification History",
-		-- },
-		{
-			"<leader>e",
-			function()
-				Snacks.explorer()
-			end,
-			desc = "File Explorer",
-		},
-		-- find
-		{
-			"<leader>fc",
-			function()
-				Snacks.picker.files({ cwd = vim.fn.stdpath("config") })
-			end,
-			desc = "Find Config File",
-		},
-		{
-			"<c-p>",
-			function()
-				Snacks.picker.files()
-			end,
-			desc = "Find Files",
-		},
-		{
-			"<leader>fg",
-			function()
-				Snacks.picker.git_files()
-			end,
-			desc = "Find Git Files",
-		},
-		{
-			"<leader>fp",
-			function()
-				Snacks.picker.projects()
-			end,
-			desc = "Projects",
-		},
-		{
-			"<leader>fr",
-			function()
-				Snacks.picker.recent()
-			end,
-			desc = "Recent",
-		},
-		-- git
-		{
-			"<leader>gb",
-			function()
-				Snacks.picker.git_branches()
-			end,
-			desc = "Git Branches",
-		},
-		{
-			"<leader>gB",
-			function()
-				Snacks.gitbrowse()
-			end,
-			desc = "Git Browse",
-		},
-		{
-			"<leader>gl",
-			function()
-				Snacks.picker.git_log()
-			end,
-			desc = "Git Log",
-		},
-		{
-			"<leader>gL",
-			function()
-				Snacks.picker.git_log_line()
-			end,
-			desc = "Git Log Line",
-		},
-		{
-			"<leader>gs",
-			function()
-				Snacks.picker.git_status()
-			end,
-			desc = "Git Status",
-		},
-		{
-			"<leader>gS",
-			function()
-				Snacks.picker.git_stash()
-			end,
-			desc = "Git Stash",
-		},
-		{
-			"<leader>gd",
-			function()
-				Snacks.picker.git_diff()
-			end,
-			desc = "Git Diff (Hunks)",
-		},
-		{
-			"<leader>gf",
-			function()
-				Snacks.picker.git_log_file()
-			end,
-			desc = "Git Log File",
-		},
-		-- Grep
-		{
-			"<leader>sb",
-			function()
-				Snacks.picker.lines()
-			end,
-			desc = "Buffer Lines",
-		},
-		{
-			"<leader>?",
-			function()
-				Snacks.picker.grep_buffers()
-			end,
-			desc = "Grep Open Buffers",
-		},
-		{
-			"<leader>sB",
-			function()
-				Snacks.picker.grep_buffers({
-					search = function(picker)
-						return picker:word()
-					end,
-				})
-			end,
-			desc = "Grep Open Buffers (word under cursor)",
-		},
-		{
-			"<leader>sw",
-			function()
-				Snacks.picker.grep_word({
-					args = { "--word-regexp", "--glob=!*test*", "--glob=!*__tests__*" },
-				})
-			end,
-			desc = "Visual selection or word (no tests)",
-			mode = { "n", "x" },
-		},
-		{
-			"<leader>sW",
-			function()
-				Snacks.picker.grep_word()
-			end,
-			desc = "Visual selection or word (all)",
-			mode = { "n", "x" },
-		},
-		-- search
-		{
-			'<leader>"',
-			function()
-				Snacks.picker.registers()
-			end,
-			desc = "Registers",
-		},
-		{
-			"<leader>s/",
-			function()
-				Snacks.picker.search_history()
-			end,
-			desc = "Search History",
-		},
-		{
-			"<leader>sa",
-			function()
-				Snacks.picker.autocmds()
-			end,
-			desc = "Autocmds",
-		},
-		{
-			"<leader>sc",
-			function()
-				Snacks.picker.command_history()
-			end,
-			desc = "Command History",
-		},
-		{
-			"<leader>sC",
-			function()
-				Snacks.picker.commands()
-			end,
-			desc = "Commands",
-		},
-		{
-			"<leader>sd",
-			function()
-				Snacks.picker.diagnostics()
-			end,
-			desc = "Diagnostics",
-		},
-		{
-			"<leader>sD",
-			function()
-				Snacks.picker.diagnostics_buffer()
-			end,
-			desc = "Buffer Diagnostics",
-		},
-		{
-			"<leader>sh",
-			function()
-				Snacks.picker.help()
-			end,
-			desc = "Help Pages",
-		},
-		{
-			"<leader>sH",
-			function()
-				Snacks.picker.highlights()
-			end,
-			desc = "Highlights",
-		},
-		{
-			"<leader>si",
-			function()
-				Snacks.picker.icons()
-			end,
-			desc = "Icons",
-		},
-		{
-			"<leader>sj",
-			function()
-				Snacks.picker.jumps()
-			end,
-			desc = "Jumps",
-		},
-		{
-			"<leader>sk",
-			function()
-				Snacks.picker.keymaps()
-			end,
-			desc = "Keymaps",
-		},
-		{
-			"<leader>sl",
-			function()
-				Snacks.picker.loclist()
-			end,
-			desc = "Location List",
-		},
-		{
-			"<leader>sm",
-			function()
-				Snacks.picker.marks()
-			end,
-			desc = "Marks",
-		},
-		{
-			"<leader>sM",
-			function()
-				Snacks.picker.man()
-			end,
-			desc = "Man Pages",
-		},
-		{
-			"<leader>sp",
-			function()
-				Snacks.picker.lazy()
-			end,
-			desc = "Search for Plugin Spec",
-		},
-		{
-			"<leader>sq",
-			function()
-				Snacks.picker.qflist()
-			end,
-			desc = "Quickfix List",
-		},
-		{
-			"<leader>sR",
-			function()
-				Snacks.picker.resume()
-			end,
-			desc = "Resume",
-		},
-		{
-			"<leader>su",
-			function()
-				Snacks.picker.undo()
-			end,
-			desc = "Undo History",
-		},
-		{
-			"<leader>uC",
-			function()
-				Snacks.picker.colorschemes()
-			end,
-			desc = "Colorschemes",
-		},
-	},
+	keys = keys,
 }

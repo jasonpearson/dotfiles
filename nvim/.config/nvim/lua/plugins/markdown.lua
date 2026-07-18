@@ -1,34 +1,35 @@
 return {
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
-		ft = { "markdown", "codecompanion" },
+		ft = { "markdown" },
 		opts = {
+			-- Off by default; toggled with <leader>md
+			enabled = false,
 			render_modes = { "n" },
+			anti_conceal = { enabled = false },
 			completions = { blink = { enabled = true } },
-			sign = {
-				enabled = false,
+			sign = { enabled = false },
+		},
+		keys = {
+			{
+				"<leader>md",
+				function()
+					require("render-markdown").toggle()
+				end,
+				desc = "Toggle Markdown Preview",
 			},
 		},
-		init = function()
-			local renderMarkdown = require("render-markdown")
-			renderMarkdown.setup({
-				anti_conceal = { enabled = false },
-				enabled = false,
-			})
-
-			vim.keymap.set("n", "<leader>md", function()
-				renderMarkdown.toggle()
-			end, { desc = "Toggle Markdown Preview" })
-		end,
 	},
 	{
 		"iamcco/markdown-preview.nvim",
+		ft = { "markdown" },
 		cmd = { "MarkdownPreviewToggle", "MarkdownPreview", "MarkdownPreviewStop" },
 		build = "cd app && yarn install",
 		init = function()
 			vim.g.mkdp_filetypes = { "markdown" }
-			vim.keymap.set("n", "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", { desc = "Markdown Preview" })
 		end,
-		ft = { "markdown" },
+		keys = {
+			{ "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown Preview" },
+		},
 	},
 }

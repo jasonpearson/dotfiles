@@ -18,6 +18,11 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({ { import = "plugins" } }, {
+	defaults = {
+		cond = function()
+			return not vim.g.vscode
+		end,
+	},
 	ui = {
 		icons = {
 			cmd = "⌘",
