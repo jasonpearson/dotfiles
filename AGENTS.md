@@ -31,8 +31,6 @@ tmux source-file ~/.tmux.conf   # or Prefix+r inside tmux
 
 There is no build, lint, or test tooling. Verification means restowing and exercising the affected tool (reload tmux, open a new shell, restart nvim).
 
-Note: README.md references `macos-supplement/` and `omarchy-supplement/` — those are stale; the setup scripts live under `setup/`.
-
 ## Architecture
 
 - **`setup/setup-common.sh`** holds shared functions (`stow_dotfiles`, `install_tpack`, `install_bun`, `set_default_shell_zsh`) sourced by each per-OS `install.sh`. Cross-platform behavior changes go here, not in the per-OS scripts. `stow_dotfiles` hardcodes the list of packages to stow — update it when adding a new package.

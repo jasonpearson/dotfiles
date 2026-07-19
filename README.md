@@ -57,11 +57,21 @@ stow zshrc ghostty tmux nvim starship gitconfig opencode claude
 ### Tmux
 
 - **Prefix:** `Ctrl+a`
-- **Split vertical:** `Prefix+v`
-- **Split horizontal:** `Prefix+s`
+- **Split vertical:** `Prefix+v` (`Prefix+V` splits along the longer edge)
+- **Split horizontal:** `Prefix+s` (`Prefix+S` splits along the longer edge)
 - **Kill pane:** `Prefix+q`
+- **Kill server:** `Prefix+Ctrl+x`
 - **Resize:** `Prefix+Ctrl+h/j/k/l`
 - **Navigate panes:** `Ctrl+h/j/k/l` (seamless with nvim via vim-tmux-navigator)
+- **Reload config:** `Prefix+r`
+- **Set pane title:** `Prefix+P` (empty input clears it)
+- **Session picker:** `Prefix+a` (Shift+Tab toggles sessions/directories)
+- **New session from a directory:** `Prefix+A`
+- **Toggle pane attention flag:** `Prefix+h`
+
+Session pickers and the attention flag come from
+[tmux-attention](https://github.com/jasonpearson/tmux-attention); its CLI is also
+on `$PATH` as `tmux-attention` (`tm` / `tmc` in zsh).
 
 ### General
 
