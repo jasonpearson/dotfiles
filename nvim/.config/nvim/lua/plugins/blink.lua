@@ -2,7 +2,6 @@ return {
 	{
 		"saghen/blink.cmp",
 		version = "1.*",
-		dependencies = { "fang2hou/blink-copilot" },
 		opts = {
 			keymap = {
 				preset = "default",
@@ -39,16 +38,7 @@ return {
 			},
 
 			sources = {
-				-- Add "copilot" here to enable the provider below
 				default = { "buffer", "path", "lsp" },
-				providers = {
-					copilot = {
-						name = "copilot",
-						module = "blink-copilot",
-						score_offset = 100,
-						async = true,
-					},
-				},
 			},
 
 			fuzzy = { implementation = "prefer_rust_with_warning" },
