@@ -22,30 +22,31 @@ prefix = "ctrl+a"
 # Config and help
 reload_config = "prefix+q"
 help = "prefix+?"
+settings = "prefix+shift+s"
 detach = "prefix+d"
 
 # Copy mode
 copy_mode = "prefix+["
 
 # Panes
-split_horizontal = ["prefix+h", "alt+enter"]
+split_horizontal = ["prefix+h", "prefix+s", "alt+enter"]
 split_vertical = ["prefix+v", "alt+shift+enter"]
 close_pane = ["prefix+x", "alt+esc"]
 zoom = "prefix+z"
 last_pane = "prefix+;"
 
-focus_pane_left = "ctrl+alt+left"
-focus_pane_down = "ctrl+alt+down"
-focus_pane_up = "ctrl+alt+up"
-focus_pane_right = "ctrl+alt+right"
+focus_pane_left = ["ctrl+h", "ctrl+alt+left"]
+focus_pane_down = ["ctrl+j", "ctrl+alt+down"]
+focus_pane_up = ["ctrl+k", "ctrl+alt+up"]
+focus_pane_right = ["ctrl+l", "ctrl+alt+right"]
 
 resize_mode = ["prefix+ctrl+left", "prefix+ctrl+down", "prefix+ctrl+up", "prefix+ctrl+right"]
 
 # Like resize-pane on C-M-S-arrows
-resize_pane_left = "ctrl+alt+shift+left"
-resize_pane_down = "ctrl+alt+shift+down"
-resize_pane_up = "ctrl+alt+shift+up"
-resize_pane_right = "ctrl+alt+shift+right"
+resize_pane_left = ["prefix+ctrl+h", "ctrl+alt+shift+left"]
+resize_pane_down = ["prefix+ctrl+j", "ctrl+alt+shift+down"]
+resize_pane_up = ["prefix+ctrl+k", "ctrl+alt+shift+up"]
+resize_pane_right = ["prefix+ctrl+l", "ctrl+alt+shift+right"]
 
 # No tmux equivalent; herdr's default prefix+shift+p is taken by previous session
 rename_pane = "prefix+shift+o"
