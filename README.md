@@ -10,42 +10,31 @@ Personal configuration files managed with [GNU Stow](https://www.gnu.org/softwar
 | `ghostty/`   | Ghostty terminal with Catppuccin Mocha theme          |
 | `gitconfig/` | Git aliases and settings                              |
 | `herdr/`     | Herdr terminal workspace manager configuration        |
+| `hypr/`      | Hyprland/Omarchy user configuration                   |
 | `nvim/`      | Neovim config with lazy.nvim, LSP, Treesitter, Snacks |
 | `opencode/`  | OpenCode AI agent configurations                      |
 | `tmux/`      | Tmux with vim-style navigation and Catppuccin theme   |
 | `starship/`  | Starship prompt configuration                         |
 | `zshrc/`     | Zsh with vi mode, starship prompt, zoxide, mise       |
 
-## Quick Start
+## Package Helpers
 
-### macOS
-
-```bash
-./setup/macos/install.sh
-```
-
-### Linux (Arch/Omarchy)
+These scripts assume the OS package manager is already installed and configured.
+They only install packages; they do not clone this repo, stow configs, change the
+login shell, or install tools from curl scripts.
 
 ```bash
-./setup/omarchy/install.sh
+./packages/install-macos.sh
+./packages/install-omarchy.sh
+./packages/install-ubuntu.sh
 ```
 
-### Ubuntu
-
-```bash
-./setup/ubuntu/install.sh
-```
-
-## Manual Setup
+## Stow Setup
 
 Install GNU Stow, then symlink configs to your home directory:
 
 ```bash
-# Install stow (macOS)
-brew install stow
-
-# Symlink all configs
-stow zshrc ghostty tmux nvim starship gitconfig opencode claude herdr
+stow zshrc ghostty tmux nvim starship gitconfig opencode claude herdr hypr
 ```
 
 ## Key Bindings
