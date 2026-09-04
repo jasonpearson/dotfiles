@@ -29,6 +29,9 @@ else
   fi
 fi
 
-# Future personal Bash customizations. Keep this file out of git if it contains
-# machine-local settings or secrets.
+# Tracked personal Bash customizations.
+[[ -r ~/.config/bash/personal.bash ]] && source ~/.config/bash/personal.bash
+
+# Machine-local Bash customizations. Keep this file out of git if it contains
+# local settings or secrets.
 [[ -r ~/.config/bash/local.bash ]] && source ~/.config/bash/local.bash
