@@ -28,3 +28,18 @@
 -- o.bind("SUPER + H", nil, "voxtype record toggle")
 -- o.bind("SUPER + PERIOD", nil, "omarchy-shell shell toggle omarchy.emojis")
 
+-- Vim-style window focus. SUPER+J/K/L had defaults, so keep those actions on
+-- unused alternatives before rebinding the keys for focus movement.
+hl.unbind("SUPER + J") -- was: Toggle window split
+hl.unbind("SUPER + K") -- was: Keybindings
+hl.unbind("SUPER + L") -- was: Toggle workspace layout
+
+o.bind("SUPER + H", "Focus on left window", hl.dsp.focus({ direction = "l" }))
+o.bind("SUPER + J", "Focus on below window", hl.dsp.focus({ direction = "d" }))
+o.bind("SUPER + K", "Focus on above window", hl.dsp.focus({ direction = "u" }))
+o.bind("SUPER + L", "Focus on right window", hl.dsp.focus({ direction = "r" }))
+
+o.bind("SUPER + ALT + J", "Toggle window split", hl.dsp.layout("togglesplit"))
+o.bind("SUPER + ALT + L", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
+o.bind("SUPER + ALT + SEMICOLON", "Keybindings", "omarchy-menu-keybindings")
+
