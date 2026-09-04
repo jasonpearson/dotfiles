@@ -1,6 +1,14 @@
-eval "$(starship init zsh)"
-eval "$(zoxide init zsh)"
-eval "$(mise activate zsh)"
+if command -v starship >/dev/null 2>&1; then
+  eval "$(starship init zsh)"
+fi
+
+if command -v zoxide >/dev/null 2>&1; then
+  eval "$(zoxide init zsh)"
+fi
+
+if command -v mise >/dev/null 2>&1; then
+  eval "$(mise activate zsh)"
+fi
 
 if [[ -f ~/.env.zsh ]]; then
   source ~/.env.zsh
@@ -11,7 +19,7 @@ fi
 if [[ -f /opt/homebrew/bin/brew ]]; then
   # macOS with Homebrew
   eval "$(/opt/homebrew/bin/brew shellenv)"
-  source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+  source "$(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh"
 elif [[ -f /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh ]]; then
   # Ubuntu/Debian
   source /usr/share/zsh-autosuggestions/zsh-autosuggestions.zsh
@@ -49,11 +57,13 @@ bindkey -M viins 'kj' vi-cmd-mode
 bindkey '^y' autosuggest-accept
 
 # fzf shell integration (0.48+ uses --zsh, older versions use separate files)
-if fzf --zsh &>/dev/null; then
-  source <(fzf --zsh)
-elif [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
-  source /usr/share/doc/fzf/examples/key-bindings.zsh
-  source /usr/share/doc/fzf/examples/completion.zsh
+if command -v fzf >/dev/null 2>&1; then
+  if fzf --zsh &>/dev/null; then
+    source <(fzf --zsh)
+  elif [[ -f /usr/share/doc/fzf/examples/key-bindings.zsh ]]; then
+    source /usr/share/doc/fzf/examples/key-bindings.zsh
+    source /usr/share/doc/fzf/examples/completion.zsh
+  fi
 fi
 
 alias tf=terraform

@@ -6,6 +6,7 @@ Personal configuration files managed with [GNU Stow](https://www.gnu.org/softwar
 
 | Directory    | Description                                           |
 | ------------ | ----------------------------------------------------- |
+| `bash/`      | Bash config for Omarchy/Arch and Ubuntu               |
 | `claude/`    | Claude Code AI agent configurations                   |
 | `ghostty/`   | Ghostty terminal with Catppuccin Mocha theme          |
 | `gitconfig/` | Git aliases and settings                              |
@@ -15,7 +16,7 @@ Personal configuration files managed with [GNU Stow](https://www.gnu.org/softwar
 | `opencode/`  | OpenCode AI agent configurations                      |
 | `tmux/`      | Tmux with vim-style navigation and Catppuccin theme   |
 | `starship/`  | Starship prompt configuration                         |
-| `zshrc/`     | Zsh with vi mode, starship prompt, zoxide, mise       |
+| `zshrc/`     | Portable Zsh config, primarily used on macOS          |
 
 ## Package Helpers
 
@@ -34,7 +35,7 @@ login shell, or install tools from curl scripts.
 Install GNU Stow, then symlink configs to your home directory:
 
 ```bash
-stow zshrc ghostty tmux nvim starship gitconfig opencode claude herdr hypr
+stow -R -t "$HOME" bash zshrc ghostty tmux nvim starship gitconfig opencode claude herdr hypr
 ```
 
 ## Key Bindings
