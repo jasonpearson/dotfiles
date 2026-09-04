@@ -4,7 +4,7 @@ This file provides guidance to coding agents when working with code in this repo
 
 ## What this repo is
 
-Personal dotfiles managed with GNU Stow. Each top-level directory (`zshrc/`, `tmux/`, `nvim/`, `ghostty/`, `gitconfig/`, `starship/`, `opencode/`, `claude/`, `pi/`) is a stow package whose internal layout mirrors `$HOME` (e.g. `nvim/.config/nvim/init.lua` symlinks to `~/.config/nvim/init.lua`).
+Personal dotfiles managed with GNU Stow. Each top-level directory (`zshrc/`, `tmux/`, `nvim/`, `ghostty/`, `gitconfig/`, `starship/`, `opencode/`, `claude/`, `pi/`, `herdr/`) is a stow package whose internal layout mirrors `$HOME` (e.g. `nvim/.config/nvim/init.lua` symlinks to `~/.config/nvim/init.lua`).
 
 Because files are symlinked into `$HOME`, edits to files in this repo take effect in the live environment immediately — no install step needed for content changes. Only adding/removing files requires a restow.
 

@@ -9,6 +9,7 @@ Personal configuration files managed with [GNU Stow](https://www.gnu.org/softwar
 | `claude/`    | Claude Code AI agent configurations                   |
 | `ghostty/`   | Ghostty terminal with Catppuccin Mocha theme          |
 | `gitconfig/` | Git aliases and settings                              |
+| `herdr/`     | Herdr terminal workspace manager configuration        |
 | `nvim/`      | Neovim config with lazy.nvim, LSP, Treesitter, Snacks |
 | `opencode/`  | OpenCode AI agent configurations                      |
 | `tmux/`      | Tmux with vim-style navigation and Catppuccin theme   |
@@ -44,7 +45,7 @@ Install GNU Stow, then symlink configs to your home directory:
 brew install stow
 
 # Symlink all configs
-stow zshrc ghostty tmux nvim starship gitconfig opencode claude
+stow zshrc ghostty tmux nvim starship gitconfig opencode claude herdr
 ```
 
 ## Key Bindings
@@ -54,7 +55,7 @@ stow zshrc ghostty tmux nvim starship gitconfig opencode claude
 - **Leader key:** Space
 - **Escape:** `kj` (insert mode)
 
-### Tmux
+### Tmux / Herdr
 
 - **Prefix:** `Ctrl+a`
 - **Split vertical:** `Prefix+v` (`Prefix+V` splits along the longer edge)

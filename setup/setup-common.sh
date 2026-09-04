@@ -37,6 +37,7 @@ stow_dotfiles() {
   rm -rf \
     ~/.cache/nvim/ \
     ~/.config/ghostty/config \
+    ~/.config/herdr/config.toml \
     ~/.config/nvim \
     ~/.config/opencode \
     ~/.config/starship.toml \
@@ -45,7 +46,7 @@ stow_dotfiles() {
 
   cd "$DOTFILES_DIR"
   echo "Stowing dotfiles..."
-  stow zshrc ghostty tmux nvim starship gitconfig opencode claude
+  stow zshrc ghostty tmux nvim starship gitconfig opencode claude herdr
 }
 
 set_default_shell_zsh() {
