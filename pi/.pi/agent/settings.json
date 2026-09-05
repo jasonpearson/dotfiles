@@ -1,7 +1,6 @@
 {
-  "lastChangelogVersion": "0.78.0",
-  "defaultThinkingLevel": "high",
-  "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-5.5",
-  "hideThinkingBlock": false
+  "theme": "omarchy-system",
+  "lastChangelogVersion": "0.84.4",
+  "defaultProvider": "anthropic",
+  "defaultModel": "claude-opus-4-8"
 }
