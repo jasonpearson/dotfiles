@@ -1,11 +1,7 @@
-return {
-	"catppuccin/nvim",
-	name = "catppuccin",
-	priority = 1000,
-	init = function()
-		require("catppuccin").setup({
-			transparent_background = true,
-		})
-		vim.cmd.colorscheme("catppuccin-macchiato")
-	end,
-}
+local theme = vim.fn.expand("~/.local/state/omarchy/current/theme/neovim.lua")
+
+if vim.fn.filereadable(theme) == 1 then
+  return dofile(theme)
+end
+
+return {}
