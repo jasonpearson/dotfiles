@@ -3,12 +3,12 @@
 -- Add any additional keymaps here
 
 vim.keymap.set("i", "kj", "<Esc>", { desc = "Escape insert mode" })
-vim.keymap.set("n", "<C-c>", "<cmd>noh<cr>", { desc = "Clear search highlight" })
-vim.keymap.set("n", "<leader>w", "<cmd>write<cr>", { desc = "Write file" })
-vim.keymap.set("n", "<leader>q", "<cmd>quit<cr>", { desc = "Quit" })
-vim.keymap.set("n", "<leader>Q", "<cmd>quitall<cr>", { desc = "Quit all" })
-vim.keymap.set("n", "<leader>r", "<cmd>set relativenumber!<cr>", { desc = "Toggle relative number" })
-vim.keymap.set("n", "<leader>W", "<cmd>set wrap!<cr>", { desc = "Toggle wrap" })
+-- vim.keymap.set("n", "<C-c>", "<cmd>noh<cr>", { desc = "Clear search highlight" })
+-- vim.keymap.set("n", "<leader>w", "<cmd>write<cr>", { desc = "Write file" })
+-- vim.keymap.set("n", "<leader>q", "<cmd>quit<cr>", { desc = "Quit" })
+-- vim.keymap.set("n", "<leader>Q", "<cmd>quitall<cr>", { desc = "Quit all" })
+-- vim.keymap.set("n", "<leader>r", "<cmd>set relativenumber!<cr>", { desc = "Toggle relative number" })
+-- vim.keymap.set("n", "<leader>W", "<cmd>set wrap!<cr>", { desc = "Toggle wrap" })
 
 local function navigate(direction, tmux_flag, herdr_direction)
   return function()
@@ -28,7 +28,7 @@ local function navigate(direction, tmux_flag, herdr_direction)
 end
 
 vim.keymap.set("n", "<C-h>", navigate("h", "-L", "left"), { desc = "Go to left window or pane" })
-vim.keymap.set("n", "<BS>", navigate("h", "-L", "left"), { desc = "Go to left window or pane" })
+-- vim.keymap.set("n", "<BS>", navigate("h", "-L", "left"), { desc = "Go to left window or pane" })
 vim.keymap.set("n", "<C-j>", navigate("j", "-D", "down"), { desc = "Go to lower window or pane" })
 vim.keymap.set("n", "<C-k>", navigate("k", "-U", "up"), { desc = "Go to upper window or pane" })
 vim.keymap.set("n", "<C-l>", navigate("l", "-R", "right"), { desc = "Go to right window or pane" })
