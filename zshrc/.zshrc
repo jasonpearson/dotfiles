@@ -72,7 +72,13 @@ function br() { bun run "$@"; }
 
 function cc() { claude "$@"; }
 
-function e() { "$EDITOR" "$@"; }
+function e() {
+  local editor="${EDITOR:-nvim}"
+  local -a editor_argv
+
+  editor_argv=(${(z)editor})
+  "${editor_argv[@]}" "$@"
+}
 
 function ed() {
   if [[ $# -eq 0 ]]; then
@@ -91,14 +97,26 @@ function ef() {
   e "$file"
 };
 
-function eg() { e $(rg -l $@) };
-function egf() { e $(rg -u --files | rg $@) };
-function ga() { git add "$@"; }
-function gac() { ga "-A" && gc "$@" }
-function gaca() { ga "-A" && gc --amend "$@" }
+function eg() {
+  local -a files
+  files=(${(f)"$(rg -l "$@")"})
+  (( ${#files} )) || return 1
+  e "${files[@]}"
+}
+function egf() {
+  local -a files
+  files=(${(f)"$(rg -u --files | rg "$@")"})
+  (( ${#files} )) || return 1
+  e "${files[@]}"
+}
+
+# Git helpers. Avoid ga/gd here because Omarchy uses those for worktree helpers.
+function gadd() { git add "$@"; }
+function gdiff() { git diff "$@"; }
+function gac() { git add -A && git commit "$@"; }
+function gaca() { git add -A && git commit --amend "$@"; }
 function gc() { git commit "$@"; }
 function gco() { git checkout "$@"; }
-function gd() { git diff "$@"; }
 
 function glo() {
   git log --color --decorate --pretty=format:"%h %an %Cgreen(%cr)%Creset - %s%C(yellow)%d%Creset" --abbrev-commit "$@"
@@ -202,19 +220,44 @@ function play_sound() {
   fi
 }
 
-# Session management lives in the tmux-attention CLI (also bound to prefix+a /
-# prefix+A inside tmux). These work from a bare shell too: inside tmux they
-# switch the client, outside they attach.
-alias tmc='tmux-attention new "$PWD"'  # session for the current directory
-alias tm='tmux-attention'              # the picker: a dir, or shift-tab for sessions
+for tmux_attention_bin in "$HOME"/.tmux/plugins/tmux-attention*/bin; do
+  [[ -d "$tmux_attention_bin" ]] || continue
+  case ":$PATH:" in
+    *":$tmux_attention_bin:"*) ;;
+    *) export PATH="$tmux_attention_bin:$PATH" ;;
+  esac
+done
+unset tmux_attention_bin
 
-function tma() {
-  tmux a "$@"
-}
+if command -v tmux-attention >/dev/null 2>&1; then
+  alias ta='tmux-attention'
+  alias tac='tmux-attention new "$PWD"'
+fi
 
-function tml() {
-  tmux ls "$@"
-}
+if [[ -n "${HERDR_PANE_ID:-}" && -z "${TMUX:-}" ]]; then
+  _herdr_focus_left() { herdr pane focus --current --direction left >/dev/null 2>&1; zle reset-prompt; }
+  _herdr_focus_down() { herdr pane focus --current --direction down >/dev/null 2>&1; zle reset-prompt; }
+  _herdr_focus_up() { herdr pane focus --current --direction up >/dev/null 2>&1; zle reset-prompt; }
+  _herdr_focus_right() { herdr pane focus --current --direction right >/dev/null 2>&1; zle reset-prompt; }
+
+  zle -N _herdr_focus_left
+  zle -N _herdr_focus_down
+  zle -N _herdr_focus_up
+  zle -N _herdr_focus_right
+
+  bindkey '^H' _herdr_focus_left
+  bindkey '^J' _herdr_focus_down
+  bindkey '^K' _herdr_focus_up
+  bindkey '^L' _herdr_focus_right
+
+  bindkey $'\e[104;5u' _herdr_focus_left
+  bindkey $'\e[106;5u' _herdr_focus_down
+  bindkey $'\e[107;5u' _herdr_focus_up
+  bindkey $'\e[108;5u' _herdr_focus_right
+fi
+
+function tma() { tmux attach "$@"; }
+function tml() { tmux list-sessions "$@"; }
 
 # Under SSH, emit "remote_pwd (host)" via the OSC title — the one channel that
 # crosses the ssh boundary — so the parent tmux can render the remote path and
