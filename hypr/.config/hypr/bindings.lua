@@ -34,6 +34,11 @@ hl.unbind("SUPER + J") -- was: Toggle window split
 hl.unbind("SUPER + K") -- was: Keybindings
 hl.unbind("SUPER + L") -- was: Toggle workspace layout
 
+-- Restore access to the default Omarchy keybindings menu on an alternate
+-- shortcut (SUPER+SHIFT+K), since SUPER+K is repurposed above.
+hl.unbind("SUPER + SHIFT + K")
+o.bind("SUPER + SHIFT + K", "Keybindings", "omarchy-menu-keybindings")
+
 o.bind("SUPER + H", "Focus on left window", hl.dsp.focus({ direction = "l" }))
 o.bind("SUPER + J", "Focus on below window", hl.dsp.focus({ direction = "d" }))
 o.bind("SUPER + K", "Focus on above window", hl.dsp.focus({ direction = "u" }))
