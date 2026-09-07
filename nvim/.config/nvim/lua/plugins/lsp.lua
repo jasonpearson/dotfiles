@@ -1,7 +1,21 @@
 return {
 	{
 		"neovim/nvim-lspconfig",
+		keys = {
+			{
+				"<leader>uh",
+				function()
+					local enabled = vim.lsp.inlay_hint.is_enabled()
+					vim.lsp.inlay_hint.enable(not enabled)
+					vim.notify((enabled and "Disabled" or "Enabled") .. " inlay hints")
+				end,
+				desc = "Toggle Inlay Hints",
+			},
+		},
 		opts = {
+			inlay_hints = {
+				enabled = false,
+			},
 			servers = {
 				graphql = {},
 				kotlin_language_server = {

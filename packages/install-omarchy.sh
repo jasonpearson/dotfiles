@@ -2,6 +2,7 @@
 set -euo pipefail
 
 omarchy pkg add \
+  bun-bin \
   ghostty \
   kind \
   opencode \

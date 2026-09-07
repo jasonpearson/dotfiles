@@ -36,3 +36,11 @@ vim.keymap.set("n", "<leader>yP", function()
   vim.fn.setreg("+", vim.fn.expand("%:p"))
   vim.notify("Copied absolute file path")
 end, { desc = "Copy absolute file path" })
+
+if vim.lsp.inlay_hint then
+  vim.keymap.set("n", "<leader>uh", function()
+    local enabled = vim.lsp.inlay_hint.is_enabled()
+    vim.lsp.inlay_hint.enable(not enabled)
+    vim.notify((enabled and "Disabled" or "Enabled") .. " inlay hints")
+  end, { desc = "Toggle Inlay Hints" })
+end

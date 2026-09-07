@@ -3,6 +3,7 @@ set -euo pipefail
 
 brew install \
   curl \
+  oven-sh/bun/bun \
   fluxcd/tap/flux \
   fzf \
   git \
