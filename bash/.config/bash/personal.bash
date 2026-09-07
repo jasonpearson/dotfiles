@@ -15,6 +15,18 @@ e() {
   "${editor_argv[@]}" "$@"
 }
 
+ed() {
+  local -a files=()
+
+  if (( $# == 0 )); then
+    mapfile -t files < <(git diff --name-only)
+  else
+    mapfile -t files < <(git diff --name-only --diff-filter="$1")
+  fi
+
+  e "${files[@]}"
+}
+
 ef() {
   local file
   file=$(fzf) || return
@@ -104,6 +116,3 @@ if [[ -n "${HERDR_PANE_ID:-}" && -z "${TMUX:-}" ]]; then
   bind -x '"\e[107;5u": _herdr_focus_up'
   bind -x '"\e[108;5u": _herdr_focus_right'
 fi
-
-tma() { tmux attach "$@"; }
-tml() { tmux list-sessions "$@"; }
