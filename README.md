@@ -1,22 +1,24 @@
 # Dotfiles
 
 Personal configuration files managed with [GNU Stow](https://www.gnu.org/software/stow/).
+Each top-level directory is a stow package whose internal layout mirrors `$HOME`.
 
 ## What's Included
 
-| Directory    | Description                                           |
-| ------------ | ----------------------------------------------------- |
-| `bash/`      | Bash config for Omarchy/Arch and Ubuntu               |
-| `claude/`    | Claude Code AI agent configurations                   |
-| `ghostty/`   | Ghostty terminal with Catppuccin Mocha theme          |
-| `gitconfig/` | Git aliases and settings                              |
-| `herdr/`     | Herdr terminal workspace manager configuration        |
-| `hypr/`      | Hyprland/Omarchy user configuration                   |
-| `nvim/`      | Neovim config with lazy.nvim, LSP, Treesitter, Snacks |
-| `opencode/`  | OpenCode AI agent configurations                      |
-| `tmux/`      | Tmux with vim-style navigation and Catppuccin theme   |
-| `starship/`  | Starship prompt configuration                         |
-| `zshrc/`     | Portable Zsh config, primarily used on macOS          |
+| Directory    | Description                                             |
+| ------------ | ------------------------------------------------------- |
+| `bash/`      | Bash config for Omarchy/Arch and Ubuntu                 |
+| `claude/`    | Claude Code AI agent configuration                      |
+| `ghostty/`   | Ghostty terminal configuration                          |
+| `gitconfig/` | XDG Git config and global ignore                        |
+| `herdr/`     | Herdr terminal workspace manager configuration          |
+| `hypr/`      | Hyprland/Omarchy user configuration                     |
+| `nvim/`      | Neovim config using LazyVim/lazy.nvim                   |
+| `opencode/`  | OpenCode AI agent configuration                         |
+| `pi/`        | Pi coding-agent settings, keybindings, and extensions   |
+| `starship/`  | Starship prompt configuration                           |
+| `tmux/`      | Tmux config with tpack plugins and vim-style navigation |
+| `zshrc/`     | Portable Zsh config, primarily used on macOS            |
 
 ## Package Helpers
 
@@ -25,17 +27,26 @@ They only install packages; they do not clone this repo, stow configs, change th
 login shell, or install tools from curl scripts.
 
 ```bash
-./packages/install-macos.sh
-./packages/install-omarchy.sh
-./packages/install-ubuntu.sh
+./packages/install-macos.sh     # Homebrew
+./packages/install-omarchy.sh   # omarchy pkg / AUR helpers
+./packages/install-ubuntu.sh    # apt
 ```
+
+macOS and Omarchy helpers install `tpack` for tmux plugin management. The tmux
+config also starts cleanly when `tpack` is not installed yet.
 
 ## Stow Setup
 
 Install GNU Stow, then symlink configs to your home directory:
 
 ```bash
-stow -R -t "$HOME" bash zshrc ghostty tmux nvim starship gitconfig opencode claude herdr hypr
+stow -R -t "$HOME" bash zshrc ghostty tmux nvim starship gitconfig opencode claude pi herdr hypr
+```
+
+Restow a package after adding or removing files:
+
+```bash
+stow -R -t "$HOME" <package>
 ```
 
 ## Key Bindings
@@ -44,30 +55,27 @@ stow -R -t "$HOME" bash zshrc ghostty tmux nvim starship gitconfig opencode clau
 
 - **Leader key:** Space
 - **Escape:** `kj` (insert mode)
+- **Pane navigation:** `Ctrl+h/j/k/l` crosses nvim, tmux, and Herdr panes
+- **Copy path:** `<leader>cp` relative path, `<leader>cP` absolute path
+- **Markdown preview:** `<leader>mp`
 
 ### Tmux / Herdr
 
 - **Prefix:** `Ctrl+a`
-- **Split vertical:** `Prefix+v` (`Prefix+V` splits along the longer edge)
-- **Split horizontal:** `Prefix+s` (`Prefix+S` splits along the longer edge)
-- **Kill pane:** `Prefix+q`
-- **Kill server:** `Prefix+Ctrl+x`
+- **Split vertical:** `Prefix+s` (`Alt+Enter`)
+- **Split horizontal:** `Prefix+v` (`Alt+Shift+Enter`)
+- **Kill pane:** `Prefix+x` (`Alt+Esc`)
 - **Resize:** `Prefix+Ctrl+h/j/k/l`
-- **Navigate panes:** `Ctrl+h/j/k/l` (seamless with nvim via vim-tmux-navigator)
-- **Reload config:** `Prefix+r`
-- **Set pane title:** `Prefix+P` (empty input clears it)
-- **Session picker:** `Prefix+a` (Shift+Tab toggles sessions/directories)
-- **New session from a directory:** `Prefix+A`
+- **Navigate panes:** `Ctrl+h/j/k/l` (seamless with nvim and Herdr)
+- **Reload config:** `Prefix+q`
 - **Toggle pane attention flag:** `Prefix+h`
 
-Session pickers and the attention flag come from
+Use shell command `t` to attach to tmux or create a session for the current
+working directory, and `tl` to list tmux sessions. The attention flag comes from
 [tmux-attention](https://github.com/jasonpearson/tmux-attention); its CLI is also
-on `$PATH` as `tmux-attention` (`tm` / `tmc` in zsh).
+on `$PATH` as `tmux-attention` (`ta` / `tac` in shell configs).
 
 ### General
 
 - **Vi mode:** Enabled in zsh, tmux, and nvim
-
-## Theme
-
-Catppuccin (Mocha/Macchiato) everywhere.
+- **Theme:** Catppuccin/Omarchy-style terminal palette across tools

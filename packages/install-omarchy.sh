@@ -7,5 +7,6 @@ omarchy pkg add \
   opencode \
   shellcheck \
   stow \
+  tpack-bin \
   wget \
   yq

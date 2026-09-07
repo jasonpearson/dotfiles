@@ -16,6 +16,7 @@ brew install \
   starship \
   stow \
   tmux \
+  tmuxpack/tpack/tpack \
   unzip \
   wget \
   yq \

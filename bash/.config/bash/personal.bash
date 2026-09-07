@@ -1,6 +1,8 @@
 alias tf=terraform
 alias t='tmux attach || tmux new -s "$PWD"'
 
+tl() { tmux list-sessions "$@"; }
+
 br() { bun run "$@"; }
 cc() { claude "$@"; }
 oc() { opencode "$@"; }

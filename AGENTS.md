@@ -33,16 +33,16 @@ There is no build, lint, or test tooling. Verification means restowing and exerc
 
 ## Architecture
 
-- **`packages/`** holds intentionally small package install helpers for macOS, Omarchy, and Ubuntu. They assume the package manager already exists and only install listed packages; they do not stow dotfiles, install curl-based tools, clone repos, or change the login shell.
-- **`.stow-local-ignore`** files control what a package symlinks. The `claude/` package uses an ignore-everything-then-whitelist pattern so only `~/.claude/CLAUDE.md` and `~/.claude/settings.json` are managed (runtime state like sessions/cache stays out via `claude/.claude/.gitignore`). `gitconfig/` overrides stow's default ignore of `.gitignore` files.
-- **`bash/`** provides a minimal Bash startup for Omarchy/Arch and Ubuntu. On Omarchy it sources `$OMARCHY_PATH/default/bash/rc` and otherwise only initializes portable tools when present. Add personal Bash customizations gradually via `~/.config/bash/local.bash` or tracked files once they are stable.
-- **tmux** uses the Omarchy-style config path `tmux/.config/tmux/tmux.conf`, stowed to `~/.config/tmux/tmux.conf`.
-- **nvim** uses lazy.nvim; each plugin gets its own file under `nvim/.config/nvim/lua/plugins/` and is auto-imported. Core config is `lua/options.lua`, `lua/keymaps.lua`, `lua/netrw.lua`.
-- **zsh**: `zshrc/.zshrc` is primarily used on macOS but should remain portable; guard optional tools with `command -v` checks. It defines the user's short helper functions (git shortcuts `ga`/`gc`/`gd`..., `tm` tmux session picker, `cc` = claude, `review`/`reviewed` workflow). `zshrc/.env.zsh` holds environment secrets and is sourced from `.zshrc`. It is untracked, but the ignore rule is indirect: `gitconfig/.gitignore` stows to `~/.gitignore`, which is the global `core.excludesfile` — it does not appear in the repo's own `.gitignore`. Never `git add -f` it.
+- **`packages/`** holds intentionally small package install helpers for macOS, Omarchy, and Ubuntu. They assume the package manager already exists and only install listed packages; they do not stow dotfiles, install curl-based tools, clone repos, or change the login shell. macOS/Omarchy helpers install `tpack` for tmux plugins.
+- **`.stow-local-ignore`** files control what a package symlinks. The `claude/` package uses an ignore-everything-then-whitelist pattern so only `~/.claude/CLAUDE.md` and `~/.claude/settings.json` are managed (runtime state like sessions/cache stays out via `claude/.claude/.gitignore`). Git's global ignore is managed as `gitconfig/.config/git/ignore` and referenced by `core.excludesFile`.
+- **`bash/`** provides a minimal Bash startup for Omarchy/Arch and Ubuntu. It sources Omarchy's packaged Bash defaults when present, then `~/.config/bash/personal.bash`, then optional untracked `~/.config/bash/local.bash`.
+- **tmux** uses the Omarchy-style config path `tmux/.config/tmux/tmux.conf`, stowed to `~/.config/tmux/tmux.conf`. Plugins are declared with TPM-compatible `@plugin` lines but loaded by `tpack` (`run -b 'command -v tpack ...'`), so tmux starts cleanly before plugins are installed.
+- **nvim** uses LazyVim/lazy.nvim; each local plugin override gets its own file under `nvim/.config/nvim/lua/plugins/` and is auto-imported. Core config is `lua/options.lua`, `lua/keymaps.lua`, `lua/autocmds.lua`, `lua/netrw.lua`. Omarchy theme integration lives in `lua/plugins/theme.lua` and hot reload support in `lua/plugins/theme-hotreload.lua`.
+- **zsh**: `zshrc/.zshrc` is primarily used on macOS but should remain portable; guard optional tools with `command -v` checks. Keep common aliases/functions aligned with `bash/.config/bash/personal.bash` where practical (`t` for tmux attach-or-new, `tl` for listing tmux sessions, `ta`/`tac` for tmux-attention, `cc`, `oc`, editor helpers, git helpers). `zshrc/.env.zsh` holds environment secrets and is sourced from `.zshrc`; never add it.
 - **`claude/.claude/settings.json`** wires Claude Code hooks into the `tmux-attention` plugin (`working`/`blocked`/`done` pane states) plus sound alerts — relevant if editing hook or tmux-attention behavior, since the two configs cooperate.
 - **`.wt/`** is a gitignored directory holding git worktrees for this repo.
 
 ## Conventions
 
-- Vi mode and Catppuccin theming are deliberate constants across all tools (zsh, tmux, nvim, ghostty).
-- tmux prefix is `Ctrl+a`; pane navigation is shared with nvim via vim-tmux-navigator, so keybinding changes in one often need a matching change in the other.
+- Vi mode and a Catppuccin/Omarchy-style terminal palette are deliberate constants across tools.
+- tmux prefix is `Ctrl+a`; pane navigation is shared across nvim, tmux, and Herdr via coordinated `Ctrl+h/j/k/l` bindings, so keybinding changes in one often need matching changes in the others.

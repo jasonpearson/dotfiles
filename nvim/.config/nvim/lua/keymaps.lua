@@ -7,7 +7,7 @@ vim.keymap.set("n", "<leader>e", "<cmd>e.<cr>")
 vim.keymap.set("n", "<leader>n", "<cmd>bn<cr>")
 vim.keymap.set("n", "<leader>p", "<cmd>bp<cr>")
 vim.keymap.set("n", "<leader>Q", "<cmd>quitall<cr>")
-vim.keymap.set("n", "<leader>q", "<cmd>quit<cr>")
+vim.keymap.set("n", "<leader>qq", "<cmd>quit<cr>")
 vim.keymap.set("n", "<leader>v", "<cmd>vsp %:p:h<cr>")
 vim.keymap.set("n", "<leader>V", "<cmd>vsp .<cr>")
 vim.keymap.set("n", "<leader>h", "<cmd>Vexplore!<cr>")
@@ -16,7 +16,7 @@ vim.keymap.set("n", "<leader>s", "<cmd>Se<cr>")
 vim.keymap.set("n", "<leader>S", "<cmd>sp .<cr>")
 vim.keymap.set("n", "<leader>t", "<cmd>tabe %:p:h<cr>")
 vim.keymap.set("n", "<leader>T", "<cmd>tabe .<cr>")
-vim.keymap.set("n", "<leader>w", "<cmd>write<cr>")
+vim.keymap.set("n", "<leader>ww", "<cmd>write<cr>")
 vim.keymap.set({ "v" }, "<leader>y", '"+y') -- yank to system clipboard
 vim.keymap.set({ "n" }, "<leader>y", '<cmd>let @* = fnamemodify(expand("%"), ":~:.")<cr>') -- yank full path to clipboard
 vim.keymap.set({ "n" }, "<leader>Y", '<cmd>let @* = fnamemodify(expand("%"), ":t")<cr>') -- yank filename to clipboard

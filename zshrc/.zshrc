@@ -67,6 +67,7 @@ if command -v fzf >/dev/null 2>&1; then
 fi
 
 alias tf=terraform
+alias t='tmux attach || tmux new -s "$PWD"'
 
 function br() { bun run "$@"; }
 
@@ -81,13 +82,15 @@ function e() {
 }
 
 function ed() {
-  if [[ $# -eq 0 ]]; then
-    files=$(git diff --name-only)
+  local -a files=()
+
+  if (( $# == 0 )); then
+    files=(${(f)"$(git diff --name-only)"})
   else
-    files=$(git diff --name-only --diff-filter=$1)
+    files=(${(f)"$(git diff --name-only --diff-filter="$1")"})
   fi
 
-  nvim ${(f)files}
+  e "${files[@]}"
 }
 
 function ef() {
@@ -256,8 +259,7 @@ if [[ -n "${HERDR_PANE_ID:-}" && -z "${TMUX:-}" ]]; then
   bindkey $'\e[108;5u' _herdr_focus_right
 fi
 
-function tma() { tmux attach "$@"; }
-function tml() { tmux list-sessions "$@"; }
+function tl() { tmux list-sessions "$@"; }
 
 # Under SSH, emit "remote_pwd (host)" via the OSC title — the one channel that
 # crosses the ssh boundary — so the parent tmux can render the remote path and
