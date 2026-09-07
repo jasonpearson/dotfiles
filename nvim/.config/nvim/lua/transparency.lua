@@ -1,3 +1,5 @@
+local M = {}
+
 -- Make highlight groups transparent while preserving their other attributes
 local function make_transparent(name)
 	local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name, link = false })
@@ -54,6 +56,10 @@ local groups = {
 	"NotifyDEBUGBorder",
 }
 
-for _, name in ipairs(groups) do
-	make_transparent(name)
+function M.apply()
+	for _, name in ipairs(groups) do
+		make_transparent(name)
+	end
 end
+
+return M

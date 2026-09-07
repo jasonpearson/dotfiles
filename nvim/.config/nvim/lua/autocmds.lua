@@ -42,4 +42,12 @@ vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter", "VimEnter" }, {
   callback = cleanup_empty_unnamed_buffers,
 })
 
+vim.api.nvim_create_autocmd("ColorScheme", {
+  group = group,
+  callback = function()
+    require("transparency").apply()
+  end,
+})
+
 cleanup_empty_unnamed_buffers()
+require("transparency").apply()
