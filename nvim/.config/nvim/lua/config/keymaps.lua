@@ -3,6 +3,7 @@
 -- Add any additional keymaps here
 
 vim.keymap.set("i", "kj", "<Esc>", { desc = "Escape insert mode" })
+vim.keymap.set("n", "<leader>ww", "<cmd>write<cr>", { desc = "Write file" })
 -- vim.keymap.set("n", "<C-c>", "<cmd>noh<cr>", { desc = "Clear search highlight" })
 -- vim.keymap.set("n", "<leader>w", "<cmd>write<cr>", { desc = "Write file" })
 -- vim.keymap.set("n", "<leader>q", "<cmd>quit<cr>", { desc = "Quit" })
@@ -32,6 +33,15 @@ vim.keymap.set("n", "<C-h>", navigate("h", "-L", "left"), { desc = "Go to left w
 vim.keymap.set("n", "<C-j>", navigate("j", "-D", "down"), { desc = "Go to lower window or pane" })
 vim.keymap.set("n", "<C-k>", navigate("k", "-U", "up"), { desc = "Go to upper window or pane" })
 vim.keymap.set("n", "<C-l>", navigate("l", "-R", "right"), { desc = "Go to right window or pane" })
+
+vim.keymap.set("n", "<leader>cp", function()
+  vim.fn.setreg("+", vim.fn.expand("%"))
+  vim.notify("Copied relative file path")
+end, { desc = "Copy relative file path" })
+vim.keymap.set("n", "<leader>cP", function()
+  vim.fn.setreg("+", vim.fn.expand("%:p"))
+  vim.notify("Copied absolute file path")
+end, { desc = "Copy absolute file path" })
 
 vim.api.nvim_create_autocmd("FileType", {
   pattern = "neo-tree",
