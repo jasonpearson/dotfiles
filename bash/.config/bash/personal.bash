@@ -19,7 +19,7 @@ e() {
 ed() {
   local -a files=()
 
-  mapfile -t files < <(git diff --name-only -- "$@")
+  mapfile -t files < <(git diff --name-only --diff-filter=d -- "$@")
 
   e "${files[@]}"
 }

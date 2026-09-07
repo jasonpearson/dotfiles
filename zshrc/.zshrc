@@ -84,7 +84,7 @@ function e() {
 function ed() {
   local -a files=()
 
-  files=(${(f)"$(git diff --name-only -- "$@")"})
+  files=(${(f)"$(git diff --name-only --diff-filter=d -- "$@")"})
 
   e "${files[@]}"
 }
