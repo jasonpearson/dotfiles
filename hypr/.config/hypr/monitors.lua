@@ -1,17 +1,15 @@
 -- See https://wiki.hypr.land/Configuring/Basics/Monitors/
 -- List current monitors and supported resolutions with: hyprctl monitors all
 
-local omarchy_gdk_scale = 2
-local omarchy_monitor_scale = 1.6
+local omarchy_gdk_scale = 1
+local omarchy_monitor_scale = 1
 
 hl.env("GDK_SCALE", tostring(omarchy_gdk_scale))
 hl.monitor({ output = "", mode = "preferred", position = "auto", scale = omarchy_monitor_scale })
 
 -- Apple Studio Display over Thunderbolt.
--- Match by description because DP-* output names can change after hotplug/reboot.
-hl.monitor({
-  output = "desc:Apple Computer Inc StudioDisplay 0xE28178B3",
-  mode = "preferred",
-  position = "auto",
-  scale = 2,
-})
+-- It exposes two DP streams with the same description; after reboot the stream
+-- with real display modes is DP-2 while DP-1 only exposes 640x480 and produces
+-- a blank display.
+hl.monitor({ output = "DP-2", mode = "2560x1440@60", position = "0x0", scale = omarchy_monitor_scale })
+hl.monitor({ output = "DP-1", disabled = true })
