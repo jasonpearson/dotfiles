@@ -35,7 +35,10 @@ local function cleanup_empty_unnamed_buffers()
   end)
 end
 
+local group = vim.api.nvim_create_augroup("UserAutocmds", { clear = true })
+
 vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter", "VimEnter" }, {
+  group = group,
   callback = cleanup_empty_unnamed_buffers,
 })
 

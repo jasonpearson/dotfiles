@@ -1,0 +1,3 @@
+-- netrw customizations live here for compatibility with the pre-LazyVim config.
+-- LazyVim currently uses neo-tree, but keep this module as the place for any
+-- netrw-specific behavior if netrw is enabled again later.
