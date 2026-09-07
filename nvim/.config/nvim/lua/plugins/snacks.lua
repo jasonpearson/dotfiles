@@ -1,8 +1,29 @@
+local accent = "#94e2d5"
+
 return {
-	"folke/snacks.nvim",
-	opts = {
-		scroll = {
-			enabled = false, -- Disable scrolling animations
-		},
-	},
+  "folke/snacks.nvim",
+  init = function()
+    for _, group in ipairs({ "Header", "Icon", "Key", "Desc", "Footer" }) do
+      vim.api.nvim_set_hl(0, "SnacksDashboard" .. group, { fg = accent })
+    end
+  end,
+  opts = {
+    dashboard = {
+      preset = {
+        header = [[
+                                                                     
+       ████ ██████           █████      ██                     
+      ███████████             █████                             
+      █████████ ███████████████████ ███   ███████████   
+     █████████  ███    █████████████ █████ ██████████████   
+    █████████ ██████████ █████████ █████ █████ ████ █████   
+  ███████████ ███    ███ █████████ █████ █████ ████ █████  
+ ██████  █████████████████████ ████ █████ █████ ████ ██████ 
+        ]],
+      },
+    },
+    scroll = {
+      enabled = false,
+    },
+  },
 }
