@@ -1,6 +1,5 @@
-# Shared personal Bash helpers.
-
 alias tf=terraform
+alias t='tmux attach || tmux new -s "$PWD"'
 
 br() { bun run "$@"; }
 cc() { claude "$@"; }
