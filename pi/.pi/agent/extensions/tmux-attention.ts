@@ -2,7 +2,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 
-const attentionPath = join(process.env.HOME ?? "", ".tmux/plugins/tmux-attention/bin/tmux-attention");
+const attentionPath = join(process.env.HOME ?? "", ".local/bin/tmux-attention");
 
 export default function (pi: ExtensionAPI) {
 	const inTmux = () => Boolean(process.env.TMUX);

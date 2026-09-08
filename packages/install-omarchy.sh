@@ -8,6 +8,8 @@ omarchy pkg add \
   opencode \
   shellcheck \
   stow \
-  tpack-bin \
   wget \
   yq
+
+omarchy pkg aur add \
+  tpack-bin

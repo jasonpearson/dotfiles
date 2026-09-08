@@ -37,11 +37,21 @@ config also starts cleanly when `tpack` is not installed yet.
 
 ## Stow Setup
 
-Install GNU Stow, then symlink configs to your home directory:
+Install GNU Stow, then symlink the package set for the current OS:
 
 ```bash
-stow -R -t "$HOME" bash zshrc ghostty tmux nvim starship gitconfig opencode claude pi herdr hypr
+# macOS: all except bash and hypr
+stow -R -t "$HOME" zshrc ghostty tmux nvim starship gitconfig opencode claude pi herdr
+
+# Omarchy: all except starship and zshrc
+stow -R -t "$HOME" bash ghostty tmux nvim gitconfig opencode claude pi herdr hypr
+
+# Ubuntu: all except hypr, zshrc, and ghostty
+stow -R -t "$HOME" bash tmux nvim starship gitconfig opencode claude pi herdr
 ```
+
+If a package conflicts with an existing real config file, back up or remove the
+file before stowing it.
 
 Restow a package after adding or removing files:
 
@@ -56,8 +66,9 @@ stow -R -t "$HOME" <package>
 - **Leader key:** Space
 - **Escape:** `kj` (insert mode)
 - **Pane navigation:** `Ctrl+h/j/k/l` crosses nvim, tmux, and Herdr panes
-- **Copy path:** `<leader>cp` relative path, `<leader>cP` absolute path
+- **Copy path:** `<leader>yp` relative path, `<leader>yP` absolute path
 - **Markdown preview:** `<leader>mp`
+- **Lazy plugin manager:** `<leader>pl`
 
 ### Tmux / Herdr
 
@@ -72,8 +83,9 @@ stow -R -t "$HOME" <package>
 
 Use shell command `t` to attach to tmux or create a session for the current
 working directory, and `tl` to list tmux sessions. The attention flag comes from
-[tmux-attention](https://github.com/jasonpearson/tmux-attention); its CLI is also
-on `$PATH` as `tmux-attention` (`ta` / `tac` in shell configs).
+[tmux-attention](https://github.com/jasonpearson/tmux-attention); the tmux package
+stows a stable `~/.local/bin/tmux-attention` wrapper (`ta` / `tac` in shell
+configs) and refreshes the tpack compatibility symlink when tmux reloads.
 
 ### General
 

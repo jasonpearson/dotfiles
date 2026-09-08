@@ -42,11 +42,8 @@ ZSH_AUTOSUGGEST_STRATEGY=(history completion)
 export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
-# claude
+# User-local tools, including the tmux-attention wrapper from the tmux package.
 export PATH="$HOME/.local/bin:$PATH"
-
-# tmux-attention CLI (pick / new / run)
-export PATH="$HOME/.tmux/plugins/tmux-attention/bin:$PATH"
 
 setopt inc_append_history
 
@@ -219,15 +216,7 @@ function play_sound() {
   fi
 }
 
-for tmux_attention_bin in "$HOME"/.tmux/plugins/tmux-attention*/bin; do
-  [[ -d "$tmux_attention_bin" ]] || continue
-  case ":$PATH:" in
-    *":$tmux_attention_bin:"*) ;;
-    *) export PATH="$tmux_attention_bin:$PATH" ;;
-  esac
-done
-unset tmux_attention_bin
-
+# Stable wrapper provided by the tmux stow package.
 if command -v tmux-attention >/dev/null 2>&1; then
   alias ta='tmux-attention'
   alias tac='tmux-attention new "$PWD"'

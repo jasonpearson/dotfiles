@@ -1,0 +1,56 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+plugin_root="${TMUX_PLUGIN_MANAGER_PATH:-$HOME/.tmux/plugins}"
+plugin_root="${plugin_root%/}"
+stable_dir="$plugin_root/tmux-attention"
+
+stat_mtime() {
+  stat -c %Y "$1" 2>/dev/null || stat -f %m "$1" 2>/dev/null || printf '0\n'
+}
+
+find_current_dir() {
+  local attention_tmux dir mtime newest="" newest_mtime=-1
+
+  for attention_tmux in "$plugin_root"/tmux-attention*/attention.tmux; do
+    [[ -f "$attention_tmux" ]] || continue
+
+    dir="${attention_tmux%/attention.tmux}"
+    [[ "$dir" == "$stable_dir" ]] && continue
+    [[ -x "$attention_tmux" && -x "$dir/bin/tmux-attention" ]] || continue
+
+    mtime="$(stat_mtime "$dir")"
+    case "$mtime" in
+      '' | *[!0-9]*) mtime=0 ;;
+    esac
+
+    if ((mtime >= newest_mtime)); then
+      newest="$dir"
+      newest_mtime="$mtime"
+    fi
+  done
+
+  [[ -n "$newest" ]] && printf '%s\n' "$newest"
+}
+
+current_dir="$(find_current_dir || true)"
+[[ -n "$current_dir" ]] || exit 0
+
+if [[ -L "$stable_dir" ]]; then
+  stable_target="$(readlink "$stable_dir" || true)"
+  [[ "$stable_target" == /* ]] || stable_target="$(dirname "$stable_dir")/$stable_target"
+
+  # Only replace symlinks managed by this helper. A manual stable symlink to a
+  # local development checkout should keep winning over tpack's hashed clone.
+  if [[ ! -e "$stable_dir" || "$stable_target" == "$plugin_root"/tmux-attention-* ]]; then
+    ln -sfn "$current_dir" "$stable_dir"
+  fi
+elif [[ ! -e "$stable_dir" ]]; then
+  ln -s "$current_dir" "$stable_dir"
+elif [[ -d "$stable_dir" ]]; then
+  # TPM-style installs already use the stable name; leave them alone.
+  exit 0
+else
+  printf 'tmux-attention-sync: %s exists and is not a symlink or directory\n' "$stable_dir" >&2
+  exit 1
+fi

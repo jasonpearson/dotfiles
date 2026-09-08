@@ -4,6 +4,7 @@ vim.keymap.set("n", "<leader>e", "<cmd>e.<cr>")
 vim.keymap.set("n", "<leader>t", "<cmd>tabe %:p:h<cr>")
 vim.keymap.set("n", "<leader>T", "<cmd>tabe .<cr>")
 vim.keymap.set("n", "<leader>ww", "<cmd>write<cr>")
+vim.keymap.set("n", "<leader>pl", "<cmd>Lazy<cr>", { desc = "Lazy Plugin Manager" })
 
 local function navigate(direction, tmux_flag, herdr_direction)
 	return function()

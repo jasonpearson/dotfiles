@@ -16,4 +16,3 @@ o.bind("SUPER + L", "Focus on right window", hl.dsp.focus({ direction = "r" }))
 o.bind("SUPER + ALT + J", "Toggle window split", hl.dsp.layout("togglesplit"))
 o.bind("SUPER + ALT + L", "Toggle workspace layout", "omarchy-hyprland-workspace-layout-toggle")
 o.bind("SUPER + SHIFT + K", "Keybindings", "omarchy-menu-keybindings")
-

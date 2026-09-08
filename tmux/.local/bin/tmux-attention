@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+plugin_root="${TMUX_PLUGIN_MANAGER_PATH:-$HOME/.tmux/plugins}"
+plugin_root="${plugin_root%/}"
+sync="$HOME/.local/bin/tmux-attention-sync"
+
+if [[ -x "$sync" ]]; then
+  "$sync" >/dev/null 2>&1 || true
+fi
+
+for candidate in "$plugin_root/tmux-attention/bin/tmux-attention" "$plugin_root"/tmux-attention*/bin/tmux-attention; do
+  [[ -x "$candidate" ]] || continue
+  exec "$candidate" "$@"
+done
+
+printf 'tmux-attention: plugin is not installed. Install/update tmux plugins with tpack, then reload tmux.\n' >&2
+exit 127

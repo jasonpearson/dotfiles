@@ -1,3 +1,8 @@
+case ":$PATH:" in
+  *":$HOME/.local/bin:"*) ;;
+  *) export PATH="$HOME/.local/bin:$PATH" ;;
+esac
+
 alias tf=terraform
 alias t='tmux attach || tmux new -s "$PWD"'
 
@@ -83,15 +88,7 @@ play_sound() {
   fi
 }
 
-for tmux_attention_bin in "$HOME"/.tmux/plugins/tmux-attention*/bin; do
-  [[ -d "$tmux_attention_bin" ]] || continue
-  case ":$PATH:" in
-    *":$tmux_attention_bin:"*) ;;
-    *) export PATH="$tmux_attention_bin:$PATH" ;;
-  esac
-done
-unset tmux_attention_bin
-
+# Stable wrapper provided by the tmux stow package.
 if command -v tmux-attention >/dev/null 2>&1; then
   alias ta='tmux-attention'
   alias tac='tmux-attention new "$PWD"'
