@@ -1,9 +1,46 @@
+local launch_cwd = vim.uv.cwd()
+
+local function current_buffer_parent_dir()
+	local buf_name = vim.api.nvim_buf_get_name(0)
+	if buf_name == "" then
+		return launch_cwd
+	end
+
+	return vim.fn.fnamemodify(buf_name, ":p:h")
+end
+
+local function focus_neotree_in_current_window(dir)
+	local file = vim.api.nvim_buf_get_name(0)
+	require("neo-tree.command").execute({
+		action = "focus",
+		source = "filesystem",
+		reveal = true,
+		reveal_file = file ~= "" and file or nil,
+		reveal_force_cwd = true,
+		dir = dir,
+		position = "current",
+		toggle = false,
+	})
+end
+
 return {
 	{
 		"nvim-neo-tree/neo-tree.nvim",
 		keys = {
-			{ "<leader>e", false },
-			{ "<leader>E", false },
+			{
+				"<leader>e",
+				function()
+					focus_neotree_in_current_window(launch_cwd)
+				end,
+				desc = "Explorer NeoTree root (started here)",
+			},
+			{
+				"<leader>E",
+				function()
+					focus_neotree_in_current_window(current_buffer_parent_dir())
+				end,
+				desc = "Explorer NeoTree parent of current buffer",
+			},
 			{
 				"<leader>h",
 				function()
@@ -27,6 +64,17 @@ return {
 				visible = true,
 				hide_dotfiles = false,
 			})
+
+			-- Make <Enter> exit filter mode and keep the filtered tree, so you can navigate results.
+			opts.filesystem.window = opts.filesystem.window or {}
+			local ff_map = opts.filesystem.window.fuzzy_finder_mappings or {}
+			ff_map["<cr>"] = "close_keep_filter"
+			if ff_map[1] and ff_map[1].n then
+				ff_map[1].n["<cr>"] = "close_keep_filter"
+			else
+				ff_map[1] = ff_map[1] or { n = { ["<cr>"] = "close_keep_filter" } }
+			end
+			opts.filesystem.window.fuzzy_finder_mappings = ff_map
 
 			opts.window = opts.window or {}
 			opts.window.mappings = vim.tbl_deep_extend("force", opts.window.mappings or {}, {

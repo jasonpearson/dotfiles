@@ -42,4 +42,13 @@ vim.api.nvim_create_autocmd({ "BufAdd", "BufEnter", "VimEnter" }, {
   callback = cleanup_empty_unnamed_buffers,
 })
 
+-- Keep spelling off by default in Markdown buffers.
+vim.api.nvim_create_autocmd("FileType", {
+  group = group,
+  pattern = { "markdown", "markdown.mdx" },
+  callback = function()
+    vim.opt_local.spell = false
+  end,
+})
+
 cleanup_empty_unnamed_buffers()

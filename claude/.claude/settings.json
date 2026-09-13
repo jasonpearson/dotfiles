@@ -17,12 +17,7 @@
     "SessionStart": [
       {
         "matcher": "",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "[ -n \"$TMUX\" ] && tmux rename-window claude || true"
-          }
-        ]
+        "hooks": []
       }
     ],
     "UserPromptSubmit": [
@@ -112,10 +107,6 @@
           {
             "type": "command",
             "command": "~/.tmux/plugins/tmux-attention/bin/tmux-attention clear"
-          },
-          {
-            "type": "command",
-            "command": "[ -n \"$TMUX\" ] && tmux set-window-option automatic-rename on || true"
           }
         ]
       }
