@@ -1,7 +1,7 @@
 hl.config({
   input = {
     kb_options = "ctrl:nocaps",
-    sensitivity = 0.35,
+    sensitivity = 0.20,
     accel_profile = "adaptive",
 
     touchpad = {
