@@ -1,0 +1,2 @@
+[[ -r ~/.config/bash/personal.bash ]] && source ~/.config/bash/personal.bash
+[[ -r ~/.config/bash/local.bash ]] && source ~/.config/bash/local.bash

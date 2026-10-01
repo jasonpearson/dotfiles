@@ -1,0 +1,46 @@
+[bootstrap.packages]
+"brew:bash" = { os = "macos" }
+"brew-cask:font-blex-mono-nerd-font" = { os = "macos" }
+"brew-cask:ghostty" = { os = "macos" }
+"brew-cask:obsidian" = { os = "macos" }
+"brew:git" = { os = "macos" }
+"pacman:ghostty" = { os = "linux" }
+"pacman:git" = { os = "linux" }
+
+[dotfiles]
+"~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
+"~/.bashrc" = { source = "../bash/bashrc", mode = "symlink" }
+"~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
+"~/.config/ghostty" = { source = "../ghostty", mode = "symlink-each" }
+"~/.config/git" = { source = "../git", mode = "symlink-each" }
+"~/.config/mise" = { source = ".", mode = "symlink-each" }
+"~/.config/starship.toml" = { source = "../starship/starship.toml", mode = "symlink" }
+"~/.config/tmux" = { source = "../tmux", mode = "symlink-each" }
+
+# linux only
+[dotfiles."~/.config/hypr"]
+source = "../hypr"
+mode = "symlink-each"
+variants = [
+  { os = "linux" },
+]
+
+[env]
+TMUX_ATTENTION_DIR_COMMAND = "zoxide query --list"
+
+[tools]
+fzf = "0.74.4"
+github-cli = "2.101.0"
+"github:jasonpearson/tmux-attention" = "dev"
+# "github:jasonpearson/tmux-attention" = "0.2.0"
+jq = "1.8.2"
+lazygit = "0.65.1"
+mosh = "latest"
+node = "24.21.0"
+python = "3.14.7"
+ripgrep = "15.2.0"
+starship = "1.26.0"
+tmux = "3.7c"
+uv = "0.12.19"
+yq = "4.53.6"
+zoxide = "0.10.0"

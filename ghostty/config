@@ -1,10 +1,16 @@
-background-opacity = 0.95
-# font-family = "Geist Mono"
-# font-feature = -calt, -liga, -dlig
-font-size = 16
-macos-titlebar-proxy-icon = hidden
-theme = Catppuccin Mocha
+# Fallback theme when Omarchy is not present.
 # theme = Rose Pine
+theme = Catppuccin Mocha
+
+# Dynamic Omarchy theme colors override the fallback when present.
+config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
+
+# background-opacity = 0.95
+font-family = "BlexMono Nerd Font"
+font-style = Regular
+font-size = 15
+font-feature = -calt, -liga, -dlig
+macos-titlebar-proxy-icon = hidden
 title = " "
 
 keybind = global:control+`=toggle_quick_terminal
