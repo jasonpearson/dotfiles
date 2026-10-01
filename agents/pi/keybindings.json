@@ -1,0 +1,7 @@
+{
+  "tui.input.newLine": ["ctrl+o"],
+  "app.tools.expand": "ctrl+\\",
+  "tui.editor.deleteToLineEnd": [],
+  "app.model.select": "ctrl+shift+l",
+  "app.tree.filter.labeledOnly": "ctrl+shift+l"
+}
