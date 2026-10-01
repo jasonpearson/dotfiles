@@ -29,6 +29,9 @@
 "~/.agents/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
 "~/.claude/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
 
+"~/.agents/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
+"~/.claude/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
+
 "~/.agents/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
 "~/.claude/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
 
@@ -53,6 +56,7 @@ fzf = "0.74.4"
 github-cli = "2.101.0"
 "github:jasonpearson/tmux-attention" = "dev"
 # "github:jasonpearson/tmux-attention" = "0.2.0"
+hunk = "0.22.0"
 jq = "1.8.2"
 lazygit = "0.65.1"
 lua-language-server = "3.19.1"

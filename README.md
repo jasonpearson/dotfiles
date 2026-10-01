@@ -41,6 +41,13 @@ mise dot apply --dry-run
 mise dot apply
 ```
 
+To reapply just one target, pass its configured path. For example:
+
+```sh
+mise dot unapply '~/.agents/skills/hunk-review'
+mise dot apply '~/.agents/skills/hunk-review'
+```
+
 ## Personal agent instructions
 
 [`agents/global-instructions.md`](agents/global-instructions.md) is the shared
