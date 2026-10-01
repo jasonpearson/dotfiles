@@ -36,7 +36,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/share/mise/shims/tmux-attention working"
+            "command": "~/.local/bin/mise exec -- tmux-attention working"
           }
         ]
       }
@@ -53,7 +53,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/share/mise/shims/tmux-attention blocked"
+            "command": "~/.local/bin/mise exec -- tmux-attention blocked"
           },
           {
             "type": "command",
@@ -68,7 +68,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/share/mise/shims/tmux-attention working"
+            "command": "~/.local/bin/mise exec -- tmux-attention working"
           }
         ]
       }
@@ -79,7 +79,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/share/mise/shims/tmux-attention working"
+            "command": "~/.local/bin/mise exec -- tmux-attention working"
           }
         ]
       }
@@ -90,7 +90,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/share/mise/shims/tmux-attention working"
+            "command": "~/.local/bin/mise exec -- tmux-attention working"
           }
         ]
       }
@@ -101,7 +101,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/share/mise/shims/tmux-attention done"
+            "command": "~/.local/bin/mise exec -- tmux-attention done"
           },
           {
             "type": "command",
@@ -116,20 +116,21 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/share/mise/shims/tmux-attention clear"
+            "command": "~/.local/bin/mise exec -- tmux-attention clear"
           }
         ]
       }
     ]
   },
   "effortLevel": "high",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "high"
+    }
+  },
   "tui": "default",
   "theme": "dark",
   "editorMode": "vim",
-  "agentPushNotifEnabled": true,
-  "modelSettings": {
-    "claude-fable-5-1": {
-      "effortLevel": "xhigh"
-    }
-  }
+  "switchModelsOnFlag": true,
+  "agentPushNotifEnabled": true
 }
