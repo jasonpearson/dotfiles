@@ -1,21 +1,5 @@
 vim.g.base16colorspace = 256
 
-if vim.fn.has("mac") == 1 then
-	vim.g.clipboard = {
-		name = "pbcopy",
-		copy = { ["+"] = { "pbcopy" }, ["*"] = { "pbcopy" } },
-		paste = { ["+"] = { "pbpaste" }, ["*"] = { "pbpaste" } },
-		cache_enabled = 0,
-	}
-else
-	local osc52 = require("vim.ui.clipboard.osc52")
-	vim.g.clipboard = {
-		name = "OSC 52",
-		copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
-		paste = { ["+"] = osc52.paste("+"), ["*"] = osc52.paste("*") },
-	}
-end
-
 vim.g.mapleader = " "
 vim.g.netrw_banner = 0
 vim.g.netrw_bufsettings = "noma nomod nu nobl nowrap ro"
@@ -82,3 +66,5 @@ vim.api.nvim_create_autocmd({ "WinEnter", "WinLeave" }, {
 		vim.opt_local.cursorline = ev.event == "WinEnter"
 	end,
 })
+
+vim.g.autoformat = false

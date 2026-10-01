@@ -14,6 +14,7 @@
 "~/.config/ghostty" = { source = "../ghostty", mode = "symlink-each" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
 "~/.config/mise" = { source = ".", mode = "symlink-each" }
+"~/.config/nvim" = { source = "../nvim", mode = "symlink-each" }
 "~/.config/starship.toml" = { source = "../starship/starship.toml", mode = "symlink" }
 "~/.config/tmux" = { source = "../tmux", mode = "symlink-each" }
 
@@ -35,8 +36,12 @@ github-cli = "2.101.0"
 # "github:jasonpearson/tmux-attention" = "0.2.0"
 jq = "1.8.2"
 lazygit = "0.65.1"
+lua-language-server = "3.19.1"
 mosh = "latest"
+neovim = "0.12.5"
 node = "24.21.0"
+"npm:typescript" = "5.9.3"
+"npm:typescript-language-server" = "6.0.1"
 python = "3.14.7"
 ripgrep = "15.2.0"
 starship = "1.26.0"
