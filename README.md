@@ -137,6 +137,10 @@ features require a compatible project version. Install the pinned CLI with
 `web-search` is a local skill backed by [DDGS](https://github.com/deedy5/ddgs).
 Update its instructions directly and keep the DDGS version pinned in mise.
 
+`recommit` is a local, explicit-invocation-only shared skill for reorganizing a
+finished branch in place. See its [workflow](agents/skills/recommit/SKILL.md).
+Update it directly; it is not a CLI import.
+
 ## Recover after unapplying everything
 
 `mise dot unapply` removes the managed links, including shell startup files and

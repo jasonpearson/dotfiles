@@ -35,6 +35,9 @@
 "~/.agents/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
 "~/.claude/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
 
+"~/.agents/skills/recommit" = { source = "../agents/skills/recommit", mode = "symlink" }
+"~/.claude/skills/recommit" = { source = "../agents/skills/recommit", mode = "symlink" }
+
 "~/.agents/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
 "~/.claude/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
 
