@@ -4,6 +4,8 @@ command_timeout = 1500
 
 palette = "shared"
 
+# Readline supplies the vi-mode arrow. Keep the final space so Bash's command
+# substitution preserves the newline separating the header from the input.
 format = """
 [░▒▓](prompt_accent)\
 [ ](bg:prompt_accent fg:prompt_text)\
@@ -22,7 +24,7 @@ $php\
 $time\
 [](fg:runtime_segment)\
 ${custom.hostname}\
-\n$character"""
+\n """
 
 [hostname]
 disabled = true
@@ -104,11 +106,6 @@ disabled = false
 time_format = "%R" # Hour:Minute Format
 style = "bg:runtime_segment"
 format = '[[  $time ](fg:git_segment bg:runtime_segment)]($style)'
-
-[character]
-success_symbol = "[❯](fg:prompt_accent)"
-error_symbol = "[❯](fg:red)"
-vimcmd_symbol = "[❮](fg:red)"
 
 [palettes.shared]
 # Keep these in sync with bash/config/colors.sh.

@@ -13,6 +13,22 @@ eval "$(starship init bash)"
 eval "$(zoxide init bash)"
 export EDITOR=nvim
 
+# Vi-style prompt editing.
+if [[ $- == *i* ]]; then
+  set -o vi
+  bind -m vi-insert '"kj": vi-movement-mode'
+  bind 'set keyseq-timeout 200'
+
+  # Readline redraws the mode arrow without rerunning Starship.
+  bind 'set show-mode-in-prompt on'
+  _vi_accent="${STARSHIP_PROMPT_ACCENT:-#89b4fa}"
+  printf -v _vi_insert_arrow '\\1\\e[38;2;%d;%d;%dm\\2❯\\1\\e[0m\\2' \
+    "0x${_vi_accent:1:2}" "0x${_vi_accent:3:2}" "0x${_vi_accent:5:2}"
+  bind "set vi-ins-mode-string \"$_vi_insert_arrow\""
+  bind 'set vi-cmd-mode-string "\1\e[31m\2❮\1\e[0m\2"'
+  unset _vi_accent _vi_insert_arrow
+fi
+
 alias t='tmux-attention'
 tl() { tmux list-sessions "$@"; }
 
