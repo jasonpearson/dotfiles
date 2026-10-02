@@ -1,0 +1,124 @@
+command_timeout = 1500
+
+"$schema" = 'https://starship.rs/config-schema.json'
+
+palette = "shared"
+
+# Readline supplies the vi-mode arrow. Keep the final space so Bash's command
+# substitution preserves the newline separating the header from the input.
+format = """
+[░▒▓](prompt_accent)\
+[ ](bg:prompt_accent fg:prompt_text)\
+$os\
+$username\
+[](fg:prompt_accent bg:prompt_segment)\
+$directory\
+[](fg:prompt_segment bg:git_segment)\
+$git_branch\
+$git_status\
+[](fg:git_segment bg:runtime_segment)\
+$nodejs\
+$rust\
+$golang\
+$php\
+$time\
+[](fg:runtime_segment)\
+${custom.hostname}\
+\n """
+
+[hostname]
+disabled = true
+
+[custom.hostname]
+command = 'echo "${HOSTNAME:-$(hostname)}" | sed "s/^jason-pearson-//"'
+when = 'test -n "$SSH_CLIENT" || test -n "$SSH_TTY"'
+format = '[$output](bold fg:hostname) '
+
+[os]
+disabled = false
+style = "fg:prompt_segment bg:prompt_accent"
+
+[os.symbols]
+Windows = ""
+Ubuntu = "󰕈"
+SUSE = ""
+Raspbian = "󰐿"
+Mint = "󰣭"
+Macos = "󰀵"
+Manjaro = ""
+Linux = "󰌽"
+Gentoo = "󰣨"
+Fedora = "󰣛"
+Alpine = ""
+Amazon = ""
+Android = ""
+AOSC = ""
+Arch = "󰣇"
+Artix = "󰣇"
+CentOS = ""
+Debian = "󰣚"
+Redhat = "󱄛"
+RedHatEnterprise = "󱄛"
+
+[username]
+show_always = true
+style_user = "fg:prompt_segment bg:prompt_accent"
+format = '[ $user ]($style)'
+
+[directory]
+style = "fg:prompt_accent bg:prompt_segment"
+format = "[ $path ]($style)"
+truncation_length = 12
+truncation_symbol = "…/"
+truncate_to_repo = false
+
+[git_branch]
+symbol = ""
+style = "fg:runtime_segment bg:git_segment"
+format = '[[ $symbol $branch ](fg:runtime_segment bg:git_segment)]($style)'
+
+[git_status]
+style = "fg:runtime_segment bg:git_segment"
+format = '[$all_status$ahead_behind ]($style)'
+
+[nodejs]
+symbol = ""
+style = "bg:runtime_segment"
+format = '[[ $symbol ($version) ](fg:node bg:runtime_segment)]($style)'
+
+[rust]
+symbol = ""
+style = "bg:runtime_segment_alt"
+format = '[[ $symbol ($version) ](fg:prompt_accent bg:runtime_segment_alt)]($style)'
+
+[golang]
+symbol = ""
+style = "bg:runtime_segment_alt"
+format = '[[ $symbol ($version) ](fg:prompt_accent bg:runtime_segment_alt)]($style)'
+
+[php]
+symbol = ""
+style = "bg:runtime_segment_alt"
+format = '[[ $symbol ($version) ](fg:prompt_accent bg:runtime_segment_alt)]($style)'
+
+[time]
+disabled = false
+time_format = "%R" # Hour:Minute Format
+style = "bg:runtime_segment"
+format = '[[  $time ](fg:git_segment bg:runtime_segment)]($style)'
+
+[palettes.shared]
+# Keep these in sync with bash/config/colors.sh.
+foreground = "#cdd6f4"
+background = "#1e1e2e"
+accent = "#89b4fa"
+
+# Starship prompt segment colors.
+prompt_accent = "#89b4fa"
+prompt_text = "#090c0c"
+prompt_segment = "#394260"
+git_segment = "#8c97c0"
+runtime_segment = "#1d2230"
+runtime_segment_alt = "#212736"
+hostname = "#fab387"
+node = "#215732"

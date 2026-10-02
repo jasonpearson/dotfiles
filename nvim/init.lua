@@ -1,0 +1,5 @@
+require("config.lazy")
+require("options")
+require("keymaps")
+require("netrw")
+require("remote_clipboard")

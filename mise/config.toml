@@ -1,0 +1,81 @@
+[bootstrap.packages]
+"brew:bash" = { os = "macos" }
+"brew-cask:font-blex-mono-nerd-font" = { os = "macos" }
+"brew-cask:ghostty" = { os = "macos" }
+"brew-cask:obsidian" = { os = "macos" }
+"brew:git" = { os = "macos" }
+"pacman:ghostty" = { os = "linux" }
+"pacman:git" = { os = "linux" }
+
+[dotfiles]
+"~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
+"~/.bashrc" = { source = "../bash/bashrc", mode = "symlink" }
+"~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
+"~/.config/ghostty" = { source = "../ghostty", mode = "symlink-each" }
+"~/.config/git" = { source = "../git", mode = "symlink-each" }
+"~/.config/mise" = { source = ".", mode = "symlink-each" }
+"~/.config/nvim" = { source = "../nvim", mode = "symlink-each" }
+"~/.config/starship.toml" = { source = "../starship/starship.toml", mode = "symlink" }
+"~/.config/tmux" = { source = "../tmux", mode = "symlink-each" }
+
+# agents
+"~/.claude" = { source = "../agents/claude", mode = "symlink-each" }
+"~/.pi/agent" = { source = "../agents/pi", mode = "symlink-each" }
+"~/.pi/agent/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.claude/CLAUDE.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.codex/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+
+# agent skills
+"~/.agents/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
+"~/.claude/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
+
+"~/.agents/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
+"~/.claude/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
+
+"~/.agents/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
+"~/.claude/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
+
+"~/.agents/skills/recommit" = { source = "../agents/skills/recommit", mode = "symlink" }
+"~/.claude/skills/recommit" = { source = "../agents/skills/recommit", mode = "symlink" }
+
+"~/.agents/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
+"~/.claude/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
+
+# linux only
+[dotfiles."~/.config/hypr"]
+source = "../hypr"
+mode = "symlink-each"
+variants = [
+  { os = "linux" },
+]
+
+[env]
+TMUX_ATTENTION_DIR_COMMAND = "zoxide query --list"
+
+[tools]
+claude = "2.1.278"
+codex = "0.155.1"
+fzf = "0.74.4"
+github-cli = "2.101.0"
+"github:jasonpearson/tmux-attention" = "0.2.0"
+hunk = "0.22.0"
+jq = "1.8.2"
+lazygit = "0.65.1"
+lua-language-server = "3.19.1"
+mosh = "latest"
+neovim = "0.12.5"
+node = "24.21.0"
+"npm:@playwright/cli" = "0.1.21"
+"npm:agent-browser" = "0.38.1"
+"npm:skills" = "1.7.0"
+"npm:typescript" = "5.9.3"
+"npm:typescript-language-server" = "6.0.1"
+pi = "0.87.0"
+"pypi:ddgs" = "9.16.0"
+python = "3.14.7"
+ripgrep = "15.2.0"
+starship = "1.26.0"
+tmux = "3.7c"
+uv = "0.12.19"
+yq = "4.53.6"
+zoxide = "0.10.0"

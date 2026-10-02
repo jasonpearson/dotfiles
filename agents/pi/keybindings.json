@@ -1,0 +1,5 @@
+{
+  "tui.editor.deleteToLineEnd": [],
+  "app.model.select": "ctrl+shift+l",
+  "app.tree.filter.labeledOnly": "ctrl+shift+l"
+}
