@@ -13,8 +13,8 @@ vim.keymap.set("n", "<leader>h", "<cmd>Vexplore!<cr>")
 vim.keymap.set("n", "<leader>H", "<cmd>topleft vsplit .<cr>")
 vim.keymap.set("n", "<leader>W", "<cmd>set wrap!<cr>")
 vim.keymap.set({ "v" }, "<leader>y", '"+y') -- yank to system clipboard
-vim.keymap.set({ "n" }, "<leader>y", '<cmd>let @* = fnamemodify(expand("%"), ":~:.")<cr>') -- yank full path to clipboard
-vim.keymap.set({ "n" }, "<leader>Y", '<cmd>let @* = fnamemodify(expand("%"), ":t")<cr>') -- yank filename to clipboard
+vim.keymap.set({ "n" }, "<leader>y", '<cmd>let @+ = fnamemodify(expand("%"), ":~:.")<cr>') -- yank full path to clipboard
+vim.keymap.set({ "n" }, "<leader>Y", '<cmd>let @+ = fnamemodify(expand("%"), ":t")<cr>') -- yank filename to clipboard
 
 local function navigate(direction, tmux_flag, herdr_direction)
 	return function()

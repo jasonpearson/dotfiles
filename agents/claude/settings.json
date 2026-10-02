@@ -35,7 +35,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/mise exec -- tmux-attention working"
+            "command": "mise exec -- tmux-attention working"
           }
         ]
       }
@@ -52,7 +52,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/mise exec -- tmux-attention blocked"
+            "command": "mise exec -- tmux-attention blocked"
           },
           {
             "type": "command",
@@ -67,7 +67,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/mise exec -- tmux-attention working"
+            "command": "mise exec -- tmux-attention working"
           }
         ]
       }
@@ -78,7 +78,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/mise exec -- tmux-attention working"
+            "command": "mise exec -- tmux-attention working"
           }
         ]
       }
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/mise exec -- tmux-attention working"
+            "command": "mise exec -- tmux-attention working"
           }
         ]
       }
@@ -100,7 +100,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/mise exec -- tmux-attention done"
+            "command": "mise exec -- tmux-attention done"
           },
           {
             "type": "command",
@@ -115,7 +115,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "~/.local/bin/mise exec -- tmux-attention clear"
+            "command": "mise exec -- tmux-attention clear"
           }
         ]
       }
