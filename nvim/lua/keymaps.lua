@@ -13,8 +13,8 @@ vim.keymap.set("n", "<leader>h", "<cmd>Vexplore!<cr>")
 vim.keymap.set("n", "<leader>H", "<cmd>topleft vsplit .<cr>")
 vim.keymap.set("n", "<leader>W", "<cmd>set wrap!<cr>")
 vim.keymap.set({ "v" }, "<leader>y", '"+y') -- yank to system clipboard
-vim.keymap.set({ "n" }, "<leader>y", '<cmd>let @+ = fnamemodify(expand("%"), ":~:.")<cr>') -- yank full path to clipboard
-vim.keymap.set({ "n" }, "<leader>Y", '<cmd>let @+ = fnamemodify(expand("%"), ":t")<cr>') -- yank filename to clipboard
+vim.keymap.set({ "n" }, "<leader>y", '<cmd>let @+ = expand("%:.")<cr>') -- yank path relative to cwd to clipboard
+vim.keymap.set({ "n" }, "<leader>Y", '<cmd>let @+ = expand("%:p")<cr>') -- yank absolute path to clipboard
 
 local function navigate(direction, tmux_flag, herdr_direction)
 	return function()
@@ -161,6 +161,19 @@ local function choose_ref_and_open_file()
   end)
 end
 
-vim.keymap.set("n", "<leader>gM", function()
+vim.keymap.set("n", "<leader>gm", function()
   choose_ref_and_open_file()
 end, { desc = "View current file from another git ref" })
+
+vim.keymap.set("n", "<leader>gd", function()
+  local file = vim.api.nvim_buf_get_name(0)
+  local root = Snacks.git.get_root(file)
+  if file == "" or vim.bo.buftype ~= "" or not root then
+    return vim.notify("Open a file in a Git repository first", vim.log.levels.WARN)
+  end
+
+  Snacks.terminal.open({ "hunk", "diff", "--", file }, {
+    cwd = root,
+    win = { width = 0.95, height = 0.95 },
+  })
+end, { desc = "Hunk: current file diff" })
