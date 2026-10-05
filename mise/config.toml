@@ -49,12 +49,19 @@ variants = [
   { os = "linux" },
 ]
 
+[dotfiles."~/.config/omarchy"]
+source = "../omarchy"
+mode = "symlink-each"
+variants = [
+  { os = "linux" },
+]
+
 [env]
 TMUX_ATTENTION_DIR_COMMAND = "zoxide query --list"
 
 [tools]
-claude = "2.1.278"
-codex = "0.155.1"
+claude = "latest"
+codex = "latest"
 fzf = "0.74.4"
 github-cli = "2.101.0"
 "github:jasonpearson/tmux-attention" = "0.3.0"
@@ -70,7 +77,7 @@ node = "24.21.0"
 "npm:skills" = "1.7.0"
 "npm:typescript" = "5.9.3"
 "npm:typescript-language-server" = "6.0.1"
-pi = "0.87.0"
+pi = "latest"
 "pypi:ddgs" = "9.16.0"
 python = "3.14.7"
 ripgrep = "15.2.0"
