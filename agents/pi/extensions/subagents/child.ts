@@ -5,32 +5,68 @@ import { readdir } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { join } from "node:path";
 import {
+	cancelPath,
+	childInfoPath,
+	eventFileName,
 	mailboxDir,
 	newId,
 	nowIso,
 	questionsDir,
 	readJson,
-	updateState,
+	reportsDir,
+	runDir,
 	writeJsonAtomic,
+	type ChildInfo,
 	type ChildQuestion,
 	type MailboxMessage,
 	type ReportStatus,
+	type SubagentReport,
 } from "./lib/common";
 
 const pollIntervalMs = 2_000;
 
+// The child never writes state.json: that file belongs to the parent. Every
+// child-originated fact goes into its own file under the run directory, which
+// the parent reads and annotates after handoff.
 export default function (pi: ExtensionAPI) {
 	const id = process.env.PI_SUBAGENT_ID;
 	if (!id) return;
+	const run = process.env.PI_SUBAGENT_RUN_DIR ?? runDir(id);
 
 	let pollTimer: ReturnType<typeof setInterval> | undefined;
 	let polling = false;
+	let cancelled = false;
+	let startedAt = nowIso();
+
+	const writeChildInfo = async (ctx: ExtensionContext) => {
+		const info: ChildInfo = {
+			pid: process.pid,
+			cwd: ctx.cwd,
+			sessionFile: ctx.sessionManager.getSessionFile(),
+			startedAt,
+			updatedAt: nowIso(),
+		};
+		await writeJsonAtomic(childInfoPath(run), info).catch(() => undefined);
+	};
+
+	const checkCancel = (ctx: ExtensionContext) => {
+		if (cancelled || !existsSync(cancelPath(run))) return;
+		cancelled = true;
+		if (!ctx.isIdle()) ctx.abort();
+		if (pollTimer) {
+			clearInterval(pollTimer);
+			pollTimer = undefined;
+		}
+		ctx.ui.notify("The parent cancelled this subagent. Further reports will be refused; the session stays open for inspection.", "warning");
+	};
 
 	const pollMailbox = async (ctx: ExtensionContext) => {
-		if (polling || !ctx.isIdle()) return;
+		if (polling) return;
 		polling = true;
 		try {
-			const dir = mailboxDir(id);
+			checkCancel(ctx);
+			if (cancelled || !ctx.isIdle()) return;
+			const dir = mailboxDir(run);
 			if (!existsSync(dir)) return;
 			const files = (await readdir(dir)).filter((file) => file.endsWith(".json")).sort();
 			for (const file of files) {
@@ -38,16 +74,11 @@ export default function (pi: ExtensionAPI) {
 				const path = join(dir, file);
 				const message = await readJson<MailboxMessage>(path).catch(() => undefined);
 				if (!message || message.status !== "queued") continue;
-				try {
-					await pi.sendUserMessage(message.text);
-					message.status = "accepted";
-					message.acceptedAt = nowIso();
-				} catch (error) {
-					message.status = "failed";
-					message.failedAt = nowIso();
-					message.error = error instanceof Error ? error.message : String(error);
-				}
+				// Mark accepted before injecting so a crash mid-send cannot replay it.
+				message.status = "accepted";
+				message.acceptedAt = nowIso();
 				await writeJsonAtomic(path, message);
+				pi.sendUserMessage(message.text, { deliverAs: "followUp" });
 			}
 		} finally {
 			polling = false;
@@ -55,8 +86,15 @@ export default function (pi: ExtensionAPI) {
 	};
 
 	pi.on("session_start", async (_event, ctx) => {
+		startedAt = nowIso();
+		await writeChildInfo(ctx);
 		pollTimer = setInterval(() => void pollMailbox(ctx), pollIntervalMs);
 		await pollMailbox(ctx);
+	});
+
+	pi.on("agent_end", async (_event, ctx) => {
+		// The session file may not exist until the first message is persisted.
+		await writeChildInfo(ctx);
 	});
 
 	pi.on("agent_settled", async (_event, ctx) => {
@@ -84,12 +122,9 @@ export default function (pi: ExtensionAPI) {
 			context: Type.Optional(Type.String({ description: "Brief context needed to answer the question." })),
 		}),
 		async execute(_toolCallId, params) {
+			if (cancelled) throw new Error("This subagent was cancelled by the parent; the question was not recorded.");
 			const question: ChildQuestion = { id: newId(), question: params.question, context: params.context, createdAt: nowIso() };
-			await writeJsonAtomic(join(questionsDir(id), `${question.createdAt.replace(/[:.]/g, "-")}-${question.id}.json`), question);
-			await updateState(id, (state) => {
-				state.status = "needs-human";
-				state.lastQuestionAt = question.createdAt;
-			});
+			await writeJsonAtomic(join(questionsDir(run), eventFileName(question.createdAt, question.id)), question);
 			return {
 				content: [{ type: "text", text: "Question recorded for the human. Keep this session open and wait for a mailbox reply." }],
 				details: { question },
@@ -114,12 +149,10 @@ export default function (pi: ExtensionAPI) {
 			artifacts: Type.Optional(Type.Array(Type.String(), { description: "Files, reports, worktree paths, or other artifacts for the parent." })),
 		}),
 		async execute(_toolCallId, params) {
+			if (cancelled) throw new Error("This subagent was cancelled by the parent; the report was not recorded.");
 			const status = params.status as ReportStatus;
-			const report = { status, summary: params.summary, artifacts: params.artifacts ?? [], createdAt: nowIso() };
-			await updateState(id, (state) => {
-				state.status = status;
-				state.report = report;
-			});
+			const report: SubagentReport = { id: newId(), status, summary: params.summary, artifacts: params.artifacts ?? [], createdAt: nowIso() };
+			await writeJsonAtomic(join(reportsDir(run), eventFileName(report.createdAt, report.id)), report);
 			return {
 				content: [{ type: "text", text: status === "done" ? "Outcome recorded. The parent will close this window after it accepts delivery." : "Outcome recorded. Keep this window open for inspection." }],
 				details: { report },

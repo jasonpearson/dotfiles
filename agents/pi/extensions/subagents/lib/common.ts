@@ -3,7 +3,7 @@ import { mkdir, readFile, rename, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 
 export const SUBAGENT_TMUX_SESSION = "pi-subagents";
-export const STATE_VERSION = 1;
+export const STATE_VERSION = 2;
 
 export type SubagentStatus =
 	| "starting"
@@ -18,6 +18,11 @@ export type ReportStatus = "done" | "failed" | "needs-human";
 
 export type SubagentMode = "worktree" | "shared-read";
 
+/**
+ * Parent-owned state. Only the parent extension writes `state.json`; the child
+ * communicates through its own files (reports/, questions/, child.json) that
+ * the parent reads and, after handoff, annotates.
+ */
 export type SubagentState = {
 	version: number;
 	id: string;
@@ -48,28 +53,38 @@ export type SubagentState = {
 		windowId?: string;
 		model?: string;
 		thinkingLevel?: string;
+		/** Exact Pi invocation captured at start so resume launches the same binary. */
+		pi?: { command: string; args: string[] };
 	};
+	/** Most recent delivered report for the current run of the child. */
 	report?: SubagentReport;
 	reportDeliveredAt?: string;
+	/** Reports from earlier runs, archived on resume. */
+	reports?: SubagentReport[];
 	lastQuestionAt?: string;
 	cancelledAt?: string;
+	/** Set when the child process exited without being told to. */
+	exit?: { code?: number; at: string; log?: string };
+	/** Launch or runtime error recorded by the parent. */
+	error?: string;
 };
 
 export type SubagentReport = {
+	id: string;
 	status: ReportStatus;
 	summary: string;
 	artifacts: string[];
 	createdAt: string;
+	/** Written by the parent once the report has been delivered. */
+	deliveredAt?: string;
 };
 
 export type MailboxMessage = {
 	id: string;
 	text: string;
 	createdAt: string;
-	status: "queued" | "accepted" | "failed";
+	status: "queued" | "accepted";
 	acceptedAt?: string;
-	failedAt?: string;
-	error?: string;
 };
 
 export type ChildQuestion = {
@@ -77,7 +92,22 @@ export type ChildQuestion = {
 	question: string;
 	context?: string;
 	createdAt: string;
+	/** Written by the parent once the human has been notified. */
 	notifiedAt?: string;
+};
+
+/** Written by the child so the parent can find its session and process. */
+export type ChildInfo = {
+	pid: number;
+	cwd: string;
+	sessionFile?: string;
+	startedAt: string;
+	updatedAt: string;
+};
+
+export type CancelMarker = {
+	createdAt: string;
+	reason?: string;
 };
 
 export function nowIso(): string {
@@ -123,16 +153,40 @@ export function statePath(id: string): string {
 	return join(runDir(id), "state.json");
 }
 
-export function mailboxDir(id: string): string {
-	return join(runDir(id), "mailbox");
+// Run-directory layout. These take the run directory rather than the id so the
+// child can resolve them from PI_SUBAGENT_RUN_DIR without depending on HOME.
+
+export function mailboxDir(run: string): string {
+	return join(run, "mailbox");
 }
 
-export function questionsDir(id: string): string {
-	return join(runDir(id), "questions");
+export function questionsDir(run: string): string {
+	return join(run, "questions");
+}
+
+export function reportsDir(run: string): string {
+	return join(run, "reports");
+}
+
+export function childInfoPath(run: string): string {
+	return join(run, "child.json");
+}
+
+export function cancelPath(run: string): string {
+	return join(run, "cancel.json");
+}
+
+export function crashLogPath(run: string): string {
+	return join(run, "crash.log");
 }
 
 export function worktreePath(hash: string, id: string): string {
 	return join(agentRoot(), "worktrees", hash, id);
+}
+
+/** Sortable file name for append-only per-event files. */
+export function eventFileName(createdAt: string, id: string): string {
+	return `${createdAt.replace(/[:.]/g, "-")}-${id}.json`;
 }
 
 export async function ensureDir(path: string): Promise<void> {
@@ -150,6 +204,7 @@ export async function readJson<T>(path: string): Promise<T> {
 	return JSON.parse(await readFile(path, "utf8")) as T;
 }
 
+/** Parent-only. The child must never call this; see SubagentState. */
 export async function updateState(id: string, updater: (state: SubagentState) => SubagentState | void): Promise<SubagentState> {
 	const current = await readJson<SubagentState>(statePath(id));
 	const updated = updater(current);
@@ -166,4 +221,51 @@ export function shellQuote(value: string): string {
 export function modelPattern(model?: { provider?: string; id?: string } | null): string | undefined {
 	if (!model?.id) return undefined;
 	return model.provider ? `${model.provider}/${model.id}` : model.id;
+}
+
+const terminalStatuses: ReadonlySet<SubagentStatus> = new Set(["done", "failed", "cancelled", "crashed"]);
+
+/** Terminal children are not scanned for reports, questions, or crashes until resumed. */
+export function isTerminalStatus(status: SubagentStatus): boolean {
+	return terminalStatuses.has(status);
+}
+
+/**
+ * Match a user- or model-supplied reference against known children. Accepts an
+ * exact id, an exact name, or an id prefix (with or without dashes), in that
+ * order of preference so a short prefix that is also a full name is unambiguous.
+ */
+export function matchSubagents(states: SubagentState[], ref: string): SubagentState[] {
+	const needle = ref.trim();
+	if (!needle) return [];
+	const exactId = states.filter((state) => state.id === needle);
+	if (exactId.length > 0) return exactId;
+	const exactName = states.filter((state) => state.name === needle);
+	if (exactName.length > 0) return exactName;
+	const compact = needle.replace(/-/g, "").toLowerCase();
+	return states.filter((state) => state.id.replace(/-/g, "").toLowerCase().startsWith(compact));
+}
+
+/**
+ * Children worth showing by default: anything still live from any parent
+ * session (a restarted parent must still see them), plus finished children
+ * that belong to the current parent session.
+ */
+export function visibleStates(states: SubagentState[], currentSessionId?: string): SubagentState[] {
+	return states.filter((state) => !isTerminalStatus(state.status) || (currentSessionId !== undefined && state.parent.sessionId === currentSessionId));
+}
+
+/**
+ * A report is delivered unless the parent cancelled the child before the
+ * report was written. Reports from before the cancellation still count.
+ */
+export function isReportDeliverable(state: Pick<SubagentState, "cancelledAt">, report: Pick<SubagentReport, "createdAt">): boolean {
+	return !state.cancelledAt || report.createdAt < state.cancelledAt;
+}
+
+/** Last `limit` non-empty lines of captured pane output, for crash reports. */
+export function tailLines(text: string, limit: number): string {
+	const lines = text.split(/\r?\n/).map((line) => line.trimEnd());
+	while (lines.length > 0 && lines[lines.length - 1] === "") lines.pop();
+	return lines.slice(-limit).join("\n");
 }
