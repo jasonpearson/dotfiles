@@ -1,5 +1,7 @@
 {
   "tui.editor.deleteToLineEnd": [],
+  "tui.altScreen.pageUp": ["pageUp", "ctrl+shift+u"],
+  "tui.altScreen.pageDown": ["pageDown", "ctrl+shift+d"],
   "app.model.select": "ctrl+shift+l",
   "app.tree.filter.labeledOnly": "ctrl+shift+l"
 }

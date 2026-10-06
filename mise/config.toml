@@ -42,6 +42,20 @@
 "~/.claude/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
 
 # linux only
+[dotfiles."~/.config/fcitx5/conf/unicode.conf"]
+source = "../fcitx5/conf/unicode.conf"
+mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/xdg-terminals.list"]
+source = "../xdg/xdg-terminals.list"
+mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
 [dotfiles."~/.config/hypr"]
 source = "../hypr"
 mode = "symlink-each"

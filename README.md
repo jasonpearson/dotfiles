@@ -48,6 +48,51 @@ mise dot unapply '~/.agents/skills/hunk-review'
 mise dot apply '~/.agents/skills/hunk-review'
 ```
 
+## Terminal defaults and Pi scrolling
+
+Pi starts in fullscreen mode. **Ctrl+Shift+U** and **Ctrl+Shift+D** scroll the
+transcript up and down by a page, directly in Pi without tmux copy mode. These
+bindings live in [`agents/pi/keybindings.json`](agents/pi/keybindings.json).
+Run `/reload` in an existing Pi session after updating its configuration.
+
+Two Linux-only mise mappings support this setup:
+
+- [`xdg/xdg-terminals.list`](xdg/xdg-terminals.list) selects Ghostty for
+  `xdg-terminal-exec`, including Omarchy's **Super+Return** launcher. This affects
+  new terminal windows, not existing ones; no Hyprland reload is needed.
+- [`fcitx5/conf/unicode.conf`](fcitx5/conf/unicode.conf) disables Fcitx5's
+  **Ctrl+Shift+U** direct hexadecimal Unicode-entry shortcut, which otherwise
+  intercepts the key and displays an underlined `U`. This frees the shortcut
+  globally, not just in Pi. The **Ctrl+Alt+Shift+U** Unicode picker remains
+  available with its default binding.
+
+Only these individual files are managed; other Fcitx preferences, profiles, and
+caches stay local. The mappings use `~/.config`, like the rest of this repository,
+and are skipped on macOS. They do not install or require Fcitx5 on systems that
+do not use it.
+
+To deploy just these preferences from the repository root:
+
+```sh
+mise dot apply --dry-run '~/.config/fcitx5/conf/unicode.conf' '~/.config/xdg-terminals.list'
+mise dot apply '~/.config/fcitx5/conf/unicode.conf' '~/.config/xdg-terminals.list'
+```
+
+If existing files conflict, inspect and back them up before adding `--force` to
+that same target-scoped apply command. Edit the repository sources for future
+changes rather than replacing the deployed links.
+
+A newly started Fcitx5 reads the configuration automatically. If it is already
+running, reload only its Unicode addon:
+
+```sh
+busctl --user call org.fcitx.Fcitx5 /controller \
+  org.fcitx.Fcitx.Controller1 ReloadAddonConfig s unicode
+```
+
+Press **Escape** to cancel any already-active Unicode entry before testing the
+Pi shortcuts. The reload command is unnecessary on systems without Fcitx5.
+
 ## Personal agent instructions
 
 [`agents/global-instructions.md`](agents/global-instructions.md) is the shared
