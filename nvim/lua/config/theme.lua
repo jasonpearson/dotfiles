@@ -52,7 +52,8 @@ local function snapshot()
     return nil
   end
   local colors = read_file(theme_dir .. "/colors.toml") or ""
-  local light = uv.fs_stat(theme_dir .. "/light") ~= nil
+  local light = uv.fs_stat(theme_dir .. "/light.mode") ~= nil
+    or uv.fs_stat(theme_dir .. "/light") ~= nil
   return {
     source = source,
     colors = colors,
@@ -104,16 +105,27 @@ local function parse(raw)
   assert(type(selected.colorscheme) == "string" and selected.colorscheme:match("^[%w_.%-]+$"),
     "Missing or invalid Omarchy colorscheme selector")
   assert(#selected.plugins > 0, "Missing Omarchy theme plugin")
+  local colors = {}
   for line in raw.colors:gmatch("[^\r\n]+") do
-    local mode = line:match("^%s*mode%s*=%s*[\"']([%a]+)[\"']")
-    if mode then
-      assert(mode == "light" or mode == "dark", "Invalid Omarchy theme mode")
-      selected.mode = mode
-      break
+    local key, value = line:match("^%s*[\"']?([%w_]+)[\"']?%s*=%s*[\"']([^\"']*)[\"']")
+    if key then
+      colors[key] = value
     end
   end
-  -- Older themes use a `light` marker, with dark as the implicit default.
-  selected.mode = selected.mode or (raw.light and "light" or "dark")
+  -- Match omarchy-theme-color's precedence, without a shell process per poll:
+  -- mode, legacy theme_type, light.mode marker, then background luminance.
+  selected.mode = colors.mode or colors.theme_type
+  if selected.mode then
+    assert(selected.mode == "light" or selected.mode == "dark", "Invalid Omarchy theme mode")
+  elseif raw.light then
+    selected.mode = "light"
+  else
+    local background = colors.background or colors.bg or colors.color0 or ""
+    local rgb = background:match("^#(%x%x%x%x%x%x)$")
+    local luminance = rgb and (tonumber(rgb:sub(1, 2), 16)
+      + tonumber(rgb:sub(3, 4), 16) + tonumber(rgb:sub(5, 6), 16)) or 0
+    selected.mode = luminance > 382 and "light" or "dark"
+  end
   return selected
 end
 

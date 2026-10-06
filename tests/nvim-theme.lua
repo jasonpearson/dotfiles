@@ -41,7 +41,7 @@ local function replace(source, mode, marker)
     write(next_dir .. "/colors.toml", 'mode = "' .. mode .. '"\n')
   end
   if marker then
-    write(next_dir .. "/light", "")
+    write(next_dir .. "/light.mode", "")
   end
   vim.fn.delete(theme_dir, "rf")
   assert(vim.uv.fs_rename(next_dir, theme_dir))
@@ -237,9 +237,22 @@ local function checks()
   eq(vim.g.theme_opts_ran, 1, "function opts evaluated")
   eq(vim.g.theme_config_ran, 1, "custom config evaluated")
   changed(generate("aether", '{colors = {fg = "#667788"}}'), nil, "aether", true)
-  eq(vim.o.background, "light", "legacy light marker")
+  eq(vim.o.background, "light", "legacy light.mode marker")
   changed(generate("aether", '{colors = {fg = "#667788"}}'), "dark", "aether")
   eq(vim.o.background, "dark", "metadata-only change")
+  local function metadata(colors, expected)
+    local prior = schemes
+    write(theme_dir .. "/colors.toml", colors)
+    controller.poll()
+    controller.poll()
+    eq(vim.o.background, expected, "legacy metadata mode")
+    eq(schemes, prior + 1, "one event for metadata change")
+  end
+  metadata('theme_type = "light"\n', "light")
+  metadata('theme_type = "light"\nmode = "dark"\n', "dark")
+  metadata('bg = "#fafafa"\n', "light")
+  metadata('color0 = "#101010"\n', "dark")
+  metadata('background = "#fafafa"\ncolor0 = "#101010"\n', "light")
   vim.cmd("syntax off")
   eq(vim.fn.exists("syntax_on"), 0, "syntax inactive fixture")
 
