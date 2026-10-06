@@ -18,6 +18,8 @@ export type ReportStatus = "done" | "failed" | "needs-human";
 
 export type SubagentMode = "worktree" | "shared-read";
 
+export type SystemPromptMode = "replace" | "append";
+
 /**
  * Parent-owned state. Only the parent extension writes `state.json`; the child
  * communicates through its own files (reports/, questions/, child.json) that
@@ -30,6 +32,8 @@ export type SubagentState = {
 	task: string;
 	summary?: string;
 	mode: SubagentMode;
+	/** Agent definition the child was started with, if any. */
+	agent?: { name: string; file: string };
 	status: SubagentStatus;
 	createdAt: string;
 	updatedAt: string;
@@ -53,6 +57,9 @@ export type SubagentState = {
 		windowId?: string;
 		model?: string;
 		thinkingLevel?: string;
+		/** Tool allowlist passed as --tools; undefined means Pi's default selection. */
+		tools?: string[];
+		systemPromptMode: SystemPromptMode;
 		/** Exact Pi invocation captured at start so resume launches the same binary. */
 		pi?: { command: string; args: string[] };
 	};
@@ -61,7 +68,10 @@ export type SubagentState = {
 	reportDeliveredAt?: string;
 	/** Reports from earlier runs, archived on resume. */
 	reports?: SubagentReport[];
+	/** createdAt of the newest question delivered to the parent; questions are child-owned files. */
 	lastQuestionAt?: string;
+	/** Parent pane was marked blocked for these open questions. */
+	parentBlockedFor?: string[];
 	cancelledAt?: string;
 	/** Set when the child process exited without being told to. */
 	exit?: { code?: number; at: string; log?: string };
@@ -85,15 +95,22 @@ export type MailboxMessage = {
 	createdAt: string;
 	status: "queued" | "accepted";
 	acceptedAt?: string;
+	/** Question id this message answers, when it is a reply. */
+	replyTo?: string;
 };
 
+/**
+ * Child-owned. The child creates the file and marks it answered; the parent
+ * only reads it and tracks delivery in state.json via lastQuestionAt.
+ */
 export type ChildQuestion = {
 	id: string;
 	question: string;
 	context?: string;
 	createdAt: string;
-	/** Written by the parent once the human has been notified. */
-	notifiedAt?: string;
+	answeredAt?: string;
+	/** "parent" when a mailbox reply answered it, "window" when a human typed in the child window. */
+	answeredBy?: "parent" | "window";
 };
 
 /** Written by the child so the parent can find its session and process. */
@@ -268,4 +285,14 @@ export function tailLines(text: string, limit: number): string {
 	const lines = text.split(/\r?\n/).map((line) => line.trimEnd());
 	while (lines.length > 0 && lines[lines.length - 1] === "") lines.pop();
 	return lines.slice(-limit).join("\n");
+}
+
+/** Questions the human or parent has not answered yet. */
+export function openQuestions(questions: ChildQuestion[]): ChildQuestion[] {
+	return questions.filter((q) => !q.answeredAt);
+}
+
+/** Questions created after the parent's delivery watermark, oldest first. */
+export function undeliveredQuestions(questions: ChildQuestion[], lastQuestionAt?: string): ChildQuestion[] {
+	return questions.filter((q) => !lastQuestionAt || q.createdAt > lastQuestionAt).sort((a, b) => a.createdAt.localeCompare(b.createdAt));
 }

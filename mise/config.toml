@@ -22,6 +22,7 @@
 "~/.claude" = { source = "../agents/claude", mode = "symlink-each" }
 "~/.pi/agent" = { source = "../agents/pi", mode = "symlink-each" }
 "~/.pi/agent/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.pi/agent/agents" = { source = "../agents/subagents", mode = "symlink-each" }
 "~/.claude/CLAUDE.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
 "~/.codex/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
 
