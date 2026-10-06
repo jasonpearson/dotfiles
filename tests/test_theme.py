@@ -1,0 +1,208 @@
+"""Isolated theme tests: no live configs, tmux sockets, or desktop switches.
+
+Run: python3 -m unittest discover -s tests -p 'test_theme.py' -v
+"""
+
+import concurrent.futures
+import importlib.util
+import json
+import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import tomllib
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+
+
+class ThemeTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory(prefix="dotfiles theme ")
+        self.addCleanup(self.temp.cleanup)
+        self.home = Path(self.temp.name)
+        # Match mise's real deployment destinations, even when XDG differs.
+        self.config = self.home / ".config"
+        self.cache = self.home / "cache/dotfiles/theme"
+        self.current = self.home / ".local/state/omarchy/current/theme"
+        self.current.mkdir(parents=True)
+        self.scripts = self.config / "dotfiles/theme"
+        shutil.copytree(ROOT / "theme", self.scripts)
+        (self.config / "starship.toml").symlink_to(ROOT / "starship/starship.toml")
+        self.env = dict(os.environ, HOME=str(self.home), XDG_CONFIG_HOME=str(self.home / "custom-config"),
+                        XDG_CACHE_HOME=str(self.home / "cache"), TMUX_TMPDIR=str(self.home),
+                        STARSHIP_CACHE=str(self.home / "starship-cache"))
+        self.env.pop("TMUX", None)
+        self.env.pop("STARSHIP_CONFIG", None)
+        self.before = (ROOT / "starship/starship.toml").read_bytes()
+        self.addCleanup(lambda: self.assertEqual(self.before, (ROOT / "starship/starship.toml").read_bytes()))
+
+    def run_apply(self, *args, check=True):
+        return subprocess.run([sys.executable, str(self.scripts / "apply.py"), *args],
+                              env=self.env, text=True, capture_output=True, check=check, timeout=15)
+
+    def set_palette(self, accent="#123456", background="#eeeeee", mode="light"):
+        text = (self.scripts / "palette.toml").read_text()
+        text = text.replace('accent = "#89b4fa"', f'accent = "{accent}"')
+        text = text.replace('background = "#1e1e2e"', f'background = "{background}"')
+        text = text.replace('mode = "dark"', f'mode = "{mode}"')
+        (self.current / "dotfiles-palette.toml").write_text(text)
+
+    def palette(self):
+        return tomllib.loads((self.cache / "starship.toml").read_text())["palettes"]["shared"]
+
+    def test_manual_fallback_and_layout_preserved(self):
+        self.run_apply("--no-reload")
+        expected = tomllib.loads((self.scripts / "palette.toml").read_text())
+        self.assertEqual(self.palette()["accent"], expected["accent"])
+        self.assertEqual((self.cache / "source").read_text(), "manual\n")
+        layout = tomllib.loads((self.config / "starship.toml").read_text())
+        actual = tomllib.loads((self.cache / "starship.toml").read_text())
+        del layout["palettes"], actual["palettes"]
+        self.assertEqual(actual, layout)
+        stamp = (self.cache / "colors.sh").stat().st_mtime_ns
+        self.run_apply("--no-reload")
+        self.assertEqual(stamp, (self.cache / "colors.sh").stat().st_mtime_ns)
+
+    def test_omarchy_dark_light_and_manual_override(self):
+        self.set_palette()
+        self.run_apply("--no-reload")
+        self.assertEqual(self.palette()["accent"], "#123456")
+        self.assertIn("export THEME_BACKGROUND='#eeeeee'", (self.cache / "colors.sh").read_text())
+        self.assertIn('set -g @theme_accent "#123456"', (self.cache / "tmux.conf").read_text())
+        self.set_palette("#abcdef", "#111111", "dark")
+        self.run_apply("--no-reload")
+        self.assertEqual(self.palette()["accent"], "#abcdef")
+        self.run_apply("--manual", "--no-reload")
+        self.assertEqual(self.palette()["accent"], "#89b4fa")
+
+    def test_missing_or_invalid_omarchy_retains_last_good_outputs(self):
+        self.set_palette()
+        self.run_apply("--no-reload")
+        before = {p.name: p.read_bytes() for p in self.cache.iterdir() if p.name != ".lock"}
+        for content in [None, 'accent = "#bad"', 'not valid toml', (self.current / "dotfiles-palette.toml").read_text().replace("#123456", '$(touch nope)')]:
+            path = self.current / "dotfiles-palette.toml"
+            if content is None:
+                path.unlink()
+            else:
+                path.write_text(content)
+            result = self.run_apply("--no-reload", check=False)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertEqual(before, {p.name: p.read_bytes() for p in self.cache.iterdir() if p.name != ".lock"})
+
+    def test_concurrent_renderers_and_round_trip(self):
+        self.set_palette()
+        with concurrent.futures.ThreadPoolExecutor(max_workers=4) as pool:
+            list(pool.map(lambda _: self.run_apply("--no-reload"), range(8)))
+        self.assertEqual(self.palette()["accent"], "#123456")
+        self.assertFalse(list(self.cache.glob(".theme-*")))
+        spec = importlib.util.spec_from_file_location("theme_apply", ROOT / "theme/apply.py")
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        value = {"format": "a\n\"b\"\\c", "key.with.dots": {"array": [True, 42, {"x": "❯"}]}}
+        self.assertEqual(tomllib.loads(module.toml_dump(value)), value)
+
+    @unittest.skipUnless(shutil.which("starship"), "starship not installed")
+    def test_starship_reads_generated_palette_on_next_invocation(self):
+        for color in ("#123456", "#abcdef"):
+            self.set_palette(color)
+            self.run_apply("--no-reload")
+            env = dict(self.env, STARSHIP_CONFIG=str(self.cache / "starship.toml"))
+            result = subprocess.run(["starship", "print-config"], env=env, text=True,
+                                    capture_output=True, check=True)
+            self.assertEqual(tomllib.loads(result.stdout)["palettes"]["shared"]["accent"], color)
+            self.assertNotIn("error", result.stderr.lower())
+
+    def test_noninteractive_bash_only_reads_existing_cache(self):
+        command = 'source "$TEST_COLORS"; printf "%s" "${THEME_ACCENT:-}"'
+        env = dict(self.env, TEST_COLORS=str(ROOT / "bash/config/colors.sh"))
+        subprocess.run(["bash", "--noprofile", "--norc", "-c", command],
+                       env=env, capture_output=True, text=True, check=True)
+        self.assertFalse(self.cache.exists())
+        self.set_palette()
+        self.run_apply("--no-reload")
+        result = subprocess.run(["bash", "--noprofile", "--norc", "-c", command],
+                                env=env, capture_output=True, text=True, check=True)
+        self.assertEqual(result.stdout, "#123456")
+
+    def test_bash_existing_shell_callback_readline_and_status(self):
+        # Start a shell, change its generated file, then invoke its existing
+        # callback: no re-source of startup files and no external prompt process.
+        script = r'''
+source "$TEST_COLORS"
+set -o vi
+bind 'set show-mode-in-prompt on'
+previous() { seen=$?; calls=$((calls + 1)); }
+calls=0
+starship_precmd_user_func=previous
+_dotfiles_theme_install_prompt_hook
+_dotfiles_theme_install_prompt_hook
+printf "export STARSHIP_PROMPT_ACCENT='#123456'\nexport THEME_ERROR='#abcdef'\n" > "$_dotfiles_theme_cache/colors.sh"
+false
+_dotfiles_theme_precmd
+status=$?
+printf 'RESULT %s %s %s %s\n' "$status" "$seen" "$calls" "$STARSHIP_PROMPT_ACCENT"
+bind -v | grep 'vi-.*-mode-string'
+[[ $STARSHIP_CONFIG == "$_dotfiles_theme_cache/starship.toml" ]] || exit 8
+'''
+        result = subprocess.run(["bash", "--noprofile", "--norc", "-ic", script],
+                                env=dict(self.env, TEST_COLORS=str(ROOT / "bash/config/colors.sh")),
+                                capture_output=True, text=True, check=True)
+        self.assertIn("RESULT 1 1 1 #123456", result.stdout)
+        self.assertIn("38;2;18;52;86m", result.stdout)
+        self.assertIn("38;2;171;205;239m", result.stdout)
+
+    @unittest.skipUnless(shutil.which("tmux"), "tmux not installed")
+    def test_tmux_startup_named_servers_and_palette_only_reload(self):
+        text = (ROOT / "tmux/tmux.conf").read_text()
+        # Parse the real config, excluding only tpack's plugin initialization.
+        # Bindings are installed, not executed. TMUX_TMPDIR isolates even the
+        # default socket, including nested `tmux` commands in run-shell.
+        conf = self.home / "tmux.conf"
+        conf.write_text(text.split("# Other plugins still use tpack", 1)[0])
+        sockets = [self.home / "one", self.home / "two"]
+        def tm(socket, *args):
+            return subprocess.run(["tmux", "-S", str(socket), *args], env=self.env,
+                                  text=True, capture_output=True, check=True, timeout=15).stdout.strip()
+        for socket in sockets:
+            self.addCleanup(lambda s=socket: subprocess.run(["tmux", "-S", str(s), "kill-server"], env=self.env, capture_output=True))
+            tm(socket, "-f", str(conf), "new-session", "-d", "-s", "probe", "sleep 120")
+            self.assertEqual(tm(socket, "show-option", "-gqv", "@theme_accent"), "#89b4fa")
+            tm(socket, "set", "-g", "status-left", "sentinel-layout")
+            tm(socket, "set-environment", "-t", "probe", "THEME_ACCENT", "#badbad")
+        self.assertEqual(set(json.loads((self.cache / "tmux-sockets.json").read_text())), set(map(str, sockets)))
+        self.set_palette()
+        # Real hook, scoped entirely to the fake HOME/cache/socket namespace.
+        subprocess.run(["bash", str(ROOT / "omarchy/hooks/theme-set.d/dotfiles-theme.hook"), "stale-name"],
+                       env=self.env, check=True, capture_output=True, timeout=15)
+        for socket in sockets:
+            self.assertEqual(tm(socket, "show-option", "-gqv", "@theme_accent"), "#123456")
+            self.assertEqual(tm(socket, "show-option", "-gqv", "status-left"), "sentinel-layout")
+            self.assertEqual(tm(socket, "display-message", "-p", "-t", "probe", "#{@theme_accent}"), "#123456")
+
+    @unittest.skipUnless(Path("/usr/share/omarchy/bin/omarchy-theme-set-templates").exists(), "Omarchy not installed")
+    def test_real_omarchy_templates_without_switching_desktop(self):
+        templates = self.home / ".config/omarchy/themed"
+        templates.mkdir(parents=True)
+        shutil.copy(ROOT / "omarchy/themed/dotfiles-palette.toml.tpl", templates)
+        stage = self.current.with_name("next-theme")
+        for theme, mode in [("catppuccin", "dark"), ("tokyo-night", "dark"), ("catppuccin-latte", "light")]:
+            if stage.exists():
+                shutil.rmtree(stage)
+            stage.mkdir()
+            shutil.copy(f"/usr/share/omarchy/themes/{theme}/colors.toml", stage)
+            subprocess.run(["/usr/share/omarchy/bin/omarchy-theme-set-templates"],
+                           env=dict(self.env, OMARCHY_PATH="/usr/share/omarchy"),
+                           check=True, capture_output=True, timeout=15)
+            shutil.copy(stage / "dotfiles-palette.toml", self.current)
+            self.run_apply("--no-reload")
+            rendered = tomllib.loads((stage / "dotfiles-palette.toml").read_text())
+            self.assertEqual(rendered["mode"], mode)
+            self.assertEqual(self.palette()["accent"], rendered["accent"])
+            self.assertNotIn("{{", (self.cache / "starship.toml").read_text())
+
+
+if __name__ == "__main__":
+    unittest.main()
