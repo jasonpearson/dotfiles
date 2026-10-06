@@ -11,6 +11,8 @@
 "~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
 "~/.bashrc" = { source = "../bash/bashrc", mode = "symlink" }
 "~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
+"~/.config/dotfiles/theme/apply.py" = { source = "../theme/apply.py", mode = "symlink" }
+"~/.config/dotfiles/theme/palette.toml" = { source = "../theme/palette.toml", mode = "symlink" }
 "~/.config/ghostty" = { source = "../ghostty", mode = "symlink-each" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
 "~/.config/mise" = { source = ".", mode = "symlink-each" }
@@ -69,6 +71,10 @@ mode = "symlink-each"
 variants = [
   { os = "linux" },
 ]
+
+[tasks."theme:apply"]
+description = "Render the current theme and refresh registered tmux servers"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py"'
 
 [env]
 TMUX_ATTENTION_DIR_COMMAND = "zoxide query --list"

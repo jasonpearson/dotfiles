@@ -93,6 +93,105 @@ busctl --user call org.fcitx.Fcitx5 /controller \
 Press **Escape** to cancel any already-active Unicode entry before testing the
 Pi shortcuts. The reload command is unnecessary on systems without Fcitx5.
 
+## Themes: Omarchy and macOS
+
+The layouts are shared across platforms. Omarchy supplies the palette when its
+rendered `~/.local/state/omarchy/current/theme/dotfiles-palette.toml` exists;
+otherwise [`theme/palette.toml`](theme/palette.toml) supplies the manual fallback.
+The fallback is Catppuccin Mocha, matching Ghostty and Neovim's defaults.
+
+### Enable after updating the dotfiles
+
+From your **permanent checkout** (not a worktree you plan to delete):
+
+```sh
+mise dot apply
+```
+
+On Omarchy, reapply the selected theme once so it renders the new user template
+and runs the new hook:
+
+```sh
+omarchy theme set "$(omarchy theme current)"
+```
+
+Off Omarchy, initialize the generated palette with:
+
+```sh
+mise run theme:apply
+```
+
+Start a new Bash session once to install its pre-prompt callback. For tmux
+servers that were already running before these changes, reload the configuration
+once with prefix + `q` (or `tmux source-file ~/.config/tmux/tmux.conf`). Restart
+Neovim once to load its new adapter. After that, ordinary Omarchy theme changes
+update all four apps without restarting them; Bash/Starship update on the next
+prompt, and Neovim detects the changed theme file. Theme reloads do not re-source
+tmux keybindings/plugins or all of `.bashrc`.
+
+### Manual changes on macOS
+
+1. Edit [`theme/palette.toml`](theme/palette.toml) for Bash, Starship, and tmux.
+2. Run `mise run theme:apply`. Existing Bash sessions pick up the new colors at
+   their next prompt; registered tmux servers reload their palette immediately.
+3. Change the fallback `theme` in [`ghostty/config`](ghostty/config) and reload
+   Ghostty's configuration.
+4. Change Neovim's fallback colorscheme/mode in
+   [`nvim/lua/config/theme.lua`](nvim/lua/config/theme.lua) and restart Neovim.
+
+No Omarchy commands or daemon are required on macOS. Use Homebrew Bash (already
+in the bootstrap packages), not Apple's old `/bin/bash`. The renderer needs
+Python 3.11+, provided by the existing mise Python pin.
+
+### How it works
+
+- [`omarchy/themed/dotfiles-palette.toml.tpl`](omarchy/themed/dotfiles-palette.toml.tpl)
+  maps Omarchy's semantic colors to the shared roles, including blended prompt
+  segments and a softer tmux status background. It works with light and dark
+  themes and is deployed only on Linux.
+- [`theme/apply.py`](theme/apply.py) validates the palette and combines it with
+  the single Starship layout in [`starship/starship.toml`](starship/starship.toml).
+  It writes only generated files under `${XDG_CACHE_HOME:-~/.cache}/dotfiles/theme/`,
+  not the managed config symlinks. Input paths match mise's explicit `~/.config/`
+  destinations, even if `XDG_CONFIG_HOME` differs. Bash exports `STARSHIP_CONFIG`
+  to that generated file. Bare Starship invocations outside managed Bash have an ANSI safety palette.
+- Interactive Bash initialization renders the palette; the Omarchy `theme-set.d` hook renders
+  it again on changes. The Bash prompt callback itself uses only shell builtins
+  to read the generated colors and rebind Readline's vi arrows.
+- tmux uses user options, not inherited color environment variables. Each server
+  registers its socket at configuration load, so named servers are updated too.
+  Only servers running this config on this machine participate; remote SSH hosts
+  keep their own theme. The default server is also checked without starting one.
+- Invalid generated palettes leave the last working files untouched. A transient
+  missing Omarchy file retains the previous palette rather than flashing back to
+  the manual theme. If deliberately removing Omarchy integration, use
+  `python3 ~/.config/dotfiles/theme/apply.py --manual` to reset that cached choice.
+  `--manual` is a one-time override; a later Omarchy hook selects Omarchy again.
+- Neovim consumes the selected theme's actual plugin options/colorscheme without
+  importing the LazyVim distribution. It detects directory replacement and
+  same-colorscheme palette changes, retaining the last good theme on read errors.
+
+### Theme tests
+
+Tests use temporary homes, caches, and tmux sockets; they do not apply dotfiles or
+switch the desktop theme:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_theme.py' -v
+tests/nvim-theme.sh
+tests/nvim-theme.sh --integration
+```
+
+Neovim tests use an existing local lazy.nvim checkout and do not download plugins.
+`--integration` additionally exercises installed theme plugins; set
+`LAZY_NVIM_PATH` / `NVIM_THEME_PLUGIN_ROOT` if they live outside the usual Neovim
+lazy data directory.
+
+Installed tmux/Starship enable their integration tests; installed Omarchy enables
+real template-rendering tests for two dark palettes and one light palette. These
+Linux tests exercise the no-Omarchy fallback but are not a substitute for a native
+macOS smoke test.
+
 ## Personal agent instructions
 
 [`agents/global-instructions.md`](agents/global-instructions.md) is the shared

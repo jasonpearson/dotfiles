@@ -21,12 +21,7 @@ if [[ $- == *i* ]]; then
 
   # Readline redraws the mode arrow without rerunning Starship.
   bind 'set show-mode-in-prompt on'
-  _vi_accent="${STARSHIP_PROMPT_ACCENT:-#89b4fa}"
-  printf -v _vi_insert_arrow '\\1\\e[38;2;%d;%d;%dm\\2❯\\1\\e[0m\\2' \
-    "0x${_vi_accent:1:2}" "0x${_vi_accent:3:2}" "0x${_vi_accent:5:2}"
-  bind "set vi-ins-mode-string \"$_vi_insert_arrow\""
-  bind 'set vi-cmd-mode-string "\1\e[31m\2❮\1\e[0m\2"'
-  unset _vi_accent _vi_insert_arrow
+  _dotfiles_theme_readline
 fi
 
 alias t='tmux-attention'

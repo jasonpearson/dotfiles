@@ -108,17 +108,17 @@ style = "bg:runtime_segment"
 format = '[[  $time ](fg:git_segment bg:runtime_segment)]($style)'
 
 [palettes.shared]
-# Keep these in sync with bash/config/colors.sh.
-foreground = "#cdd6f4"
-background = "#1e1e2e"
-accent = "#89b4fa"
-
-# Starship prompt segment colors.
-prompt_accent = "#89b4fa"
-prompt_text = "#090c0c"
-prompt_segment = "#394260"
-git_segment = "#8c97c0"
-runtime_segment = "#1d2230"
-runtime_segment_alt = "#212736"
-hostname = "#fab387"
-node = "#215732"
+# ANSI safety palette for invocations outside the managed Bash environment.
+# Bash selects the generated RGB config via STARSHIP_CONFIG. Edit
+# theme/palette.toml for manual colors, not this terminal-palette fallback.
+foreground = "white"
+background = "black"
+accent = "blue"
+prompt_accent = "blue"
+prompt_text = "black"
+prompt_segment = "bright-black"
+git_segment = "white"
+runtime_segment = "black"
+runtime_segment_alt = "black"
+hostname = "yellow"
+node = "green"
