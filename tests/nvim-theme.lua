@@ -25,6 +25,7 @@ end
 local function generate(name, opts, extra)
   local repos = {
     aether = '"bjarneo/aether.nvim", name = "aether", branch = "v3"',
+    ethereal = '"bjarneo/ethereal.nvim"',
     catppuccin = '"catppuccin/nvim", name = "catppuccin"',
     nightfox = '"EdenEast/nightfox.nvim"',
   }
@@ -32,7 +33,7 @@ local function generate(name, opts, extra)
   return ("return {{ %s, opts = %s %s }, { 'LazyVim/LazyVim', opts = { colorscheme = %q } }}")
     :format(repos[name], opts or "{}", extra or "", scheme)
 end
-local function replace(source, mode, marker)
+local function replace(source, mode, marker, name)
   -- Match Omarchy's rm(current/theme) + mv(next-theme, current/theme).
   local next_dir = theme_dir .. "-next"
   vim.fn.delete(next_dir, "rf")
@@ -45,14 +46,19 @@ local function replace(source, mode, marker)
   end
   vim.fn.delete(theme_dir, "rf")
   assert(vim.uv.fs_rename(next_dir, theme_dir))
+  if name then
+    write(theme_dir .. ".name", name .. "\n")
+  else
+    vim.fn.delete(theme_dir .. ".name")
+  end
 end
 local function settle()
   -- Exercise the actual timer; no LazyReload notification is sent by the writer.
   vim.wait(1250, function() return false end, 25)
 end
-local function changed(source, mode, expected, marker)
+local function changed(source, mode, expected, marker, name)
   local before = schemes
-  replace(source, mode, marker)
+  replace(source, mode, marker, name)
   assert(vim.wait(2500, function() return schemes > before end, 25), "theme did not refresh")
   eq(vim.g.colors_name, expected, "selected colorscheme")
   eq(schemes, before + 1, "one ColorScheme per accepted snapshot")
@@ -60,7 +66,9 @@ end
 
 vim.opt.rtp:prepend(repo .. "/nvim")
 vim.opt.rtp:prepend(vim.env.NVIM_THEME_LAZY)
-if scenario == "runtime" then
+if scenario == "ethereal" then
+  replace(generate("aether", '{colors = {fg = "#112233", bg = "#101010"}}'), "dark", nil, "ethereal")
+elseif scenario == "runtime" then
   replace(generate("aether", '{ colors = { fg = "#112233", bg = "#101010" } }'), "dark")
 elseif scenario == "native" then
   replace(generate("catppuccin", '{flavour = "latte"}'), "light")
@@ -128,6 +136,9 @@ return { setup = function() error('Competing aether watcher must not start') end
   fixture("nightfox.nvim", "nightfox", "{}", {
     ["nordfox.lua"] = [[require('nightfox').load('nordfox')]],
   })
+  fixture("ethereal.nvim", "ethereal", "{}", {
+    ["ethereal.vim"] = [[lua require('ethereal').load('ethereal')]],
+  })
 end
 
 require("lazy").setup({
@@ -152,6 +163,58 @@ local function checks()
   eq(plugins.aether.name, "aether", "aether install name")
   eq(entered, 1, "natural VimEnter")
   eq(schemes, 1, "explicit startup colorscheme")
+  if scenario == "ethereal" then
+    eq(vim.g.colors_name, "ethereal", "Omarchy Ethereal uses native colorscheme at startup")
+    eq(plugins.aether._.loaded, nil, "generated Aether plugin is not loaded for Ethereal")
+    local function highlights()
+      local result = {}
+      for _, name in ipairs({ "Normal", "Identifier", "@property", "String" }) do
+        result[name] = vim.api.nvim_get_hl(0, { name = name, link = false, create = false })
+      end
+      return result
+    end
+    local native = highlights()
+    assert(native.Normal.fg ~= 0x112233, "generated Aether options must not leak into native Ethereal")
+    local source = generate("aether", '{colors = {fg = "#112233", bg = "#101010"}}')
+    eq(table.concat(vim.fn.readfile(theme_dir .. "/neovim.lua"), "\n"), source, "generated state is unchanged")
+    vim.cmd.colorscheme("ethereal")
+    eq(highlights(), native, "automatic and manual Ethereal highlights match")
+
+    -- A different theme with the exact same generated palette must stay Aether.
+    -- This also exercises lazy module unloading when returning to native Ethereal.
+    for _ = 1, 2 do
+      changed(source, "dark", "aether", nil, "another-theme")
+      eq(vim.api.nvim_get_hl(0, { name = "Normal", link = false }).fg, 0x112233)
+      changed(source, "dark", "ethereal", nil, "ethereal")
+      eq(highlights(), native, "native highlights survive switching away and back")
+    end
+    local before = schemes
+    settle()
+    eq(schemes, before, "unchanged Ethereal selection is not reloaded")
+
+    -- Omarchy writes theme.name separately, after swapping the generated files.
+    -- A name-only change (or missing name) must invalidate the snapshot too.
+    vim.fn.delete(theme_dir .. ".name")
+    controller.poll()
+    controller.poll()
+    eq(vim.g.colors_name, "aether", "missing theme name preserves generated selection")
+    write(theme_dir .. ".name", "ethereal\n")
+    controller.poll()
+    controller.poll()
+    eq(vim.g.colors_name, "ethereal", "name-only update selects native Ethereal")
+    eq(highlights(), native, "name-only update restores native highlights")
+    eq(schemes, before + 2, "one event per name-only update")
+
+    -- Do not override explicit native/custom specs supplied by the user.
+    changed(generate("catppuccin", '{flavour = "latte"}'), "light", "catppuccin-latte", nil, "ethereal")
+    changed(generate("ethereal", '{colors = {fg = "#abcdef"}}'), "dark", "ethereal", nil, "ethereal")
+    eq(vim.api.nvim_get_hl(0, { name = "Normal", link = false }).fg, 0xabcdef, "explicit native options preserved")
+    changed(source, "dark", "ethereal", nil, "ethereal")
+    eq(highlights(), native, "generated-to-native preference resets old native options")
+    eq(errors, {}, "Ethereal startup and runtime errors")
+    print(("PASS nvim-theme ethereal (%s)"):format(real and "installed plugins" or "fixtures"))
+    return
+  end
   if scenario == "native" or scenario == "invalid" then
     eq(vim.g.colors_name, scenario == "native" and "catppuccin-latte" or "catppuccin-mocha")
     eq(vim.o.background, scenario == "native" and "light" or "dark")

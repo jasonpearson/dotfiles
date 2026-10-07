@@ -21,7 +21,7 @@ trap 'rm -rf -- "$scratch"' EXIT
 mkdir -p "$scratch/bin"
 printf '#!/bin/sh\necho "Unexpected git invocation in theme test" >&2\nexit 97\n' > "$scratch/bin/git"
 chmod +x "$scratch/bin/git"
-for scenario in fallback runtime native invalid; do
+for scenario in ethereal fallback runtime native invalid; do
   home=$scratch/$scenario
   mkdir -p "$home"/{config/nvim,data,state,cache}
   env -u NVIM_APPNAME -u VIMINIT -u EXINIT -u GVIMINIT \

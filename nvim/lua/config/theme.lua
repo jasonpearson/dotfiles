@@ -52,15 +52,17 @@ local function snapshot()
     return nil
   end
   local colors = read_file(theme_dir .. "/colors.toml") or ""
+  local name = vim.trim(read_file(theme_dir .. ".name") or "")
   local light = uv.fs_stat(theme_dir .. "/light.mode") ~= nil
     or uv.fs_stat(theme_dir .. "/light") ~= nil
   return {
     source = source,
     colors = colors,
+    name = name,
     light = light,
-    -- Content, not mtime or colorscheme name: aether palettes reuse a name,
-    -- and directory replacements can preserve timestamps.
-    key = source .. "\0" .. colors .. "\0" .. tostring(light),
+    -- Include the Omarchy name as well as contents: different themes can use
+    -- identical generated Aether specs, and theme.name is updated separately.
+    key = source .. "\0" .. colors .. "\0" .. tostring(light) .. "\0" .. name,
   }
 end
 
@@ -105,6 +107,13 @@ local function parse(raw)
   assert(type(selected.colorscheme) == "string" and selected.colorscheme:match("^[%w_.%-]+$"),
     "Missing or invalid Omarchy colorscheme selector")
   assert(#selected.plugins > 0, "Missing Omarchy theme plugin")
+  -- Omarchy generates Aether palettes for Ethereal, but the standalone plugin
+  -- has different syntax highlights. Match :colorscheme ethereal without
+  -- rewriting generated state or overriding explicit native theme specs.
+  if raw.name == "ethereal" and selected.colorscheme == "aether" then
+    selected.plugins = { filter({ "bjarneo/ethereal.nvim", opts = {} }) }
+    selected.colorscheme = "ethereal"
+  end
   local colors = {}
   for line in raw.colors:gmatch("[^\r\n]+") do
     local key, value = line:match("^%s*[\"']?([%w_]+)[\"']?%s*=%s*[\"']([^\"']*)[\"']")

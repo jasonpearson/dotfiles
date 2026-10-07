@@ -51,8 +51,11 @@ mise dot apply '~/.agents/skills/hunk-review'
 ## Terminal defaults and Pi scrolling
 
 Pi starts in fullscreen mode. **Ctrl+Shift+U** and **Ctrl+Shift+D** scroll the
-transcript up and down by a page, directly in Pi without tmux copy mode. These
-bindings live in [`agents/pi/keybindings.json`](agents/pi/keybindings.json).
+transcript up and down by a page; **Ctrl+Shift+Y** and **Ctrl+Shift+E** scroll up
+and down by one line, directly in Pi without tmux copy mode. These bindings live
+in [`agents/pi/keybindings.json`](agents/pi/keybindings.json) and are deployed
+on Linux and macOS through the existing `~/.pi/agent` mise mapping. The terminal
+must distinguish Ctrl+Shift+letter from Ctrl+letter (as Ghostty does).
 Run `/reload` in an existing Pi session after updating its configuration.
 
 Two Linux-only mise mappings support this setup:
@@ -216,9 +219,18 @@ Python 3.11+, provided by the existing mise Python pin.
   the manual theme. If deliberately removing Omarchy integration, use
   `python3 ~/.config/dotfiles/theme/apply.py --manual` to reset that cached choice.
   `--manual` is a one-time override; a later Omarchy hook selects Omarchy again.
-- Neovim consumes the selected theme's actual plugin options/colorscheme without
-  importing the LazyVim distribution. It detects directory replacement and
-  same-colorscheme palette changes, retaining the last good theme on read errors.
+- Neovim consumes the selected theme's plugin options/colorscheme without
+  importing the LazyVim distribution. One intentional preference lives in
+  [`nvim/lua/config/theme.lua`](nvim/lua/config/theme.lua): when Omarchy selects
+  Ethereal using a generated Aether palette, Neovim loads native `ethereal.nvim`
+  instead, matching `:colorscheme ethereal`. Explicit native theme specs and
+  other Omarchy themes are unchanged. The adapter reads `current/theme.name`
+  along with the generated files; it never rewrites `~/.local/state/omarchy`.
+  It detects theme-name changes, directory replacement, and same-colorscheme
+  palette changes, retaining the last good theme on read errors. The existing
+  `~/.config/nvim` mise mapping deploys this preference; restart Neovim once to
+  load the updated adapter. No Omarchy theme reapplication is needed for this
+  preference, and the no-Omarchy/macOS fallback remains Catppuccin Mocha.
 
 ### Theme tests
 
@@ -232,7 +244,9 @@ tests/nvim-theme.sh --integration
 ```
 
 Neovim tests use an existing local lazy.nvim checkout and do not download plugins.
-`--integration` additionally exercises installed theme plugins; set
+They cover native Ethereal at startup, switching away and back, name-only updates,
+and matching manual Ethereal highlights. `--integration` additionally exercises
+installed theme plugins; set
 `LAZY_NVIM_PATH` / `NVIM_THEME_PLUGIN_ROOT` if they live outside the usual Neovim
 lazy data directory.
 
