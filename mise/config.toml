@@ -14,7 +14,9 @@
 "~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
 "~/.config/dotfiles/theme/apply.py" = { source = "../theme/apply.py", mode = "symlink" }
 "~/.config/dotfiles/theme/palette.toml" = { source = "../theme/palette.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/ethereal.toml" = { source = "../theme/ethereal.toml", mode = "symlink" }
 "~/.config/ghostty/config" = { source = "../ghostty/config", mode = "symlink" }
+"~/.config/ghostty/config-theme" = { source = "../ghostty/config-theme.tera", mode = "template" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
 "~/.config/mise" = { source = ".", mode = "symlink-each" }
 "~/.config/nvim" = { source = "../nvim", mode = "symlink-each" }
@@ -81,8 +83,12 @@ variants = [
   { os = "linux" },
 ]
 
+[tasks.theme]
+description = "Switch all terminal apps: mise theme [catppuccin|ethereal] (no argument shows selection)"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py" --select'
+
 [tasks."theme:apply"]
-description = "Render the current theme and refresh registered tmux servers"
+description = "Re-render the saved preset or Omarchy theme and refresh registered tmux servers"
 run = 'python3 "$HOME/.config/dotfiles/theme/apply.py"'
 
 [env]

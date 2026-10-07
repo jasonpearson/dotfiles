@@ -32,7 +32,8 @@ class ThemeTests(unittest.TestCase):
         shutil.copytree(ROOT / "theme", self.scripts)
         (self.config / "starship.toml").symlink_to(ROOT / "starship/starship.toml")
         self.env = dict(os.environ, HOME=str(self.home), XDG_CONFIG_HOME=str(self.home / "custom-config"),
-                        XDG_CACHE_HOME=str(self.home / "cache"), TMUX_TMPDIR=str(self.home),
+                        XDG_CACHE_HOME=str(self.home / "cache"), XDG_STATE_HOME=str(self.home / "state"),
+                        TMUX_TMPDIR=str(self.home),
                         STARSHIP_CACHE=str(self.home / "starship-cache"))
         self.env.pop("TMUX", None)
         self.env.pop("STARSHIP_CONFIG", None)
@@ -65,6 +66,80 @@ class ThemeTests(unittest.TestCase):
         stamp = (self.cache / "colors.sh").stat().st_mtime_ns
         self.run_apply("--no-reload")
         self.assertEqual(stamp, (self.cache / "colors.sh").stat().st_mtime_ns)
+
+    def test_preset_selection_persists_without_editing_sources(self):
+        before = {p.name: p.read_bytes() for p in self.scripts.glob("*") if p.is_file()}
+        # Status is read-only, even before any render.
+        result = self.run_apply("--select")
+        self.assertIn("Saved preset: catppuccin", result.stdout)
+        self.assertIn("ethereal", result.stdout)
+        self.assertFalse(self.cache.exists())
+        state = self.home / "state/dotfiles/theme/selection"
+        self.assertFalse(state.exists())
+        for name, accent, scheme in [("ethereal", "#7d82d9", "ethereal"),
+                                     ("catppuccin", "#89b4fa", "catppuccin-mocha")]:
+            self.run_apply("--select", name, "--no-reload")
+            self.assertEqual(state.read_text(), name + "\n")
+            self.assertEqual(self.palette()["accent"], accent)
+            self.assertEqual(json.loads((self.cache / "neovim.json").read_text())["colorscheme"], scheme)
+            self.assertIn(f"Saved preset: {name}", self.run_apply("--select").stdout)
+            stamp = (self.cache / "neovim.json").stat().st_mtime_ns
+            self.run_apply("--no-reload")
+            self.assertEqual(stamp, (self.cache / "neovim.json").stat().st_mtime_ns)
+            # Deleting the cache does not lose the saved preference.
+            shutil.rmtree(self.cache)
+            self.run_apply("--no-reload")
+            self.assertEqual(self.palette()["accent"], accent)
+        self.assertEqual(before, {p.name: p.read_bytes() for p in self.scripts.glob("*") if p.is_file()})
+
+    def test_bad_selection_or_preset_leaves_previous_outputs_and_preference(self):
+        self.run_apply("--select", "catppuccin", "--no-reload")
+        before = {p.name: p.read_bytes() for p in self.cache.iterdir() if p.name != ".lock"}
+        bad = self.run_apply("--select", "../ethereal", "--no-reload", check=False)
+        self.assertNotEqual(bad.returncode, 0)
+        ethereal = self.scripts / "ethereal.toml"
+        original = ethereal.read_text()
+        for text in ["not toml", original.replace('colorscheme = "ethereal"', 'colorscheme = "bad;command"'),
+                     original.replace('"#e9bb4f"', '"nope"'), original.replace('mode = "dark"', 'mode = "nope"')]:
+            ethereal.write_text(text)
+            self.assertNotEqual(self.run_apply("--select", "ethereal", "--no-reload", check=False).returncode, 0)
+            self.assertEqual(before, {p.name: p.read_bytes() for p in self.cache.iterdir() if p.name != ".lock"})
+            self.assertEqual((self.home / "state/dotfiles/theme/selection").read_text(), "catppuccin\n")
+
+    def test_selector_does_not_override_omarchy(self):
+        self.run_apply("--select", "ethereal", "--no-reload")
+        self.set_palette()
+        result = self.run_apply("--select", "catppuccin", "--no-reload", check=False)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("omarchy theme set", result.stderr)
+        self.assertEqual((self.home / "state/dotfiles/theme/selection").read_text(), "ethereal\n")
+        self.run_apply("--no-reload")
+        self.assertEqual(self.palette()["accent"], "#123456")
+        self.assertEqual(json.loads((self.cache / "neovim.json").read_text()), {"source": "omarchy"})
+        self.assertNotIn("palette =", (self.cache / "ghostty.conf").read_text())
+
+    @unittest.skipUnless(shutil.which("ghostty"), "Ghostty not installed")
+    def test_ghostty_effective_preset_and_omarchy_precedence(self):
+        config = self.config / "ghostty"
+        config.mkdir()
+        shutil.copy(ROOT / "ghostty/config", config / "config")
+        # Equivalent to mise's template output, including a cache path with spaces.
+        (config / "config-theme").write_text(f'config-file = ?"{self.cache}/ghostty.conf"\n')
+        def effective():
+            result = subprocess.run(["ghostty", "+show-config"],
+                                    env=dict(self.env, XDG_CONFIG_HOME=str(self.config)),
+                                    text=True, capture_output=True, check=True, timeout=15)
+            self.assertNotIn("error", result.stderr.lower())
+            return result.stdout.lower()
+        for preset, background, foreground in [("ethereal", "060b1e", "ffcead"),
+                                                ("catppuccin", "1e1e2e", "cdd6f4")]:
+            self.run_apply("--select", preset, "--no-reload")
+            actual = effective()
+            self.assertIn(f"background = #{background}", actual)
+            self.assertIn(f"foreground = #{foreground}", actual)
+            self.assertIn("font-size = 15", actual)
+        (self.current / "ghostty.conf").write_text("background = #123456\n")
+        self.assertIn("background = #123456", effective())
 
     def test_omarchy_dark_light_and_manual_override(self):
         self.set_palette()
@@ -173,6 +248,11 @@ bind -v | grep 'vi-.*-mode-string'
             tm(socket, "set", "-g", "status-left", "sentinel-layout")
             tm(socket, "set-environment", "-t", "probe", "THEME_ACCENT", "#badbad")
         self.assertEqual(set(json.loads((self.cache / "tmux-sockets.json").read_text())), set(map(str, sockets)))
+        for preset, accent in [("ethereal", "#7d82d9"), ("catppuccin", "#89b4fa")]:
+            self.run_apply("--select", preset)
+            for socket in sockets:
+                self.assertEqual(tm(socket, "show-option", "-gqv", "@theme_accent"), accent)
+                self.assertEqual(tm(socket, "show-option", "-gqv", "status-left"), "sentinel-layout")
         self.set_palette()
         # Real hook, scoped entirely to the fake HOME/cache/socket namespace.
         subprocess.run(["bash", str(ROOT / "omarchy/hooks/theme-set.d/dotfiles-theme.hook"), "stale-name"],

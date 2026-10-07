@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Render portable shell themes; only generated cache files are ever written.
+"""Render portable app themes without rewriting managed configuration.
 
 Python 3.11+ (provided by mise), standard library only. On Omarchy the input is
-its user-template output; elsewhere it is the adjacent manual palette.toml.
+its user-template output; elsewhere it is a checked-in preset. Explicit selection
+also saves a per-machine preference under XDG_STATE_HOME, never in app configs.
 """
 
 import argparse
@@ -19,6 +20,8 @@ import sys
 import tempfile
 import time
 import tomllib
+
+PRESETS = {"catppuccin": "palette.toml", "ethereal": "ethereal.toml"}
 
 COLORS = (
     "foreground", "background", "accent", "muted", "error", "status_background",
@@ -87,7 +90,54 @@ def atomic_write(path, text):
             os.unlink(name)
 
 
-def select_palette(cache, manual):
+def selection_path():
+    return Path(os.environ.get("XDG_STATE_HOME") or Path.home() / ".local/state") / "dotfiles/theme/selection"
+
+
+def selected_preset():
+    path = selection_path()
+    name = path.read_text().strip() if path.exists() else "catppuccin"
+    if name not in PRESETS:
+        raise ValueError(f"{path}: unknown preset {name!r}; choose catppuccin or ethereal")
+    return name
+
+
+def read_preset(name):
+    path = Path(__file__).resolve().with_name(PRESETS[name])
+    palette = read_palette(path)
+    data = tomllib.loads(path.read_text())
+    scheme = data.get("colorscheme")
+    if not isinstance(scheme, str) or not re.fullmatch(r"[a-zA-Z0-9_.-]+", scheme):
+        raise ValueError(f"{path}: invalid Neovim colorscheme")
+    neovim = json.dumps({"source": "manual", "preset": name,
+                         "colorscheme": scheme, "mode": palette["mode"]}) + "\n"
+    terminal = data.get("ghostty", {})
+    if not isinstance(terminal, dict):
+        raise ValueError(f"{path}: ghostty must be a table")
+    if "theme" in terminal:
+        builtin = terminal["theme"]
+        if not isinstance(builtin, str) or not re.fullmatch(r"[a-zA-Z0-9][a-zA-Z0-9 ._-]*", builtin):
+            raise ValueError(f"{path}: invalid built-in Ghostty theme name")
+        ghostty = f"theme = {builtin}\n"
+    else:
+        keys = ("cursor-color", "cursor-text", "selection-foreground", "selection-background")
+        for key in keys:
+            if not isinstance(terminal.get(key), str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", terminal[key]):
+                raise ValueError(f"{path}: invalid Ghostty {key}")
+        ansi = terminal.get("palette")
+        if not isinstance(ansi, list) or len(ansi) != 16 or any(
+            not isinstance(color, str) or not re.fullmatch(r"#[0-9a-fA-F]{6}", color) for color in ansi
+        ):
+            raise ValueError(f"{path}: Ghostty palette must contain 16 hex colors")
+        # Clear the bundled theme so no unspecified Mocha theme settings leak in.
+        ghostty = "theme =\n" + "".join(
+            f"{key} = {palette[key]}\n" for key in ("foreground", "background")
+        ) + "".join(f"{key} = {terminal[key]}\n" for key in keys)
+        ghostty += "".join(f"palette = {index}={color}\n" for index, color in enumerate(ansi))
+    return palette, ghostty, neovim
+
+
+def select_palette(cache, manual, preset):
     # This producer path is hardcoded by Omarchy, not XDG_STATE_HOME or nvim's
     # stdpath('state'). A previous Omarchy palette survives its rm/mv gap.
     current = Path.home() / ".local/state/omarchy/current/theme/dotfiles-palette.toml"
@@ -96,7 +146,7 @@ def select_palette(cache, manual):
     if not manual:
         for attempt in range(4):
             try:
-                return read_palette(current), "omarchy"
+                return read_palette(current), "omarchy", None, None
             except FileNotFoundError:
                 if not was_omarchy:
                     break
@@ -105,7 +155,8 @@ def select_palette(cache, manual):
         if was_omarchy:
             raise ValueError("Omarchy palette temporarily unavailable; keeping the last theme. "
                              "Use --manual to deliberately return to the fallback.")
-    return read_palette(Path(__file__).resolve().with_name("palette.toml")), "manual"
+    palette, ghostty, neovim = read_preset(preset)
+    return palette, "manual", ghostty, neovim
 
 
 def reload_tmux(cache, socket):
@@ -136,7 +187,11 @@ def apply(args):
     cache.mkdir(parents=True, exist_ok=True, mode=0o700)
     with (cache / ".lock").open("w") as lock:
         fcntl.flock(lock, fcntl.LOCK_EX)
-        palette, source = select_palette(cache, args.manual)
+        preset = args.select or selected_preset()
+        palette, source, ghostty, neovim = select_palette(cache, args.manual, preset)
+        if args.select and source == "omarchy":
+            raise ValueError("Omarchy is active; use `omarchy theme set` instead. "
+                             "This selector is for macOS and non-Omarchy Linux.")
         layout = tomllib.loads((config / "starship.toml").read_text())
         layout["palette"] = "shared"
         layout.setdefault("palettes", {})["shared"] = {key: palette[key] for key in COLORS}
@@ -151,23 +206,52 @@ def apply(args):
         shell = "# Generated by dotfiles theme/apply.py.\n" + "".join(
             f"export {name}='{palette[key]}'\n" for name, key in EXPORTS.items()
         )
+        if source == "manual":
+            atomic_write(cache / "ghostty.conf", "# Generated by dotfiles theme/apply.py.\n" + ghostty)
+            atomic_write(cache / "neovim.json", neovim)
+        else:
+            # Ghostty's later Omarchy include is authoritative. Clear any stale
+            # manual fragment; Neovim reads Omarchy directly, not this marker.
+            atomic_write(cache / "ghostty.conf", "# Colors supplied by Omarchy.\n")
+            atomic_write(cache / "neovim.json", '{"source": "omarchy"}\n')
         atomic_write(cache / "starship.toml", starship)
         atomic_write(cache / "tmux.conf", tmux)
         atomic_write(cache / "source", source + "\n")
         # Publish the shell change last: its pre-prompt callback can now safely
         # use both the new Readline color and the complete Starship config.
         atomic_write(cache / "colors.sh", shell)
+        if args.select:
+            selection = selection_path()
+            selection.parent.mkdir(parents=True, exist_ok=True, mode=0o700)
+            atomic_write(selection, preset + "\n")
         if not args.no_reload:
             reload_tmux(cache, args.tmux_socket)
+    if args.select:
+        tmux_status = "reload skipped" if args.no_reload else "refresh requested"
+        print(f"Selected {preset}. Bash/Starship: next prompt; tmux: {tmux_status}; Neovim: automatic.")
+        shortcut = "Cmd+Shift+," if sys.platform == "darwin" else "Ctrl+Shift+,"
+        print(f"Ghostty: reload configuration with {shortcut}.")
 
 
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--no-reload", action="store_true", help="render without touching tmux servers")
     parser.add_argument("--tmux-socket", help="register and update only this tmux server (used at startup)")
-    parser.add_argument("--manual", action="store_true", help="use the fallback even when Omarchy is present")
+    parser.add_argument("--manual", action="store_true", help="use the saved preset even when Omarchy is present (one run)")
+    parser.add_argument("--select", nargs="?", const="", choices=["", *PRESETS], metavar="PRESET",
+                        help="save and apply a preset; without a name, show current selection and choices")
     args = parser.parse_args()
+    if args.select is not None and args.manual:
+        parser.error("--select cannot be combined with --manual; Omarchy owns theme selection when present")
     try:
+        if args.select == "":
+            print(f"Saved preset: {selected_preset()}")
+            omarchy = Path.home() / ".local/state/omarchy/current/theme/dotfiles-palette.toml"
+            if omarchy.exists():
+                print("Omarchy is active and takes precedence; use `omarchy theme set`.")
+            print("Available: " + ", ".join(PRESETS))
+            print("Switch: mise theme <name>")
+            return 0
         apply(args)
     except (OSError, ValueError, subprocess.SubprocessError) as error:
         print(f"dotfiles theme: {error}", file=sys.stderr)

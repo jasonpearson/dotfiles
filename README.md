@@ -165,18 +165,50 @@ Linux or **Cmd+0** on macOS after reloading, or open a fresh window.
 
 ## Themes: Omarchy and macOS
 
-The layouts are shared across platforms. Omarchy supplies the palette when its
-rendered `~/.local/state/omarchy/current/theme/dotfiles-palette.toml` exists;
-otherwise [`theme/palette.toml`](theme/palette.toml) supplies the manual fallback.
-The fallback is Catppuccin Mocha, matching Ghostty and Neovim's defaults.
+### Switch on macOS (or Linux without Omarchy)
+
+One selection now coordinates Ghostty, Neovim, Bash/Starship, and tmux:
+
+```sh
+mise theme ethereal
+mise theme catppuccin       # Catppuccin Mocha, the original default
+mise theme                 # show the saved selection and available presets
+```
+
+Then reload Ghostty with **Cmd+Shift+,** on macOS (**Ctrl+Shift+,** on Linux).
+Bash/Starship update at the next prompt, registered tmux servers refresh
+immediately, and Neovim switches automatically within about a second. No app
+config editing, Omarchy commands, daemon, or downloads are needed to switch.
+On a fresh install, let Neovim's normal Lazy setup install its theme plugins once.
+
+Presets are checked in: [`theme/palette.toml`](theme/palette.toml) preserves the
+existing Catppuccin shell colors, and [`theme/ethereal.toml`](theme/ethereal.toml)
+bundles native Ethereal's terminal and shell palette. Neovim uses the native
+`ethereal.nvim` plugin. Fonts, layouts, keybindings, and other settings stay put.
+
+The choice is intentionally **per machine**, saved under
+`${XDG_STATE_HOME:-~/.local/state}/dotfiles/theme/selection`; switching does not
+dirty Git or rewrite config symlinks. It survives restarts and cache cleanup.
+A new machine defaults to Catppuccin; run the same command there to select
+Ethereal. To customize a preset, edit its repository TOML and rerun the command.
+
+On Omarchy, keep using `omarchy theme set`: its rendered palette takes precedence.
+`mise theme <name>` refuses to compete with it. The layouts remain shared.
 
 ### Enable after updating the dotfiles
 
 From your **permanent checkout** (not a worktree you plan to delete):
 
 ```sh
+mise dot apply --dry-run
 mise dot apply
 ```
+
+The new mappings deploy `theme/ethereal.toml` and a small Ghostty include,
+[`ghostty/config-theme.tera`](ghostty/config-theme.tera), on both macOS and Linux.
+The include is rendered by mise so Ghostty can find the generated palette even
+with a custom `XDG_CACHE_HOME`. Reapply `~/.config/ghostty/config-theme` if that
+environment variable changes; use the same cache environment when switching.
 
 On Omarchy, reapply the selected theme once so it renders the new user template
 and runs the new hook:
@@ -185,33 +217,20 @@ and runs the new hook:
 omarchy theme set "$(omarchy theme current)"
 ```
 
-Off Omarchy, initialize the generated palette with:
-
-```sh
-mise run theme:apply
-```
+Off Omarchy, initialize with `mise theme catppuccin` or `mise theme ethereal`.
+`mise run theme:apply` regenerates the saved selection without changing it.
 
 Start a new Bash session once to install its pre-prompt callback. For tmux
 servers that were already running before these changes, reload the configuration
 once with prefix + `q` (or `tmux source-file ~/.config/tmux/tmux.conf`). Restart
-Neovim once to load its new adapter. After that, ordinary Omarchy theme changes
-update all four apps without restarting them; Bash/Starship update on the next
-prompt, and Neovim detects the changed theme file. Theme reloads do not re-source
-tmux keybindings/plugins or all of `.bashrc`.
+Neovim once to load its new adapter; subsequent switches need no restart.
+Reload Ghostty once to load its new include. Ordinary Omarchy theme changes still
+update all four apps automatically; portable preset changes need only Ghostty's
+reload shortcut. Theme reloads do not re-source tmux keybindings/plugins or all
+of `.bashrc`.
 
-### Manual changes on macOS
-
-1. Edit [`theme/palette.toml`](theme/palette.toml) for Bash, Starship, and tmux.
-2. Run `mise run theme:apply`. Existing Bash sessions pick up the new colors at
-   their next prompt; registered tmux servers reload their palette immediately.
-3. Change the fallback `theme` in [`ghostty/config`](ghostty/config) and reload
-   Ghostty's configuration.
-4. Change Neovim's fallback colorscheme/mode in
-   [`nvim/lua/config/theme.lua`](nvim/lua/config/theme.lua) and restart Neovim.
-
-No Omarchy commands or daemon are required on macOS. Use Homebrew Bash (already
-in the bootstrap packages), not Apple's old `/bin/bash`. The renderer needs
-Python 3.11+, provided by the existing mise Python pin.
+Use Homebrew Bash (already in the bootstrap packages), not Apple's old `/bin/bash`.
+The renderer needs Python 3.11+, provided by the mise Python pin.
 
 ### How it works
 
@@ -221,10 +240,14 @@ Python 3.11+, provided by the existing mise Python pin.
   themes and is deployed only on Linux.
 - [`theme/apply.py`](theme/apply.py) validates the palette and combines it with
   the single Starship layout in [`starship/starship.toml`](starship/starship.toml).
-  It writes only generated files under `${XDG_CACHE_HOME:-~/.cache}/dotfiles/theme/`,
-  not the managed config symlinks. Input paths match mise's explicit `~/.config/`
-  destinations, even if `XDG_CONFIG_HOME` differs. Bash exports `STARSHIP_CONFIG`
-  to that generated file. Bare Starship invocations outside managed Bash have an ANSI safety palette.
+  It validates the preset, including terminal colors and the Neovim selector,
+  before publishing generated files under `${XDG_CACHE_HOME:-~/.cache}/dotfiles/theme/`.
+  Only explicit `mise theme <name>` also writes the selection state; managed config
+  symlinks are never written. Ghostty includes its generated fragment before the
+  Omarchy override; Neovim watches the generated JSON when Omarchy is absent.
+  Input paths match mise's explicit `~/.config/` destinations, even if
+  `XDG_CONFIG_HOME` differs. Bash exports `STARSHIP_CONFIG` to the generated file.
+  Bare Starship invocations outside managed Bash have an ANSI safety palette.
 - Interactive Bash initialization renders the palette; the Omarchy `theme-set.d` hook renders
   it again on changes. The Bash prompt callback itself uses only shell builtins
   to read the generated colors and rebind Readline's vi arrows.
@@ -248,7 +271,8 @@ Python 3.11+, provided by the existing mise Python pin.
   palette changes, retaining the last good theme on read errors. The existing
   `~/.config/nvim` mise mapping deploys this preference; restart Neovim once to
   load the updated adapter. No Omarchy theme reapplication is needed for this
-  preference, and the no-Omarchy/macOS fallback remains Catppuccin Mocha.
+  preference. Off Omarchy, the adapter follows the saved portable preset, with
+  Catppuccin Mocha as its safe default before the first render.
 
 ### Theme tests
 
@@ -262,16 +286,17 @@ tests/nvim-theme.sh --integration
 ```
 
 Neovim tests use an existing local lazy.nvim checkout and do not download plugins.
-They cover native Ethereal at startup, switching away and back, name-only updates,
-and matching manual Ethereal highlights. `--integration` additionally exercises
+They cover saved presets at startup, switching Catppuccin/Ethereal in an existing
+instance, native Ethereal on Omarchy, name-only updates, and matching manual
+Ethereal highlights. `--integration` additionally exercises
 installed theme plugins; set
 `LAZY_NVIM_PATH` / `NVIM_THEME_PLUGIN_ROOT` if they live outside the usual Neovim
 lazy data directory.
 
-Installed tmux/Starship enable their integration tests; installed Omarchy enables
-real template-rendering tests for two dark palettes and one light palette. These
-Linux tests exercise the no-Omarchy fallback but are not a substitute for a native
-macOS smoke test.
+Installed tmux/Starship enable their integration tests. Installed Ghostty enables
+an effective-config check for both presets and Omarchy precedence. Installed
+Omarchy enables real template-rendering tests for two dark palettes and one light
+palette. Preset switching and installed theme plugins are also tested on macOS.
 
 ## Personal agent instructions
 

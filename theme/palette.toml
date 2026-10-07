@@ -1,6 +1,6 @@
-# Manual palette used off Omarchy (including macOS): Catppuccin Mocha.
-# After editing, run `mise run theme:apply` or start a new Bash session.
-# Neovim and Ghostty select their own matching colorscheme; see README.md.
+# Catppuccin Mocha preset and default off Omarchy (including macOS).
+# Customize shell colors here, then run `mise theme catppuccin`.
+colorscheme = "catppuccin-mocha"
 mode = "dark"
 foreground = "#cdd6f4"
 background = "#1e1e2e"
@@ -16,3 +16,6 @@ runtime_segment = "#1d2230"
 runtime_segment_alt = "#212736"
 hostname = "#fab387"
 node = "#a6e3a1"
+
+[ghostty]
+theme = "Catppuccin Mocha"

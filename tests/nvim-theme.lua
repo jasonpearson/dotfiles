@@ -64,9 +64,17 @@ local function changed(source, mode, expected, marker, name)
   eq(schemes, before + 1, "one ColorScheme per accepted snapshot")
 end
 
+local function select_preset(name)
+  local result = vim.system({ "python3", repo .. "/theme/apply.py", "--select", name, "--no-reload" },
+    { text = true }):wait()
+  assert(result.code == 0, result.stderr)
+end
+
 vim.opt.rtp:prepend(repo .. "/nvim")
 vim.opt.rtp:prepend(vim.env.NVIM_THEME_LAZY)
-if scenario == "ethereal" then
+if scenario == "manual" then
+  select_preset("ethereal")
+elseif scenario == "ethereal" then
   replace(generate("aether", '{colors = {fg = "#112233", bg = "#101010"}}'), "dark", nil, "ethereal")
 elseif scenario == "runtime" then
   replace(generate("aether", '{ colors = { fg = "#112233", bg = "#101010" } }'), "dark")
@@ -163,6 +171,45 @@ local function checks()
   eq(plugins.aether.name, "aether", "aether install name")
   eq(entered, 1, "natural VimEnter")
   eq(schemes, 1, "explicit startup colorscheme")
+  if scenario == "manual" then
+    eq(vim.g.colors_name, "ethereal", "saved portable preset at startup")
+    eq(vim.o.background, "dark")
+    local native = vim.api.nvim_get_hl(0, { name = "Normal", link = false })
+    if real then
+      eq(native.fg, 0xffcead, "native Ethereal foreground")
+    end
+    for _, name in ipairs({ "catppuccin", "ethereal", "catppuccin", "ethereal" }) do
+      local before = schemes
+      select_preset(name)
+      assert(vim.wait(2500, function() return schemes > before end, 25), "preset did not refresh")
+      eq(vim.g.colors_name, name == "catppuccin" and "catppuccin-mocha" or "ethereal")
+      eq(schemes, before + 1, "one event per preset switch")
+    end
+    eq(vim.api.nvim_get_hl(0, { name = "Normal", link = false }), native, "Ethereal highlights round-trip")
+    local before = schemes
+    select_preset("ethereal")
+    settle()
+    eq(schemes, before, "same preset does not reload")
+    local cache = vim.env.XDG_CACHE_HOME .. "/dotfiles/theme/neovim.json"
+    vim.fn.delete(cache)
+    settle()
+    eq(schemes, before, "missing preset cache preserves theme")
+    write(cache, '{"source":"manual","colorscheme":"bad;command","mode":"dark"}')
+    settle()
+    eq(schemes, before, "invalid preset preserves theme")
+    eq(#errors, 1, "invalid preset reported once")
+    errors = {}
+    select_preset("catppuccin")
+    assert(vim.wait(2500, function() return schemes > before end, 25), "preset did not recover")
+    eq(vim.g.colors_name, "catppuccin-mocha")
+    changed(generate("aether", '{colors = {fg = "#223344"}}'), "dark", "aether")
+    vim.fn.delete(theme_dir, "rf")
+    settle()
+    eq(vim.g.colors_name, "aether", "Omarchy rm/mv gap never selects stale manual cache")
+    eq(errors, {}, "portable preset errors")
+    print(("PASS nvim-theme manual (%s)"):format(real and "installed plugins" or "fixtures"))
+    return
+  end
   if scenario == "ethereal" then
     eq(vim.g.colors_name, "ethereal", "Omarchy Ethereal uses native colorscheme at startup")
     eq(plugins.aether._.loaded, nil, "generated Aether plugin is not loaded for Ethereal")

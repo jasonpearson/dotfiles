@@ -2,9 +2,10 @@ local M = {}
 local uv = vim.uv or vim.loop
 local theme_dir = vim.fn.expand("~/.local/state/omarchy/current/theme")
 
--- Manual selector for machines without Omarchy. Match Ghostty and Bash there.
-local fallback_colorscheme = "catppuccin-mocha"
-local fallback = { plugins = {}, colorscheme = fallback_colorscheme, mode = "dark" }
+-- Safe default before the first `mise theme` / shell startup render.
+local cache = (vim.env.XDG_CACHE_HOME and vim.env.XDG_CACHE_HOME ~= "" and vim.env.XDG_CACHE_HOME
+  or vim.fn.expand("~/.cache")) .. "/dotfiles/theme/neovim.json"
+local fallback = { plugins = {}, colorscheme = "catppuccin-mocha", mode = "dark", source = "manual" }
 local current, applied, pending, rejected, timer
 local busy = false
 local names = {}
@@ -33,7 +34,7 @@ local function apply_transparency()
 end
 
 local function notify_error(err)
-  vim.notify(tostring(err), vim.log.levels.ERROR, { title = "Omarchy theme" })
+  vim.notify(tostring(err), vim.log.levels.ERROR, { title = "Dotfiles theme" })
 end
 
 local function read_file(path)
@@ -49,7 +50,12 @@ end
 local function snapshot()
   local source = read_file(theme_dir .. "/neovim.lua")
   if not source then
-    return nil
+    -- Never flash back to a stale manual preset in Omarchy's rm/mv window.
+    if current and current.source == "omarchy" then
+      return nil
+    end
+    local manual = read_file(cache)
+    return manual and { manual = manual, key = "manual\0" .. manual } or nil
   end
   local colors = read_file(theme_dir .. "/colors.toml") or ""
   local name = vim.trim(read_file(theme_dir .. ".name") or "")
@@ -67,11 +73,20 @@ local function snapshot()
 end
 
 local function parse(raw)
+  if raw.manual then
+    local selected = vim.json.decode(raw.manual)
+    assert(type(selected) == "table" and selected.source == "manual", "Manual theme unavailable")
+    assert(type(selected.colorscheme) == "string" and selected.colorscheme:match("^[%w_.%-]+$"),
+      "Invalid preset colorscheme")
+    assert(selected.mode == "dark" or selected.mode == "light", "Invalid preset mode")
+    return { plugins = {}, colorscheme = selected.colorscheme, mode = selected.mode,
+      source = "manual", key = raw.key }
+  end
   local chunk, err = loadstring(raw.source, "@" .. theme_dir .. "/neovim.lua")
   assert(chunk, err)
   local generated = chunk()
   assert(type(generated) == "table", "Expected a list of theme specs")
-  local selected = { plugins = {}, key = raw.key }
+  local selected = { plugins = {}, key = raw.key, source = "omarchy" }
 
   local function filter(spec)
     spec = type(spec) == "string" and { spec } or vim.deepcopy(spec)

@@ -1,8 +1,8 @@
-# Fallback theme when Omarchy is not present.
-# theme = Rose Pine
+# Safe default before the first render. Switch all apps with `mise theme <name>`.
 theme = Catppuccin Mocha
+config-file = ?config-theme
 
-# Dynamic Omarchy theme colors override the fallback when present.
+# Dynamic Omarchy theme colors override the portable preset when present.
 config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
 
 # background-opacity = 0.95
