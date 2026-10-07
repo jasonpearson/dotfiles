@@ -6,6 +6,7 @@
 "brew:git" = { os = "macos" }
 "pacman:ghostty" = { os = "linux" }
 "pacman:git" = { os = "linux" }
+"pacman:ttf-ibmplex-mono-nerd" = { os = "linux" }
 
 [dotfiles]
 "~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
@@ -13,7 +14,7 @@
 "~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
 "~/.config/dotfiles/theme/apply.py" = { source = "../theme/apply.py", mode = "symlink" }
 "~/.config/dotfiles/theme/palette.toml" = { source = "../theme/palette.toml", mode = "symlink" }
-"~/.config/ghostty" = { source = "../ghostty", mode = "symlink-each" }
+"~/.config/ghostty/config" = { source = "../ghostty/config", mode = "symlink" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
 "~/.config/mise" = { source = ".", mode = "symlink-each" }
 "~/.config/nvim" = { source = "../nvim", mode = "symlink-each" }
@@ -44,6 +45,13 @@
 "~/.claude/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
 
 # linux only
+[dotfiles."~/.config/ghostty/config-linux"]
+source = "../ghostty/config-linux"
+mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
 [dotfiles."~/.config/fcitx5/conf/unicode.conf"]
 source = "../fcitx5/conf/unicode.conf"
 mode = "symlink"

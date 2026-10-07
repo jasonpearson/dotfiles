@@ -9,6 +9,8 @@ config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
 font-family = "BlexMono Nerd Font"
 font-style = Regular
 font-size = 15
+# Optional font-size override, deployed only on Linux by mise.
+config-file = ?config-linux
 font-feature = -calt, -liga, -dlig
 macos-titlebar-proxy-icon = hidden
 title = " "

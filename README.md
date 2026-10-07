@@ -93,6 +93,55 @@ busctl --user call org.fcitx.Fcitx5 /controller \
 Press **Escape** to cancel any already-active Unicode entry before testing the
 Pi shortcuts. The reload command is unnecessary on systems without Fcitx5.
 
+## Neovim clipboard
+
+[`nvim/init.lua`](nvim/init.lua) initializes
+[`remote_clipboard`](nvim/lua/remote_clipboard.lua) before plugins load. macOS uses
+`pbcopy`/`pbpaste`; local Wayland uses `wl-copy`/`wl-paste`. Linux tmux, SSH, and
+Herdr sessions also send OSC 52 clipboard writes to the attaching terminal.
+Without that extra write, Wayland can have the new text while tmux's clipboard
+buffer still contains an older copy.
+
+The existing **Space+y** and **Space+Shift+y** normal-mode mappings copy the
+current file's relative and absolute paths respectively. Restart Neovim after
+changing its clipboard startup configuration. The existing `~/.config/nvim`
+mise mapping deploys this on both Linux and macOS; no desktop settings change.
+
+The Linux integration test uses a private tmux server and fake Wayland tools,
+without reading or replacing the desktop clipboard or downloading plugins:
+
+```sh
+PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_nvim_clipboard.py' -v
+```
+
+## Ghostty Linux overrides
+
+[`ghostty/config`](ghostty/config) keeps the shared font size at 15. It optionally
+includes [`ghostty/config-linux`](ghostty/config-linux), deployed only on Linux.
+Mise maps the two files individually rather than deploying the whole `ghostty/`
+directory, keeping the override off macOS.
+
+The Linux size of 11 is tuned for Linux's 96-DPI baseline and this desktop's
+1.1818 GTK text scale. It is a starting point, not an automatic DPI adjustment;
+edit `ghostty/config-linux` if another desktop needs a different size.
+Monitor and desktop-wide text scaling are unchanged. Mise bootstrap installs
+BlexMono via Homebrew on macOS and pacman on Arch Linux.
+
+Omarchy's **Super+V** universal paste sends **Shift+Insert** to terminals. The
+Linux override maps that chord to `paste_from_clipboard`, matching Neovim's `+`
+register and Ghostty's **Ctrl+Shift+V**. This replaces Ghostty's default
+**Shift+Insert** behavior of pasting the separate primary selection (`*`).
+macOS bindings are unchanged.
+
+```sh
+mise dot apply --dry-run '~/.config/ghostty/config' '~/.config/ghostty/config-linux'
+mise dot apply '~/.config/ghostty/config' '~/.config/ghostty/config-linux'
+```
+
+Reload Ghostty with **Ctrl+Shift+,** on Linux or **Cmd+Shift+,** on macOS.
+If a terminal has been manually zoomed, reset its font size with **Ctrl+0** on
+Linux or **Cmd+0** on macOS after reloading, or open a fresh window.
+
 ## Themes: Omarchy and macOS
 
 The layouts are shared across platforms. Omarchy supplies the palette when its
