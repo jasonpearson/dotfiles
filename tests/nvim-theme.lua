@@ -26,6 +26,7 @@ local function generate(name, opts, extra)
   local repos = {
     aether = '"bjarneo/aether.nvim", name = "aether", branch = "v3"',
     ethereal = '"bjarneo/ethereal.nvim"',
+    bamboo = '"ribru17/bamboo.nvim"',
     catppuccin = '"catppuccin/nvim", name = "catppuccin"',
     nightfox = '"EdenEast/nightfox.nvim"',
   }
@@ -72,7 +73,9 @@ end
 
 vim.opt.rtp:prepend(repo .. "/nvim")
 vim.opt.rtp:prepend(vim.env.NVIM_THEME_LAZY)
-if scenario == "manual" then
+if scenario == "osaka-jade" then
+  select_preset("osaka-jade")
+elseif scenario == "manual" then
   select_preset("ethereal")
 elseif scenario == "ethereal" then
   replace(generate("aether", '{colors = {fg = "#112233", bg = "#101010"}}'), "dark", nil, "ethereal")
@@ -147,6 +150,9 @@ return { setup = function() error('Competing aether watcher must not start') end
   fixture("ethereal.nvim", "ethereal", "{}", {
     ["ethereal.vim"] = [[lua require('ethereal').load('ethereal')]],
   })
+  fixture("bamboo.nvim", "bamboo", "{}", {
+    ["bamboo.lua"] = [[require('bamboo').load('bamboo')]],
+  })
 end
 
 require("lazy").setup({
@@ -171,6 +177,26 @@ local function checks()
   eq(plugins.aether.name, "aether", "aether install name")
   eq(entered, 1, "natural VimEnter")
   eq(schemes, 1, "explicit startup colorscheme")
+  if scenario == "osaka-jade" then
+    eq(vim.g.colors_name, "bamboo", "Osaka Jade uses Bamboo at startup")
+    eq(vim.o.background, "dark")
+    local function highlights()
+      local result = {}
+      for _, name in ipairs({ "Normal", "Identifier", "@property", "String" }) do
+        result[name] = vim.api.nvim_get_hl(0, { name = name, link = false, create = false })
+      end
+      return result
+    end
+    local portable = highlights()
+    if real then
+      eq(portable.Normal.fg, 0xf1e9d2, "native Bamboo foreground")
+    end
+    changed(generate("bamboo"), "dark", "bamboo", nil, "osaka-jade")
+    eq(highlights(), portable, "portable and Omarchy Osaka Jade highlights match")
+    eq(errors, {}, "Osaka Jade errors")
+    print(("PASS nvim-theme osaka-jade (%s)"):format(real and "installed plugins" or "fixtures"))
+    return
+  end
   if scenario == "manual" then
     eq(vim.g.colors_name, "ethereal", "saved portable preset at startup")
     eq(vim.o.background, "dark")
@@ -178,11 +204,13 @@ local function checks()
     if real then
       eq(native.fg, 0xffcead, "native Ethereal foreground")
     end
-    for _, name in ipairs({ "catppuccin", "ethereal", "catppuccin", "ethereal" }) do
+    local expected = { catppuccin = "catppuccin-mocha", ethereal = "ethereal", ["osaka-jade"] = "bamboo" }
+    -- Cover every directed transition between the three portable presets.
+    for _, name in ipairs({ "catppuccin", "osaka-jade", "ethereal", "osaka-jade", "catppuccin", "ethereal" }) do
       local before = schemes
       select_preset(name)
       assert(vim.wait(2500, function() return schemes > before end, 25), "preset did not refresh")
-      eq(vim.g.colors_name, name == "catppuccin" and "catppuccin-mocha" or "ethereal")
+      eq(vim.g.colors_name, expected[name])
       eq(schemes, before + 1, "one event per preset switch")
     end
     eq(vim.api.nvim_get_hl(0, { name = "Normal", link = false }), native, "Ethereal highlights round-trip")

@@ -1,7 +1,7 @@
 {
-  "theme": "dark",
+  "theme": "system",
   "tuiMode": "fullscreen",
-  "lastChangelogVersion": "1.0.1",
+  "lastChangelogVersion": "1.0.2",
   "defaultProvider": "openai-codex",
   "defaultModel": "gpt-6-astra",
   "defaultThinkingLevel": "xhigh"

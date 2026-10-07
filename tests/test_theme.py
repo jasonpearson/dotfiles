@@ -73,10 +73,12 @@ class ThemeTests(unittest.TestCase):
         result = self.run_apply("--select")
         self.assertIn("Saved preset: catppuccin", result.stdout)
         self.assertIn("ethereal", result.stdout)
+        self.assertIn("osaka-jade", result.stdout)
         self.assertFalse(self.cache.exists())
         state = self.home / "state/dotfiles/theme/selection"
         self.assertFalse(state.exists())
         for name, accent, scheme in [("ethereal", "#7d82d9", "ethereal"),
+                                     ("osaka-jade", "#509475", "bamboo"),
                                      ("catppuccin", "#89b4fa", "catppuccin-mocha")]:
             self.run_apply("--select", name, "--no-reload")
             self.assertEqual(state.read_text(), name + "\n")
@@ -109,9 +111,10 @@ class ThemeTests(unittest.TestCase):
     def test_selector_does_not_override_omarchy(self):
         self.run_apply("--select", "ethereal", "--no-reload")
         self.set_palette()
-        result = self.run_apply("--select", "catppuccin", "--no-reload", check=False)
-        self.assertNotEqual(result.returncode, 0)
-        self.assertIn("omarchy theme set", result.stderr)
+        for preset in ("catppuccin", "osaka-jade"):
+            result = self.run_apply("--select", preset, "--no-reload", check=False)
+            self.assertNotEqual(result.returncode, 0)
+            self.assertIn("omarchy theme set", result.stderr)
         self.assertEqual((self.home / "state/dotfiles/theme/selection").read_text(), "ethereal\n")
         self.run_apply("--no-reload")
         self.assertEqual(self.palette()["accent"], "#123456")
@@ -132,12 +135,19 @@ class ThemeTests(unittest.TestCase):
             self.assertNotIn("error", result.stderr.lower())
             return result.stdout.lower()
         for preset, background, foreground in [("ethereal", "060b1e", "ffcead"),
+                                                ("osaka-jade", "111c18", "c1c497"),
                                                 ("catppuccin", "1e1e2e", "cdd6f4")]:
             self.run_apply("--select", preset, "--no-reload")
             actual = effective()
             self.assertIn(f"background = #{background}", actual)
             self.assertIn(f"foreground = #{foreground}", actual)
             self.assertIn("font-size = 15", actual)
+            if preset == "osaka-jade":
+                self.assertIn("cursor-color = #f7e8b2", actual)
+                self.assertIn("selection-background = #32473b", actual)
+                self.assertIn("selection-foreground = #f7e8b2", actual)
+                self.assertIn("palette = 6=#2dd5b7", actual)
+                self.assertIn("palette = 14=#8cd3cb", actual)
         (self.current / "ghostty.conf").write_text("background = #123456\n")
         self.assertIn("background = #123456", effective())
 
@@ -241,18 +251,55 @@ bind -v | grep 'vi-.*-mode-string'
         def tm(socket, *args):
             return subprocess.run(["tmux", "-S", str(socket), *args], env=self.env,
                                   text=True, capture_output=True, check=True, timeout=15).stdout.strip()
+        def assert_styles(socket):
+            colors = self.palette()
+            # Resolve the actual UI formats, not merely their @theme_* inputs.
+            # Stale inherited/session environment colors must not win here.
+            self.assertEqual(tm(socket, "display-message", "-p", "-t", "probe", "#{E:pane-active-border-style}"),
+                             f'fg={colors["accent"]}')
+            self.assertEqual(tm(socket, "display-message", "-p", "-t", "probe", "#{E:status-style}"),
+                             f'bg={colors["status_background"]},fg={colors["background"]}')
+            label = tm(socket, "display-message", "-p", "-t", "probe", "#{E:pane-border-format}")
+            self.assertIn(f'#[bg={colors["accent"]}]', label)
+            self.assertNotIn("#badbad", label)
+            window = tm(socket, "display-message", "-p", "-t", "probe", "#{E:window-status-current-format}")
+            self.assertIn(f'fg={colors["git_segment"]},bg={colors["background"]}', window)
+            panes = tm(socket, "list-panes", "-t", "probe", "-F", "#{pane_id}").splitlines()
+            self.assertEqual(len(panes), 2)
+            for focused in panes:
+                tm(socket, "select-pane", "-t", focused)
+                for pane in panes:
+                    label = tm(socket, "display-message", "-p", "-t", pane, "#{E:pane-border-format}")
+                    if pane == focused:
+                        path = tm(socket, "display-message", "-p", "-t", pane,
+                                  "#{=/60/…:#{E:@pane_border_text}}")
+                        self.assertIn(f'#[bg={colors["accent"]}]', label)
+                        self.assertIn("#[bold]", label)
+                        # The entire icon/path label is enclosed, not just the icon.
+                        self.assertLess(label.index(""), label.index(path))
+                        self.assertLess(label.index(path), label.index(""))
+                    else:
+                        self.assertIn(f'#[fg={colors["muted"]}]', label)
+                        self.assertNotIn("", label)
+                        self.assertNotIn("", label)
+                        self.assertNotIn("#[bold]", label)
+                        self.assertNotIn(f'#[bg={colors["muted"]}]', label)
+                        self.assertNotIn(f'#[bg={colors["accent"]}]', label)
         for socket in sockets:
             self.addCleanup(lambda s=socket: subprocess.run(["tmux", "-S", str(s), "kill-server"], env=self.env, capture_output=True))
             tm(socket, "-f", str(conf), "new-session", "-d", "-s", "probe", "sleep 120")
             self.assertEqual(tm(socket, "show-option", "-gqv", "@theme_accent"), "#89b4fa")
             tm(socket, "set", "-g", "status-left", "sentinel-layout")
             tm(socket, "set-environment", "-t", "probe", "THEME_ACCENT", "#badbad")
+            tm(socket, "split-window", "-d", "-t", "probe", "sleep 120")
         self.assertEqual(set(json.loads((self.cache / "tmux-sockets.json").read_text())), set(map(str, sockets)))
-        for preset, accent in [("ethereal", "#7d82d9"), ("catppuccin", "#89b4fa")]:
+        for preset, accent in [("ethereal", "#7d82d9"), ("osaka-jade", "#509475"),
+                               ("catppuccin", "#89b4fa")]:
             self.run_apply("--select", preset)
             for socket in sockets:
                 self.assertEqual(tm(socket, "show-option", "-gqv", "@theme_accent"), accent)
                 self.assertEqual(tm(socket, "show-option", "-gqv", "status-left"), "sentinel-layout")
+                assert_styles(socket)
         self.set_palette()
         # Real hook, scoped entirely to the fake HOME/cache/socket namespace.
         subprocess.run(["bash", str(ROOT / "omarchy/hooks/theme-set.d/dotfiles-theme.hook"), "stale-name"],
@@ -261,6 +308,44 @@ bind -v | grep 'vi-.*-mode-string'
             self.assertEqual(tm(socket, "show-option", "-gqv", "@theme_accent"), "#123456")
             self.assertEqual(tm(socket, "show-option", "-gqv", "status-left"), "sentinel-layout")
             self.assertEqual(tm(socket, "display-message", "-p", "-t", "probe", "#{@theme_accent}"), "#123456")
+            assert_styles(socket)
+
+    @unittest.skipUnless(shutil.which("tmux"), "tmux not installed")
+    def test_tmux_legacy_styles_warn_until_one_time_config_reload(self):
+        # Reproduce an already-running pre-bridge server: new palette options
+        # arrive successfully but borders/status still use inherited colors.
+        socket = self.home / "legacy socket"
+        def tm(*args):
+            return subprocess.run(["tmux", "-S", str(socket), *args], env=self.env,
+                                  text=True, capture_output=True, check=True, timeout=15).stdout.strip()
+        self.addCleanup(lambda: subprocess.run(["tmux", "-S", str(socket), "kill-server"],
+                                               env=self.env, capture_output=True))
+        tm("-f", "/dev/null", "new-session", "-d", "-s", "probe", "sleep 120")
+        tm("set-environment", "-g", "THEME_ACCENT", "#89b4fa")
+        tm("set", "-g", "@status_background", "#7c85aa")
+        tm("set", "-g", "pane-active-border-style", "fg=#{THEME_ACCENT}")
+        tm("set", "-g", "status-style", "bg=#{@status_background}")
+        tm("set", "-g", "status-left", "sentinel-layout")
+        result = self.run_apply("--select", "osaka-jade", "--tmux-socket", str(socket))
+        self.assertIn("legacy color formats", result.stderr)
+        self.assertIn("source-file", result.stderr)
+        self.assertIn(str(socket), result.stderr)
+        self.assertEqual(tm("show-option", "-gqv", "@theme_accent"), "#509475")
+        self.assertEqual(tm("display-message", "-p", "#{E:pane-active-border-style}"), "fg=#89b4fa")
+        self.assertEqual(tm("show-option", "-gqv", "status-left"), "sentinel-layout")
+        # The recommended explicit reload installs the new format references.
+        config = self.config / "tmux/tmux.conf"
+        config.parent.mkdir(parents=True)
+        config.write_text((ROOT / "tmux/tmux.conf").read_text().split("# Other plugins still use tpack", 1)[0])
+        tm("source-file", str(config))
+        result = self.run_apply("--select", "ethereal")
+        self.assertNotIn("legacy color formats", result.stderr)
+        self.assertEqual(tm("display-message", "-p", "#{E:pane-active-border-style}"), "fg=#7d82d9")
+        self.assertEqual(tm("display-message", "-p", "#{E:status-style}"), "bg=#8f766d,fg=#060b1e")
+        # A stale per-window override also gets diagnosed, even in another window.
+        tm("new-window", "-d", "-n", "old-style", "sleep 120")
+        tm("set", "-w", "-t", "probe:old-style", "pane-active-border-style", "fg=#{THEME_ACCENT}")
+        self.assertIn("legacy color formats", self.run_apply("--select", "catppuccin").stderr)
 
     @unittest.skipUnless(Path("/usr/share/omarchy/bin/omarchy-theme-set-templates").exists(), "Omarchy not installed")
     def test_real_omarchy_templates_without_switching_desktop(self):
@@ -268,7 +353,8 @@ bind -v | grep 'vi-.*-mode-string'
         templates.mkdir(parents=True)
         shutil.copy(ROOT / "omarchy/themed/dotfiles-palette.toml.tpl", templates)
         stage = self.current.with_name("next-theme")
-        for theme, mode in [("catppuccin", "dark"), ("tokyo-night", "dark"), ("catppuccin-latte", "light")]:
+        for theme, mode in [("catppuccin", "dark"), ("osaka-jade", "dark"),
+                            ("tokyo-night", "dark"), ("catppuccin-latte", "light")]:
             if stage.exists():
                 shutil.rmtree(stage)
             stage.mkdir()
@@ -282,6 +368,10 @@ bind -v | grep 'vi-.*-mode-string'
             self.assertEqual(rendered["mode"], mode)
             self.assertEqual(self.palette()["accent"], rendered["accent"])
             self.assertNotIn("{{", (self.cache / "starship.toml").read_text())
+            if theme == "osaka-jade":
+                portable = tomllib.loads((self.scripts / "osaka-jade.toml").read_text())
+                self.assertEqual({key: value.lower() for key, value in rendered.items()},
+                                 {key: portable[key].lower() for key in rendered})
 
 
 if __name__ == "__main__":

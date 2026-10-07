@@ -21,7 +21,7 @@ trap 'rm -rf -- "$scratch"' EXIT
 mkdir -p "$scratch/bin"
 printf '#!/bin/sh\necho "Unexpected git invocation in theme test" >&2\nexit 97\n' > "$scratch/bin/git"
 chmod +x "$scratch/bin/git"
-for scenario in manual ethereal fallback runtime native invalid; do
+for scenario in osaka-jade manual ethereal fallback runtime native invalid; do
   home=$scratch/$scenario
   mkdir -p "$home"/{.config,config/nvim,data,state,cache}
   ln -s "$repo/starship/starship.toml" "$home/.config/starship.toml"

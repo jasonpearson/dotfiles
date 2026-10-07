@@ -66,6 +66,18 @@ Reopen pickers after editing; no tmux configuration reload is needed. The pinned
 installed, the existing mise `TMUX_ATTENTION_DIR_COMMAND` setting preserves
 zoxide navigation; remove that compatibility setting when upgrading.
 
+## tmux pane focus
+
+The active pane has a **bold, accent-filled pill around its icon and path/title**.
+Inactive pane labels are plain muted text, without a pill. Focus therefore differs
+by shape and emphasis, not just hue—even when a theme's accent and muted colors
+are similar. The same layout works on macOS and Linux with every theme.
+
+This lives in [`tmux/tmux.conf`](tmux/tmux.conf), deployed by its existing mise
+mapping. After updating the layout, reload tmux once with prefix + `q` (or
+`tmux source-file ~/.config/tmux/tmux.conf`). No panes need restarting, and
+subsequent palette changes still update automatically.
+
 ## Terminal defaults and Pi scrolling
 
 Pi starts in fullscreen mode. **Ctrl+Shift+U** and **Ctrl+Shift+D** scroll the
@@ -171,6 +183,7 @@ One selection now coordinates Ghostty, Neovim, Bash/Starship, and tmux:
 
 ```sh
 mise theme ethereal
+mise theme osaka-jade
 mise theme catppuccin       # Catppuccin Mocha, the original default
 mise theme                 # show the saved selection and available presets
 ```
@@ -184,16 +197,32 @@ On a fresh install, let Neovim's normal Lazy setup install its theme plugins onc
 Presets are checked in: [`theme/palette.toml`](theme/palette.toml) preserves the
 existing Catppuccin shell colors, and [`theme/ethereal.toml`](theme/ethereal.toml)
 bundles native Ethereal's terminal and shell palette. Neovim uses the native
-`ethereal.nvim` plugin. Fonts, layouts, keybindings, and other settings stay put.
+`ethereal.nvim` plugin. [`theme/osaka-jade.toml`](theme/osaka-jade.toml) matches
+Omarchy's Osaka Jade terminal palette and shell blends; Neovim uses **Bamboo**,
+just as Omarchy does (there is no `osaka-jade` Neovim colorscheme to install).
+Fonts, layouts, keybindings, and other settings stay put.
 
 The choice is intentionally **per machine**, saved under
 `${XDG_STATE_HOME:-~/.local/state}/dotfiles/theme/selection`; switching does not
 dirty Git or rewrite config symlinks. It survives restarts and cache cleanup.
 A new machine defaults to Catppuccin; run the same command there to select
-Ethereal. To customize a preset, edit its repository TOML and rerun the command.
+Ethereal or Osaka Jade. To customize a preset, edit its repository TOML and rerun
+the command.
 
 On Omarchy, keep using `omarchy theme set`: its rendered palette takes precedence.
 `mise theme <name>` refuses to compete with it. The layouts remain shared.
+For manual comparisons, use these commands one at a time on your Omarchy machine:
+
+```sh
+omarchy theme set catppuccin
+omarchy theme set ethereal
+omarchy theme set osaka-jade
+```
+
+On macOS, use the corresponding `mise theme <name>` command above and press
+**Cmd+Shift+,** in Ghostty after each switch. Check a fresh prompt, tmux's active
+pane/status bar, and the same file in Neovim; `:colorscheme` should report
+`catppuccin-mocha`, `ethereal`, or `bamboo` respectively.
 
 ### Enable after updating the dotfiles
 
@@ -204,7 +233,7 @@ mise dot apply --dry-run
 mise dot apply
 ```
 
-The new mappings deploy `theme/ethereal.toml` and a small Ghostty include,
+The mappings deploy `theme/ethereal.toml`, `theme/osaka-jade.toml`, and a small Ghostty include,
 [`ghostty/config-theme.tera`](ghostty/config-theme.tera), on both macOS and Linux.
 The include is rendered by mise so Ghostty can find the generated palette even
 with a custom `XDG_CACHE_HOME`. Reapply `~/.config/ghostty/config-theme` if that
@@ -217,7 +246,8 @@ and runs the new hook:
 omarchy theme set "$(omarchy theme current)"
 ```
 
-Off Omarchy, initialize with `mise theme catppuccin` or `mise theme ethereal`.
+Off Omarchy, initialize with `mise theme catppuccin`, `mise theme ethereal`,
+or `mise theme osaka-jade`.
 `mise run theme:apply` regenerates the saved selection without changing it.
 
 Start a new Bash session once to install its pre-prompt callback. For tmux
@@ -231,6 +261,26 @@ of `.bashrc`.
 
 Use Homebrew Bash (already in the bootstrap packages), not Apple's old `/bin/bash`.
 The renderer needs Python 3.11+, provided by the mise Python pin.
+
+### If tmux stays blue while the prompt changes
+
+A long-running server may still have the old configuration loaded: its palette
+options update, but its border/status formats read stale environment colors.
+Reload once **inside each affected server**, without restarting any panes:
+
+```sh
+tmux source-file ~/.config/tmux/tmux.conf
+```
+
+Theme switching now warns when it detects those legacy formats and prints a
+socket-specific reload command. It does not automatically re-source keybindings,
+plugins, or layouts. If the warning persists after reloading, check for old
+session/window-local style overrides that shadow the managed global settings.
+To inspect the effective colors in the current pane:
+
+```sh
+tmux display-message -p 'accent=#{@theme_accent} border=#{E:pane-active-border-style} status=#{E:status-style}'
+```
 
 ### How it works
 
@@ -286,17 +336,20 @@ tests/nvim-theme.sh --integration
 ```
 
 Neovim tests use an existing local lazy.nvim checkout and do not download plugins.
-They cover saved presets at startup, switching Catppuccin/Ethereal in an existing
-instance, native Ethereal on Omarchy, name-only updates, and matching manual
-Ethereal highlights. `--integration` additionally exercises
+They cover saved presets at startup, switching among all three presets in an
+existing instance, matching portable/Omarchy Osaka Jade highlights, native
+Ethereal on Omarchy, name-only updates, and matching manual Ethereal highlights. `--integration` additionally exercises
 installed theme plugins; set
 `LAZY_NVIM_PATH` / `NVIM_THEME_PLUGIN_ROOT` if they live outside the usual Neovim
 lazy data directory.
 
-Installed tmux/Starship enable their integration tests. Installed Ghostty enables
-an effective-config check for both presets and Omarchy precedence. Installed
-Omarchy enables real template-rendering tests for two dark palettes and one light
-palette. Preset switching and installed theme plugins are also tested on macOS.
+Installed tmux/Starship enable their integration tests. Tmux tests check resolved
+border labels and status styles through preset changes, plus the warning and
+one-time reload for a pre-switcher server—not just the stored palette values.
+Installed Ghostty enables
+an effective-config check for all three presets and Omarchy precedence. Installed
+Omarchy enables real template-rendering tests for three dark palettes and one light
+palette, including a comparison of Osaka Jade's portable and rendered shell colors. Preset switching and installed theme plugins are also tested on macOS.
 
 ## Personal agent instructions
 

@@ -13,6 +13,7 @@ import json
 import os
 from pathlib import Path
 import re
+import shlex
 import shutil
 import stat
 import subprocess
@@ -21,7 +22,7 @@ import tempfile
 import time
 import tomllib
 
-PRESETS = {"catppuccin": "palette.toml", "ethereal": "ethereal.toml"}
+PRESETS = {"catppuccin": "palette.toml", "ethereal": "ethereal.toml", "osaka-jade": "osaka-jade.toml"}
 
 COLORS = (
     "foreground", "background", "accent", "muted", "error", "status_background",
@@ -98,7 +99,7 @@ def selected_preset():
     path = selection_path()
     name = path.read_text().strip() if path.exists() else "catppuccin"
     if name not in PRESETS:
-        raise ValueError(f"{path}: unknown preset {name!r}; choose catppuccin or ethereal")
+        raise ValueError(f"{path}: unknown preset {name!r}; choose from {', '.join(PRESETS)}")
     return name
 
 
@@ -176,8 +177,26 @@ def reload_tmux(cache, socket):
     # targets registered servers plus the default server (which may predate us).
     targets = [["-S", socket]] if socket else [[], *(["-S", path] for path in sorted(sockets))]
     for target in targets:
-        subprocess.run([binary, "-N", *target, "source-file", str(cache / "tmux.conf")],
-                       env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
+        result = subprocess.run([binary, "-N", *target, "source-file", str(cache / "tmux.conf")],
+                                env=env, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, timeout=5)
+        if result.returncode != 0:
+            continue  # Absent/stopped servers are normal; never start one.
+        # A server started before the palette bridge can receive @theme_* while
+        # its visible styles still read old inherited environment colors. Check
+        # every pane/session, including local overrides, not just global values.
+        options = ("pane-active-border-style", "pane-border-style", "pane-border-format",
+                   "status-style", "status-left", "status-right", "window-status-format",
+                   "window-status-current-format", "message-style", "message-command-style", "mode-style")
+        formats = subprocess.run([binary, "-N", *target, "list-panes", "-a", "-F",
+                                  "\n".join("#{" + option + "}" for option in options)],
+                                 env=env, text=True, capture_output=True, timeout=5)
+        if any(token in formats.stdout for token in ("#{THEME_", "#{STARSHIP_", "#{@status_background}")):
+            # Do not auto-reload keybindings/plugins or overwrite custom layouts.
+            # Make the one-time migration explicit instead of claiming success.
+            command = shlex.join(["tmux", *(target or ["-L", "default"]), "source-file",
+                                  str(Path.home() / ".config/tmux/tmux.conf")])
+            print("dotfiles theme: tmux still uses legacy color formats. Reload its config once "
+                  f"(prefix + q in that server, or `{command}`).", file=sys.stderr)
 
 
 def apply(args):

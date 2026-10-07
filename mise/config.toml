@@ -15,6 +15,7 @@
 "~/.config/dotfiles/theme/apply.py" = { source = "../theme/apply.py", mode = "symlink" }
 "~/.config/dotfiles/theme/palette.toml" = { source = "../theme/palette.toml", mode = "symlink" }
 "~/.config/dotfiles/theme/ethereal.toml" = { source = "../theme/ethereal.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/osaka-jade.toml" = { source = "../theme/osaka-jade.toml", mode = "symlink" }
 "~/.config/ghostty/config" = { source = "../ghostty/config", mode = "symlink" }
 "~/.config/ghostty/config-theme" = { source = "../ghostty/config-theme.tera", mode = "template" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
@@ -84,7 +85,7 @@ variants = [
 ]
 
 [tasks.theme]
-description = "Switch all terminal apps: mise theme [catppuccin|ethereal] (no argument shows selection)"
+description = "Switch all terminal apps: mise theme [catppuccin|ethereal|osaka-jade] (no argument shows selection)"
 run = 'python3 "$HOME/.config/dotfiles/theme/apply.py" --select'
 
 [tasks."theme:apply"]
