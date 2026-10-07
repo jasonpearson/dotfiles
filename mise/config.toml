@@ -1,3 +1,6 @@
+# Per-key Codex configuration merging requires this version.
+min_version = "2026.10.4"
+
 [bootstrap.packages]
 "brew:bash" = { os = "macos" }
 "brew-cask:font-blex-mono-nerd-font" = { os = "macos" }
@@ -31,6 +34,7 @@
 "~/.pi/agent/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
 "~/.claude/CLAUDE.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
 "~/.codex/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.codex/config.toml/tmux-title" = { source = "../agents/codex/tmux.toml", merge = true }
 
 # agent skills
 "~/.agents/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }

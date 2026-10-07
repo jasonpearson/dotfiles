@@ -3,3 +3,4 @@
 if [[ $- == *i* ]] && declare -F _dotfiles_theme_install_prompt_hook >/dev/null; then
   _dotfiles_theme_install_prompt_hook
 fi
+[[ -r ~/.config/bash/tmux.bash ]] && source ~/.config/bash/tmux.bash

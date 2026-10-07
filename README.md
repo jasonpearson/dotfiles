@@ -78,6 +78,60 @@ mapping. After updating the layout, reload tmux once with prefix + `q` (or
 `tmux source-file ~/.config/tmux/tmux.conf`). No panes need restarting, and
 subsequent palette changes still update automatically.
 
+## Coding-agent window names
+
+On macOS and Linux, tmux names a window after its focused coding-agent pane.
+When a shell or other command is focused, it uses the first agent in pane order;
+with no agents, it uses the focused pane's directory basename. Claude, Codex,
+Pi, and the existing OpenCode title convention are recognized. Empty agent
+names temporarily fall back to that agent's directory. Dead panes are ignored.
+
+- **Claude:** `/rename` (or `--name`) wins over its native generated title.
+- **Codex:** `/rename` wins over its native generated title. Only `thread-name`
+  is included in the terminal title; activity badges stay separate.
+- **Pi:** `/name` wins immediately. Unnamed sessions get a 2–6-word task summary
+  after conversation changes, at most once every two minutes. This uses an
+  additional request to the current model. Summaries are saved as separate Pi
+  extension metadata for resume/reload, never as explicit session names.
+  Failed requests retain the previous title, and late results cannot overwrite
+  a manual rename or a different session. Print/JSON/RPC runs don't touch titles.
+
+[`tmux/tmux.conf`](tmux/tmux.conf) selects and normalizes pane titles using native
+formats and hooks: no daemon, screen scraping, or periodic shell process. Pi
+publishes its chosen name in the pane-local `@pi_title` option so Pi's later
+native terminal-title writes during startup/resume cannot overwrite it.
+[`bash/config/tmux.bash`](bash/config/tmux.bash) clears old agent titles at the
+shell prompt, including after crashes and suspended commands. Explicitly
+renaming a **tmux window** with prefix + `r` still disables automatic naming for
+that window; use `tmux setw automatic-rename on` there to resume it.
+
+Deployment requires **mise >= 2026.10.4** for per-key merging. Upgrade older mise
+with `mise self-update --no-plugins 2026.10.4`. The source
+[`agents/codex/tmux.toml`](agents/codex/tmux.toml) owns only
+`tui.terminal_title`; mise preserves all unrelated local Codex configuration,
+comments, plugins, and credentials. The rest of `~/.codex` remains unmanaged.
+
+```sh
+mise dot apply --dry-run '~/.config/tmux/tmux.conf' '~/.bashrc' '~/.config/bash' '~/.pi/agent' '~/.claude' '~/.codex/config.toml/tmux-title'
+mise dot apply '~/.config/tmux/tmux.conf' '~/.bashrc' '~/.config/bash' '~/.pi/agent' '~/.claude' '~/.codex/config.toml/tmux-title'
+```
+
+Reload tmux with prefix + `q`, run `/reload` in existing Pi sessions, restart
+Claude/Codex sessions, and open a new Bash shell (or `source ~/.bashrc`).
+
+Tests use private tmux servers, fake agent processes, and mocked model calls:
+
+```sh
+python3 -m unittest discover -s tests -p 'test_tmux_naming.py' -v
+python3 -m unittest discover -s tests -p 'test_agent_title_deployment.py' -v
+node --test tests/pi-tmux-attention.test.mjs
+```
+
+The tmux tests require a C compiler for fake agent executables. When Pi is
+installed, they also exercise real Pi startup, rename, reload, and summary
+resume using named or empty sessions. The mocked Pi tests require Node 24 or
+newer. No real model requests are made by the tests.
+
 ## Terminal defaults and Pi scrolling
 
 Pi starts in fullscreen mode. **Ctrl+Shift+U** and **Ctrl+Shift+D** scroll the
