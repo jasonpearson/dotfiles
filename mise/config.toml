@@ -19,7 +19,8 @@
 "~/.config/mise" = { source = ".", mode = "symlink-each" }
 "~/.config/nvim" = { source = "../nvim", mode = "symlink-each" }
 "~/.config/starship.toml" = { source = "../starship/starship.toml", mode = "symlink" }
-"~/.config/tmux" = { source = "../tmux", mode = "symlink-each" }
+"~/.config/tmux/tmux.conf" = { source = "../tmux/tmux.conf", mode = "symlink" }
+"~/.config/tmux-attention/config" = { source = "../tmux/tmux-attention-config", mode = "symlink" }
 
 # agents
 "~/.claude" = { source = "../agents/claude", mode = "symlink-each" }
@@ -85,6 +86,8 @@ description = "Render the current theme and refresh registered tmux servers"
 run = 'python3 "$HOME/.config/dotfiles/theme/apply.py"'
 
 [env]
+# Compatibility for the pinned 0.3.0, which predates config-file support.
+# Remove after upgrading to a config-aware release; dir_command is managed there.
 TMUX_ATTENTION_DIR_COMMAND = "zoxide query --list"
 
 [tools]

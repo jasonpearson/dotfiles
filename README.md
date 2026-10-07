@@ -48,6 +48,24 @@ mise dot unapply '~/.agents/skills/hunk-review'
 mise dot apply '~/.agents/skills/hunk-review'
 ```
 
+## tmux-attention preferences
+
+[`tmux/tmux-attention-config`](tmux/tmux-attention-config) is a trusted Bash file,
+linked to `~/.config/tmux-attention/config` on macOS and Linux. It keeps the
+`pi`/`claude`/`codex` agent commands, `*subagents*` session pattern, zoxide directory
+source, and existing picker keys explicit and customizable. Other settings use
+tmux-attention's built-in defaults; environment variables override the file.
+
+```sh
+mise dot apply --dry-run '~/.config/tmux/tmux.conf' '~/.config/tmux-attention/config'
+mise dot apply '~/.config/tmux/tmux.conf' '~/.config/tmux-attention/config'
+```
+
+Reopen pickers after editing; no tmux configuration reload is needed. The pinned
+`0.3.0` release does not read this file yet. Until a config-aware release is
+installed, the existing mise `TMUX_ATTENTION_DIR_COMMAND` setting preserves
+zoxide navigation; remove that compatibility setting when upgrading.
+
 ## Terminal defaults and Pi scrolling
 
 Pi starts in fullscreen mode. **Ctrl+Shift+U** and **Ctrl+Shift+D** scroll the
