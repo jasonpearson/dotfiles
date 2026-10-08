@@ -13,6 +13,9 @@ font-size = 15
 config-file = ?config-linux
 font-feature = -calt, -liga, -dlig
 macos-titlebar-proxy-icon = hidden
+# Pi's Alt navigation/editing shortcuts; right Option still types Unicode.
+# This setting has no effect on Linux.
+macos-option-as-alt = left
 title = " "
 
 keybind = global:control+`=toggle_quick_terminal

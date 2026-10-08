@@ -60,9 +60,9 @@ variants = [
   { os = "linux" },
 ]
 
+# Retire the old Pi Ctrl+Shift+U workaround, including already-deployed links.
 [dotfiles."~/.config/fcitx5/conf/unicode.conf"]
-source = "../fcitx5/conf/unicode.conf"
-mode = "symlink"
+mode = "absent"
 variants = [
   { os = "linux" },
 ]

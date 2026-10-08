@@ -134,51 +134,81 @@ newer. No real model requests are made by the tests.
 
 ## Terminal defaults and Pi scrolling
 
-Pi starts in fullscreen mode. **Ctrl+Shift+U** and **Ctrl+Shift+D** scroll the
-transcript up and down by a page; **Ctrl+Shift+Y** and **Ctrl+Shift+E** scroll up
-and down by one line, directly in Pi without tmux copy mode. These bindings live
-in [`agents/pi/keybindings.json`](agents/pi/keybindings.json) and are deployed
-on Linux and macOS through the existing `~/.pi/agent` mise mapping. The terminal
-must distinguish Ctrl+Shift+letter from Ctrl+letter (as Ghostty does).
-Run `/reload` in an existing Pi session after updating its configuration.
+Pi starts in fullscreen mode. Navigate the conversation directly in Pi, without
+tmux copy mode or physical PageUp/PageDown keys:
 
-Two Linux-only mise mappings support this setup:
+| Keys | Action |
+| --- | --- |
+| **Ctrl+U / Ctrl+D** | Half-page up/down |
+| **Ctrl+B / Ctrl+F** | Full-page up/down |
+| **Ctrl+Y / Ctrl+E** | One line up/down |
+| **Alt+K / Alt+J** | Previous/next message marker |
+| **Ctrl+G / Ctrl+Shift+G** | Beginning/end; end resumes following new output |
+| **Ctrl+Shift+E** | Open the input in the external editor |
+| **Ctrl+Shift+F** | Search the transcript (Pi's default) |
+| **Ctrl+N / Ctrl+Shift+N** | Next/previous match while searching |
+| **Enter / Shift+Enter** | Alternate next/previous search match |
+| **Escape** | Close transcript search |
+| **Ctrl+O** | Collapse/expand tool output |
 
-- [`xdg/xdg-terminals.list`](xdg/xdg-terminals.list) selects Ghostty for
-  `xdg-terminal-exec`, including Omarchy's **Super+Return** launcher. This affects
-  new terminal windows, not existing ones; no Hyprland reload is needed.
-- [`fcitx5/conf/unicode.conf`](fcitx5/conf/unicode.conf) disables Fcitx5's
-  **Ctrl+Shift+U** direct hexadecimal Unicode-entry shortcut, which otherwise
-  intercepts the key and displays an underlined `U`. This frees the shortcut
-  globally, not just in Pi. The **Ctrl+Alt+Shift+U** Unicode picker remains
-  available with its default binding.
+Bindings live in [`agents/pi/keybindings.json`](agents/pi/keybindings.json),
+deployed on Linux and macOS through the existing `~/.pi/agent` mise mapping.
+PageUp/PageDown, Home/End, and the default message-jump shortcuts remain available.
+Search navigation is scoped to an open search; Ctrl+N still toggles named-only
+sessions in the session picker.
 
-Only these individual files are managed; other Fcitx preferences, profiles, and
-caches stay local. The mappings use `~/.config`, like the rest of this repository,
-and are skipped on macOS. They do not install or require Fcitx5 on systems that
-do not use it.
+The navigation keys no longer double as editor shortcuts: use **Alt+U** to cut
+to the start of the input line, **Alt+E** to move to its end, **Alt+Y** to yank,
+and **Alt+Shift+Y** to cycle the kill ring. Arrow keys still move the input
+cursor; Delete still deletes forward. **Ctrl+D never exits Pi**; use `/quit`
+or the existing Ctrl+C exit sequence instead. These are fullscreen-first bindings;
+regular mode does not turn those control keys back into editor shortcuts.
 
-To deploy just these preferences from the repository root:
+**Ctrl+A** is tmux's sole prefix; the secondary Ctrl+B prefix is disabled so
+Pi receives full-page-up. Ctrl+H/J/K/L still navigate tmux panes. Ghostty sends
+left **Option** as Alt on macOS; right Option remains available for Unicode
+characters. Ghostty's own Cmd+U/D shortcuts scroll terminal history, not Pi's
+fullscreen transcript. On Linux, [`ghostty/config-linux`](ghostty/config-linux)
+unbinds Ghostty's Ctrl+Shift+E split-down and Ctrl+Shift+N new-window shortcuts
+so Pi receives them; the other split/window controls remain available.
+
+The former Ctrl+Shift+U/D bindings and `fcitx5/conf/unicode.conf` workaround are
+removed. A Linux-only mise `absent` entry removes that previously managed
+Unicode-addon override, including stale symlinks, restoring Fcitx5's defaults.
+It removes only that file, not other Fcitx preferences, profiles, or caches;
+inspect it first if you have since replaced it with unrelated local settings.
+The cleanup is skipped on macOS and does not install or require Fcitx5.
+
+To deploy just these changes from the repository root:
 
 ```sh
-mise dot apply --dry-run '~/.config/fcitx5/conf/unicode.conf' '~/.config/xdg-terminals.list'
-mise dot apply '~/.config/fcitx5/conf/unicode.conf' '~/.config/xdg-terminals.list'
+mise dot apply --dry-run '~/.pi/agent' '~/.config/tmux/tmux.conf' '~/.config/ghostty/config' '~/.config/ghostty/config-linux' '~/.config/fcitx5/conf/unicode.conf'
+mise dot apply '~/.pi/agent' '~/.config/tmux/tmux.conf' '~/.config/ghostty/config' '~/.config/ghostty/config-linux' '~/.config/fcitx5/conf/unicode.conf'
+tmux source-file ~/.config/tmux/tmux.conf
 ```
 
-If existing files conflict, inspect and back them up before adding `--force` to
-that same target-scoped apply command. Edit the repository sources for future
-changes rather than replacing the deployed links.
+Select Pi's `symlink-each` mapping by `~/.pi/agent`, not an individual child path.
+Inspect and back up conflicting files before considering `--force`. Run
+`/reload` in existing Pi sessions and reload Ghostty's configuration
+(**Cmd+Shift+,** on macOS, **Ctrl+Shift+,** on Linux). tmux declares Ghostty's
+extended-key support, which preserves Shift in Ctrl+Shift+G/N/E/F. Existing tmux clients need
+a detach/re-attach (**Ctrl+A**, then **d**; `tmux attach`) to pick up that terminal
+feature. Pi sessions keep running; do not kill the tmux server.
 
-A newly started Fcitx5 reads the configuration automatically. If it is already
-running, reload only its Unicode addon:
+On Linux, if Fcitx5 is running, reload its Unicode addon after removing the override:
 
 ```sh
 busctl --user call org.fcitx.Fcitx5 /controller \
   org.fcitx.Fcitx.Controller1 ReloadAddonConfig s unicode
 ```
 
-Press **Escape** to cancel any already-active Unicode entry before testing the
-Pi shortcuts. The reload command is unnecessary on systems without Fcitx5.
+[`xdg/xdg-terminals.list`](xdg/xdg-terminals.list) independently selects Ghostty
+for Linux `xdg-terminal-exec`, including Omarchy's **Super+Return** launcher.
+This affects new terminal windows; no Hyprland reload is needed.
+
+`tests/test_pi_navigation.py` checks the bindings in a real Pi TUI on a private
+tmux server and exercises deployment cleanup in a temporary home. It makes no
+model requests.
 
 ## Neovim clipboard
 
