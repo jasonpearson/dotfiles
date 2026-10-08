@@ -38,9 +38,8 @@ keybind = super+l=goto_split:right
 keybind = super+j=goto_split:bottom
 keybind = super+h=goto_split:left
 
-keybind = control+shift+k=resize_split:up,15
+# Ctrl+Shift+J/K pass through to Pi for message navigation.
 keybind = control+shift+l=resize_split:right,15
-keybind = control+shift+j=resize_split:down,15
 keybind = control+shift+h=resize_split:left,15
 
 ###############

@@ -35,13 +35,15 @@ class NavigationConfigTests(unittest.TestCase):
         self.assertEqual(bindings["app.editor.external"], "ctrl+shift+e")
         self.assertEqual(bindings["tui.altScreen.searchNext"], ["enter", "ctrl+n"])
         self.assertEqual(bindings["tui.altScreen.searchPrevious"], ["shift+enter", "ctrl+shift+n"])
+        self.assertIn("ctrl+shift+k", bindings["tui.altScreen.previousPrompt"])
+        self.assertIn("ctrl+shift+j", bindings["tui.altScreen.nextPrompt"])
         all_keys = {key for keys in bindings.values() for key in ([keys] if isinstance(keys, str) else keys)}
         self.assertNotIn("ctrl+shift+u", all_keys)
         self.assertNotIn("ctrl+shift+d", all_keys)
         self.assertIn("macos-option-as-alt = left", (ROOT / "ghostty/config").read_text())
 
     @unittest.skipUnless(Path(GHOSTTY).is_file(), "requires Ghostty")
-    def test_ghostty_preserves_modified_enter(self):
+    def test_ghostty_preserves_pi_input_keys(self):
         for linux in (False, True):
             with self.subTest(linux_overrides=linux), tempfile.TemporaryDirectory() as temp:
                 config = Path(temp) / ".config/ghostty"
@@ -56,6 +58,7 @@ class NavigationConfigTests(unittest.TestCase):
                 # A raw LF mapping loses Shift and triggers tmux's Ctrl+J pane
                 # navigation. Let the negotiated keyboard protocol encode Enter.
                 self.assertNotRegex(result.stdout, r"(?m)^keybind = (?:ctrl|shift)\+enter=")
+                self.assertNotRegex(result.stdout, r"(?m)^keybind = ctrl\+shift\+[jk]=")
 
     @unittest.skipUnless(Path(GHOSTTY).is_file(), "requires Ghostty")
     def test_linux_ghostty_frees_pi_shortcuts(self):
@@ -255,6 +258,30 @@ class PiNavigationTests(unittest.TestCase):
             # Plain Enter still executes a built-in command, without a model call.
             send(b"/name Newline regression\r")
             self.assertIn("Newline regression", self.tm("display-message", "-p", "-t", "test:1", "#{pane_title}"))
+
+    def test_shift_jk_jumps_messages_without_changing_tmux_panes(self):
+        pane = self.tm("display-message", "-p", "-t", "test:1", "#{pane_id}")
+        lower = self.tm("split-window", "-d", "-v", "-t", pane, "-P", "-F", "#{pane_id}", "sleep", "300")
+        with self.client_input() as send:
+            send(b"DRAFT_NAVIGATION")
+            for previous_key, next_key in [
+                (b"\x1b[107;6u", b"\x1b[106;6u"),
+                (b"\x1b[27;6;107~", b"\x1b[27;6;106~"),
+            ]:
+                bottom = send(b"\x1b[103;6u")  # Ctrl+Shift+G
+                previous = send(previous_key)
+                self.assertLess(self.rows(previous)[0], self.rows(bottom)[0])
+                earlier = send(previous_key)
+                self.assertNotEqual(earlier, previous)
+                returned = send(next_key)
+                self.assertEqual(self.rows(returned), self.rows(previous))
+                self.assertIn("DRAFT_NAVIGATION", returned)
+                self.assertEqual(self.tm("display-message", "-p", "-t", "test:1", "#{pane_id}"), pane)
+            # Unshifted Ctrl+J/K still navigate panes rather than reaching Pi.
+            send(b"\n")
+            self.assertEqual(self.tm("display-message", "-p", "-t", "test:1", "#{pane_id}"), lower)
+            send(b"\x0b")
+            self.assertEqual(self.tm("display-message", "-p", "-t", "test:1", "#{pane_id}"), pane)
 
     def test_navigation_search_and_editing_preserve_draft(self):
         self.assertEqual(self.tm("show-options", "-gqv", "prefix"), "C-a")

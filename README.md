@@ -142,7 +142,8 @@ tmux copy mode or physical PageUp/PageDown keys:
 | **Ctrl+U / Ctrl+D** | Half-page up/down |
 | **Ctrl+B / Ctrl+F** | Full-page up/down |
 | **Ctrl+Y / Ctrl+E** | One line up/down |
-| **Alt+K / Alt+J** | Previous/next message marker |
+| **Ctrl+Shift+K / Ctrl+Shift+J** | Previous/next message marker |
+| **Alt+K / Alt+J** | Alternate previous/next message marker |
 | **Ctrl+G / Ctrl+Shift+G** | Beginning/end; end resumes following new output |
 | **Ctrl+Shift+E** | Open the input in the external editor |
 | **Shift+Enter** | Insert a newline in the input |
@@ -170,7 +171,9 @@ Do not map Shift+Enter to `text:\n`: that becomes Ctrl+J, which tmux intercepts
 for pane navigation before Pi receives it.
 
 **Ctrl+A** is tmux's sole prefix; the secondary Ctrl+B prefix is disabled so
-Pi receives full-page-up. Ctrl+H/J/K/L still navigate tmux panes. Ghostty sends
+Pi receives full-page-up. Ctrl+H/J/K/L still navigate tmux panes. Ghostty's
+Ctrl+Shift+J/K resize bindings are removed so those keys reach Pi on both
+macOS and Linux, without an Fcitx5 workaround. Ghostty sends
 left **Option** as Alt on macOS; right Option remains available for Unicode
 characters. Ghostty's own Cmd+U/D shortcuts scroll terminal history, not Pi's
 fullscreen transcript. On Linux, [`ghostty/config-linux`](ghostty/config-linux)
@@ -196,7 +199,8 @@ Select Pi's `symlink-each` mapping by `~/.pi/agent`, not an individual child pat
 Inspect and back up conflicting files before considering `--force`. Run
 `/reload` in existing Pi sessions and reload Ghostty's configuration
 (**Cmd+Shift+,** on macOS, **Ctrl+Shift+,** on Linux). tmux declares Ghostty's
-extended-key support, which preserves Shift in Ctrl+Shift+G/N/E/F. Existing tmux clients need
+extended-key support, which preserves Shift in Ctrl+Shift+J/K/G/N/E/F.
+Existing tmux clients need
 a detach/re-attach (**Ctrl+A**, then **d**; `tmux attach`) to pick up that terminal
 feature. Pi sessions keep running; do not kill the tmux server.
 
