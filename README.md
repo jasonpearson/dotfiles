@@ -145,6 +145,7 @@ tmux copy mode or physical PageUp/PageDown keys:
 | **Alt+K / Alt+J** | Previous/next message marker |
 | **Ctrl+G / Ctrl+Shift+G** | Beginning/end; end resumes following new output |
 | **Ctrl+Shift+E** | Open the input in the external editor |
+| **Shift+Enter** | Insert a newline in the input |
 | **Ctrl+Shift+F** | Search the transcript (Pi's default) |
 | **Ctrl+N / Ctrl+Shift+N** | Next/previous match while searching |
 | **Enter / Shift+Enter** | Alternate next/previous search match |
@@ -163,6 +164,10 @@ and **Alt+Shift+Y** to cycle the kill ring. Arrow keys still move the input
 cursor; Delete still deletes forward. **Ctrl+D never exits Pi**; use `/quit`
 or the existing Ctrl+C exit sequence instead. These are fullscreen-first bindings;
 regular mode does not turn those control keys back into editor shortcuts.
+
+Ghostty leaves Ctrl+Enter and Shift+Enter to its native keyboard protocol.
+Do not map Shift+Enter to `text:\n`: that becomes Ctrl+J, which tmux intercepts
+for pane navigation before Pi receives it.
 
 **Ctrl+A** is tmux's sole prefix; the secondary Ctrl+B prefix is disabled so
 Pi receives full-page-up. Ctrl+H/J/K/L still navigate tmux panes. Ghostty sends

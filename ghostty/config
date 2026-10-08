@@ -49,4 +49,3 @@ keybind = control+shift+h=resize_split:left,15
 keybind = super+u=scroll_page_up
 keybind = super+d=scroll_page_down
 keybind = super+f=write_screen_file:paste
-keybind = shift+enter=text:\n
