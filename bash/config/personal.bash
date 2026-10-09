@@ -7,6 +7,10 @@ done
 unset brew_bin
 
 [[ -x "$HOME/.local/bin/mise" ]] && export PATH="$HOME/.local/bin:$PATH"
+case ":$PATH:" in
+  *":$HOME/repos/k8s-start/bin:"*) ;;
+  *) export PATH="$HOME/repos/k8s-start/bin:$PATH" ;;
+esac
 command -v mise >/dev/null 2>&1 && eval "$(mise activate bash)"
 [[ -r ~/.config/bash/colors.sh ]] && source ~/.config/bash/colors.sh
 eval "$(starship init bash)"
@@ -32,6 +36,7 @@ alias cc='claude'
 alias cl='mise exec -- claude'
 alias co='mise exec -- codex'
 alias hd='hunk diff'
+alias ks='k8s-start'
 oc() { opencode "$@"; }
 
 # Editor helpers

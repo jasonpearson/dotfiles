@@ -6,7 +6,7 @@ config-file = ?config-theme
 config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
 
 # background-opacity = 0.95
-font-family = "BlexMono Nerd Font"
+font-family = "Hack Nerd Font"
 font-style = Regular
 font-size = 15
 # Optional font-size override, deployed only on Linux by mise.

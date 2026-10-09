@@ -251,7 +251,8 @@ The Linux size of 11 is tuned for Linux's 96-DPI baseline and this desktop's
 1.1818 GTK text scale. It is a starting point, not an automatic DPI adjustment;
 edit `ghostty/config-linux` if another desktop needs a different size.
 Monitor and desktop-wide text scaling are unchanged. Mise bootstrap installs
-BlexMono via Homebrew on macOS and pacman on Arch Linux.
+Hack Nerd Font via Homebrew on macOS and pacman on Arch Linux.
+Hack Nerd Font is the default in `ghostty/config`.
 
 Omarchy's **Super+V** universal paste sends **Shift+Insert** to terminals. The
 Linux override maps that chord to `paste_from_clipboard`, matching Neovim's `+`

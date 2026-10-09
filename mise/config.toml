@@ -3,13 +3,13 @@ min_version = "2026.10.4"
 
 [bootstrap.packages]
 "brew:bash" = { os = "macos" }
-"brew-cask:font-blex-mono-nerd-font" = { os = "macos" }
+"brew-cask:font-hack-nerd-font" = { os = "macos" }
 "brew-cask:ghostty" = { os = "macos" }
 "brew-cask:obsidian" = { os = "macos" }
 "brew:git" = { os = "macos" }
 "pacman:ghostty" = { os = "linux" }
 "pacman:git" = { os = "linux" }
-"pacman:ttf-ibmplex-mono-nerd" = { os = "linux" }
+"pacman:ttf-hack-nerd" = { os = "linux" }
 
 [dotfiles]
 "~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }

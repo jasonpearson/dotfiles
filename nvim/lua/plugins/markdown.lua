@@ -1,6 +1,17 @@
 return {
 	{
 		"MeanderingProgrammer/render-markdown.nvim",
+		ft = { "markdown" },
+		opts = { enabled = true },
+		init = function()
+			vim.api.nvim_create_autocmd("FileType", {
+				group = vim.api.nvim_create_augroup("MarkdownWrap", { clear = true }),
+				pattern = "markdown",
+				callback = function()
+					vim.opt_local.wrap = true
+				end,
+			})
+		end,
 		keys = {
 			{
 				"<leader>md",
