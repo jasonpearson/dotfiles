@@ -1,0 +1,130 @@
+# Per-key Codex configuration merging requires this version.
+min_version = "2026.10.4"
+
+[bootstrap.packages]
+"brew:bash" = { os = "macos" }
+"brew-cask:font-hack-nerd-font" = { os = "macos" }
+"brew-cask:ghostty" = { os = "macos" }
+"brew-cask:obsidian" = { os = "macos" }
+"brew:git" = { os = "macos" }
+"pacman:ghostty" = { os = "linux" }
+"pacman:git" = { os = "linux" }
+"pacman:ttf-hack-nerd" = { os = "linux" }
+
+[dotfiles]
+"~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
+"~/.bashrc" = { source = "../bash/bashrc", mode = "symlink" }
+"~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
+"~/.config/dotfiles/theme/apply.py" = { source = "../theme/apply.py", mode = "symlink" }
+"~/.config/dotfiles/theme/palette.toml" = { source = "../theme/palette.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/ethereal.toml" = { source = "../theme/ethereal.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/osaka-jade.toml" = { source = "../theme/osaka-jade.toml", mode = "symlink" }
+"~/.config/ghostty/config" = { source = "../ghostty/config", mode = "symlink" }
+"~/.config/ghostty/config-theme" = { source = "../ghostty/config-theme.tera", mode = "template" }
+"~/.config/git" = { source = "../git", mode = "symlink-each" }
+"~/.config/mise" = { source = ".", mode = "symlink-each" }
+"~/.config/nvim" = { source = "../nvim", mode = "symlink-each" }
+"~/.config/starship.toml" = { source = "../starship/starship.toml", mode = "symlink" }
+"~/.config/tmux/tmux.conf" = { source = "../tmux/tmux.conf", mode = "symlink" }
+"~/.config/tmux-attention/config" = { source = "../tmux/tmux-attention-config", mode = "symlink" }
+
+# agents
+"~/.claude" = { source = "../agents/claude", mode = "symlink-each" }
+"~/.pi/agent" = { source = "../agents/pi", mode = "symlink-each" }
+"~/.pi/agent/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.claude/CLAUDE.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.codex/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.codex/config.toml/tmux-title" = { source = "../agents/codex/tmux.toml", merge = true }
+
+# agent skills
+"~/.agents/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
+"~/.claude/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
+
+"~/.agents/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
+"~/.claude/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
+
+"~/.agents/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
+"~/.claude/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
+
+"~/.agents/skills/recommit" = { source = "../agents/skills/recommit", mode = "symlink" }
+"~/.claude/skills/recommit" = { source = "../agents/skills/recommit", mode = "symlink" }
+
+"~/.agents/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
+"~/.claude/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
+
+# linux only
+[dotfiles."~/.config/ghostty/config-linux"]
+source = "../ghostty/config-linux"
+mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
+# Retire the old Pi Ctrl+Shift+U workaround, including already-deployed links.
+[dotfiles."~/.config/fcitx5/conf/unicode.conf"]
+mode = "absent"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/xdg-terminals.list"]
+source = "../xdg/xdg-terminals.list"
+mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/hypr"]
+source = "../hypr"
+mode = "symlink-each"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/omarchy"]
+source = "../omarchy"
+mode = "symlink-each"
+variants = [
+  { os = "linux" },
+]
+
+[tasks.theme]
+description = "Switch all terminal apps: mise theme [catppuccin|ethereal|osaka-jade] (no argument shows selection)"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py" --select'
+
+[tasks."theme:apply"]
+description = "Re-render the saved preset or Omarchy theme and refresh registered tmux servers"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py"'
+
+[env]
+# Compatibility for the pinned 0.3.0, which predates config-file support.
+# Remove after upgrading to a config-aware release; dir_command is managed there.
+TMUX_ATTENTION_DIR_COMMAND = "zoxide query --list"
+
+[tools]
+claude = "latest"
+codex = "latest"
+fzf = "0.74.4"
+github-cli = "2.101.0"
+"github:jasonpearson/tmux-attention" = "0.4.0"
+hunk = "0.22.0"
+jq = "1.8.2"
+lazygit = "0.65.1"
+lua-language-server = "3.19.1"
+mosh = "latest"
+neovim = "0.12.5"
+node = "24.21.0"
+"npm:@playwright/cli" = "0.1.21"
+"npm:agent-browser" = "0.38.1"
+"npm:skills" = "1.7.0"
+"npm:typescript" = "5.9.3"
+"npm:typescript-language-server" = "6.0.1"
+pi = "latest"
+"pypi:ddgs" = "9.16.0"
+python = "3.14.7"
+ripgrep = "15.2.0"
+starship = "1.26.0"
+tmux = "3.7c"
+uv = "0.12.19"
+yq = "4.53.6"
+zoxide = "0.10.0"

@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+# Ignore the theme-name argument: another switch may already have completed.
+# Always render the latest committed palette, never mutate managed symlinks.
+python3 "$HOME/.config/dotfiles/theme/apply.py"

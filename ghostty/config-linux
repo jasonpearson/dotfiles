@@ -1,0 +1,12 @@
+# Linux-only font size, tuned for this desktop's GTK text scale.
+# Keep the shared macOS size of 15 in config unchanged.
+font-size = 11
+
+# Omarchy's Super+V sends Shift+Insert to terminals. Paste the regular
+# clipboard (Neovim's + register), not the primary selection (* register).
+keybind = shift+insert=paste_from_clipboard
+
+# Let Pi receive external-editor and previous-search-match shortcuts rather
+# than Ghostty's default split-down / new-window actions.
+keybind = ctrl+shift+e=unbind
+keybind = ctrl+shift+n=unbind

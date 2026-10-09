@@ -1,0 +1,136 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "env": {},
+  "terminalTitleFromRename": true,
+  "permissions": {
+    "allow": [
+      "Bash(find:*)",
+      "Bash(grep:*)",
+      "Bash(ls:*)"
+    ],
+    "ask": [
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)",
+      "Bash(git rebase:*)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "claude-fable-5-1[1m]",
+  "skillOverrides": {
+    "agent-browser": "user-invocable-only",
+    "playwright-cli": "user-invocable-only",
+    "recommit": "user-invocable-only",
+    "web-search": "user-invocable-only"
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "matcher": "",
+        "hooks": []
+      }
+    ],
+    "UserPromptSubmit": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise exec -- tmux-attention working"
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "",
+        "hooks": []
+      }
+    ],
+    "PermissionRequest": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise exec -- tmux-attention blocked"
+          },
+          {
+            "type": "command",
+            "command": "if command -v afplay >/dev/null; then afplay /System/Library/Sounds/Pop.aiff & else printf '\\a'; fi"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise exec -- tmux-attention working"
+          }
+        ]
+      }
+    ],
+    "PostToolUseFailure": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise exec -- tmux-attention working"
+          }
+        ]
+      }
+    ],
+    "PermissionDenied": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise exec -- tmux-attention working"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise exec -- tmux-attention done"
+          },
+          {
+            "type": "command",
+            "command": "if command -v afplay >/dev/null; then afplay /System/Library/Sounds/Pop.aiff & else printf '\\a'; fi"
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise exec -- tmux-attention clear"
+          }
+        ]
+      }
+    ]
+  },
+  "effortLevel": "high",
+  "modelSettings": {
+    "claude-fable-5-1": {
+      "effortLevel": "high"
+    }
+  },
+  "tui": "default",
+  "theme": "dark",
+  "editorMode": "vim",
+  "switchModelsOnFlag": true,
+  "agentPushNotifEnabled": true
+}
