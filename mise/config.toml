@@ -1,0 +1,28 @@
+min_version = "2026.10.4"
+
+[bootstrap.packages]
+"brew:bash" = { os = "macos" }
+"brew-cask:obsidian" = { os = "macos" }
+"brew:git" = { os = "macos" }
+"pacman:git" = { os = "linux" }
+
+[dotfiles]
+"~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
+"~/.bashrc" = { source = "../bash/bashrc", mode = "symlink" }
+"~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
+"~/.config/git" = { source = "../git", mode = "symlink-each" }
+"~/.config/mise" = { source = ".", mode = "symlink-each" }
+
+[tools]
+fzf = "0.74.4"
+github-cli = "2.101.0"
+hunk = "0.22.0"
+jq = "1.8.2"
+mosh = "latest"
+node = "24.21.0"
+python = "3.14.7"
+ripgrep = "15.2.0"
+starship = "1.26.0"
+uv = "0.12.19"
+yq = "4.53.6"
+zoxide = "0.10.0"

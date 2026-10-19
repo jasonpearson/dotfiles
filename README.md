@@ -1,82 +1,50 @@
 # Dotfiles
 
-Personal configuration files managed with [GNU Stow](https://www.gnu.org/software/stow/).
+Personal configuration for macOS and Linux: Bash, Ghostty, tmux, Neovim,
+Starship, and coding agents.
 
-## What's Included
+[mise](https://mise.jdx.dev/) manages tool versions, system packages, and dotfile
+links. [`mise/config.toml`](mise/config.toml) is the source of truth.
 
-| Directory    | Description                                           |
-| ------------ | ----------------------------------------------------- |
-| `claude/`    | Claude Code AI agent configurations                   |
-| `ghostty/`   | Ghostty terminal with Catppuccin Mocha theme          |
-| `gitconfig/` | Git aliases and settings                              |
-| `nvim/`      | Neovim config with lazy.nvim, LSP, Treesitter, Snacks |
-| `opencode/`  | OpenCode AI agent configurations                      |
-| `tmux/`      | Tmux with vim-style navigation and Catppuccin theme   |
-| `starship/`  | Starship prompt configuration                         |
-| `zshrc/`     | Zsh with vi mode, starship prompt, zoxide, mise       |
+## Setup
 
-## Quick Start
+Requires mise **2026.10.4 or newer**. System packages are configured for Homebrew
+on macOS and pacman on Arch Linux.
 
-### macOS
-
-```bash
-./setup/macos/install.sh
+```sh
+git clone https://github.com/jasonpearson/dotfiles.git "$HOME/repos/dotfiles"
+curl https://mise.run | sh
 ```
 
-### Linux (Arch/Omarchy)
+Preview, then install packages, tools, and dotfile links:
 
-```bash
-./setup/omarchy/install.sh
+```sh
+"$HOME/.local/bin/mise" -C "$HOME/repos/dotfiles" bootstrap --dry-run
+"$HOME/.local/bin/mise" -C "$HOME/repos/dotfiles" bootstrap
 ```
 
-### Ubuntu
+Start a new Bash session afterward. To apply only dotfiles, replace `bootstrap`
+with `dot apply`. Review conflicting files before using `--force`.
 
-```bash
-./setup/ubuntu/install.sh
+## Everyday use
+
+Edit files in this repository, not their deployed copies. Add new tools and
+file mappings in [`mise/config.toml`](mise/config.toml).
+
+```sh
+mise dot status
+mise dot apply --dry-run
+mise dot apply
 ```
 
-## Manual Setup
+Reload the affected application after changing its configuration.
 
-Install GNU Stow, then symlink configs to your home directory:
+## Restore dotfile links
 
-```bash
-# Install stow (macOS)
-brew install stow
+If you unapplied the dotfiles, restore them without relying on shell setup:
 
-# Symlink all configs
-stow zshrc ghostty tmux nvim starship gitconfig opencode claude
+```sh
+"$HOME/.local/bin/mise" -C "$HOME/repos/dotfiles" dot apply
 ```
 
-## Key Bindings
-
-### Nvim
-
-- **Leader key:** Space
-- **Escape:** `kj` (insert mode)
-
-### Tmux
-
-- **Prefix:** `Ctrl+a`
-- **Split vertical:** `Prefix+v` (`Prefix+V` splits along the longer edge)
-- **Split horizontal:** `Prefix+s` (`Prefix+S` splits along the longer edge)
-- **Kill pane:** `Prefix+q`
-- **Kill server:** `Prefix+Ctrl+x`
-- **Resize:** `Prefix+Ctrl+h/j/k/l`
-- **Navigate panes:** `Ctrl+h/j/k/l` (seamless with nvim via vim-tmux-navigator)
-- **Reload config:** `Prefix+r`
-- **Set pane title:** `Prefix+P` (empty input clears it)
-- **Session picker:** `Prefix+a` (Shift+Tab toggles sessions/directories)
-- **New session from a directory:** `Prefix+A`
-- **Toggle pane attention flag:** `Prefix+h`
-
-Session pickers and the attention flag come from
-[tmux-attention](https://github.com/jasonpearson/tmux-attention); its CLI is also
-on `$PATH` as `tmux-attention` (`tm` / `tmc` in zsh).
-
-### General
-
-- **Vi mode:** Enabled in zsh, tmux, and nvim
-
-## Theme
-
-Catppuccin (Mocha/Macchiato) everywhere.
+Then start a new Bash session.
