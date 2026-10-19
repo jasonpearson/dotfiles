@@ -48,3 +48,7 @@ If you unapplied the dotfiles, restore them without relying on shell setup:
 ```
 
 Then start a new Bash session.
+
+## Details
+
+- [Shared agent instructions](agents/global-instructions.md)
