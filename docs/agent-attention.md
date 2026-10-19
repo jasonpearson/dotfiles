@@ -102,6 +102,7 @@ interrupts, input, and completion. Reusing its lifecycle ideas is useful;
 making tmux-attention depend on its daemon would couple a portable pane CLI to a
 separate session/inbox system. Pi's generic UI prompts cannot safely become
 Moshi permission actions: they have no permission command, decision, or action ID.
+The existing Moshi extension and its fork/resume fixes are preserved.
 
 ## Evidence
 

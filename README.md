@@ -11,11 +11,21 @@ deployment through [`mise/config.toml`](mise/config.toml).
 Requires mise **2026.10.4 or newer**. Package installation uses Homebrew on macOS
 and pacman on Arch Linux.
 
+Install mise using a [method for your platform](https://mise.jdx.dev/installing-mise.html)
+and ensure it is on `PATH`. If it is not already installed, the official script
+uses `~/.local/bin/mise` by default:
+
+```sh
+curl -fsSL https://mise.run | sh
+export PATH="$HOME/.local/bin:$PATH"
+```
+
+Then clone and bootstrap:
+
 ```sh
 git clone https://github.com/jasonpearson/dotfiles.git "$HOME/repos/dotfiles"
-curl https://mise.run | sh
-"$HOME/.local/bin/mise" -C "$HOME/repos/dotfiles" bootstrap --dry-run
-"$HOME/.local/bin/mise" -C "$HOME/repos/dotfiles" bootstrap
+mise -C "$HOME/repos/dotfiles" bootstrap --dry-run
+mise -C "$HOME/repos/dotfiles" bootstrap
 ```
 
 Start a new Bash session afterward. To deploy only configuration, use `dot apply`
@@ -29,6 +39,9 @@ Edit files in this repository. Add tools and deployment mappings in
 Most files are symlinked; content edits are visible immediately. Run `dot apply`
 after adding or renaming files, or to refresh templates and merged settings.
 Codex's configuration is merged per key so unrelated local settings stay intact.
+The global mise config is rendered with source paths anchored to this checkout,
+so deployment commands also work outside the repository. Run `mise dot apply`
+after changing tool versions or deployment mappings to refresh that file.
 
 ```sh
 mise dot status
@@ -46,10 +59,19 @@ mise dot apply '~/.config/tmux/tmux.conf'
 Reload the affected application. In tmux, use **Ctrl+A, q**. Machine-specific
 Bash settings belong in the untracked `~/.config/bash/local.bash`.
 
-Without the shell setup, use the full path:
+To deploy from any directory, select the checkout explicitly. Shell activation
+is optional; mise only needs to be on `PATH`. Use `command -v mise` to check its
+location, or invoke your installation's full path if it is not on `PATH`.
 
 ```sh
-"$HOME/.local/bin/mise" -C "$HOME/repos/dotfiles" dot apply
+mise -C "$HOME/repos/dotfiles" dot apply
+```
+
+To refresh the global mise config directly from the checkout, including when
+migrating from its old symlink:
+
+```sh
+mise -C "$HOME/repos/dotfiles" dot apply '~/.config/mise/config.toml'
 ```
 
 ## Themes

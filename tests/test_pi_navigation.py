@@ -267,7 +267,7 @@ class PiNavigationTests(unittest.TestCase):
                 (b"\x1b[107;6u", b"\x1b[106;6u"),
                 (b"\x1b[27;6;107~", b"\x1b[27;6;106~"),
             ]:
-                bottom = send(b"\x1b[103;6u")  # Ctrl+Shift+G
+                bottom = send(b"\x1b[103;5u")  # Ctrl+G
                 previous = send(previous_key)
                 self.assertLess(self.rows(previous)[0], self.rows(bottom)[0])
                 earlier = send(previous_key)
@@ -301,8 +301,8 @@ class PiNavigationTests(unittest.TestCase):
         self.assertNotEqual(self.press("C-y"), bottom)
         self.assertEqual(self.rows(self.press("C-e")), bottom_rows)
 
-        self.assertIn("ROW_000", self.press("C-g"))
-        self.assertEqual(self.rows(self.press("C-S-g")), bottom_rows)
+        self.assertIn("ROW_000", self.press("C-S-g"))
+        self.assertEqual(self.rows(self.press("C-g")), bottom_rows)
         previous = self.press("M-k")
         self.assertLess(self.rows(previous)[0], bottom_rows[0])
         earlier = self.press("M-k")
@@ -311,9 +311,9 @@ class PiNavigationTests(unittest.TestCase):
         self.assertNotEqual(earlier, previous)
         self.assertLessEqual(self.rows(earlier)[0], self.rows(previous)[0])
         self.assertEqual(self.rows(self.press("M-j")), self.rows(previous))
-        self.assertEqual(self.rows(self.press("C-S-g")), bottom_rows)
+        self.assertEqual(self.rows(self.press("C-g")), bottom_rows)
 
-        self.press("C-g")
+        self.press("C-S-g")
         self.press("C-S-f")
         self.press("PROMPT_", literal=True)
         searched = self.wait_screen(lambda screen: "PROMPT_00" in screen)
@@ -324,7 +324,7 @@ class PiNavigationTests(unittest.TestCase):
         self.assertIn("PROMPT_00", self.press("S-Enter"))
         self.press("Escape")
         self.assertIn(draft, self.screen())
-        self.assertEqual(self.rows(self.press("C-S-g")), bottom_rows)
+        self.assertEqual(self.rows(self.press("C-g")), bottom_rows)
 
         # Ctrl+D scrolls even with an empty editor, never deletes or exits.
         self.assertNotIn(draft, self.press("M-u"))

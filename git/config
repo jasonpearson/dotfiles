@@ -1,7 +1,7 @@
 # See https://git-scm.com/docs/git-config
 
 [core]
-	excludesFile = ~/.config/git/ignore
+	excludesFile = ~/.config/git/.gitignore
 
 [alias]
 	co = checkout

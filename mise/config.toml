@@ -1,6 +1,10 @@
 # Per-key Codex configuration merging requires this version.
 min_version = "2026.10.4"
 
+[vars]
+# The global template keeps this canonical path when it renders itself again.
+dotfiles_config = "{{ config_source | canonicalize }}"
+
 [bootstrap.packages]
 "brew:bash" = { os = "macos" }
 "brew-cask:font-hack-nerd-font" = { os = "macos" }
@@ -12,6 +16,7 @@ min_version = "2026.10.4"
 "pacman:ttf-hack-nerd" = { os = "linux" }
 
 [dotfiles]
+# Keep source paths relative to mise/ with ../; the global template anchors them.
 "~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
 "~/.bashrc" = { source = "../bash/bashrc", mode = "symlink" }
 "~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
@@ -22,7 +27,7 @@ min_version = "2026.10.4"
 "~/.config/ghostty/config" = { source = "../ghostty/config", mode = "symlink" }
 "~/.config/ghostty/config-theme" = { source = "../ghostty/config-theme.tera", mode = "template" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
-"~/.config/mise" = { source = ".", mode = "symlink-each" }
+"~/.config/mise/config.toml" = { source = "../mise/global-config.tera", mode = "template" }
 "~/.config/moshi/config.toml" = { source = "../moshi/config.toml", mode = "copy" }
 "~/.config/moshi/agent-hook.sh" = { source = "../moshi/agent-hook.sh", mode = "symlink" }
 "~/.config/moshi/control.sh" = { source = "../moshi/control.sh", mode = "symlink" }
@@ -135,6 +140,7 @@ python = "3.14.7"
 ripgrep = "15.2.0"
 starship = "1.26.0"
 tmux = "3.7c"
+tree-sitter = "0.26.1"
 uv = "0.12.19"
 yq = "4.53.6"
 zoxide = "0.10.0"

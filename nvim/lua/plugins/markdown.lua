@@ -24,6 +24,14 @@ return {
 	},
 	{
 		"iamcco/markdown-preview.nvim",
+		build = function(plugin)
+			local result = vim.system({ "npm", "install", "--omit=dev" }, {
+				cwd = vim.fs.joinpath(plugin.dir, "app"),
+				text = true,
+			}):wait()
+			assert(result.code == 0,
+				"Markdown Preview installation failed:\n" .. (result.stderr or "") .. (result.stdout or ""))
+		end,
 		keys = {
 			{ "<leader>cp", false },
 			{ "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown Preview" },

@@ -6,7 +6,7 @@ import type { ExtensionAPI } from "@earendil-works/pi-coding-agent"
 import { createConnection } from "node:net"
 import { homedir } from "node:os"
 import { join as pathJoin } from "node:path"
-import { closeSync, existsSync, openSync, readSync } from "node:fs"
+import { existsSync } from "node:fs"
 import { spawnSync } from "node:child_process"
 
 const agentSource = "pi"
@@ -430,43 +430,10 @@ function recordTaskCompletion(state: SessionState, signature: string, now: numbe
   return true
 }
 
-// Session headers identify children through parentSession or parentSessionId.
-// Cache successful reads; retry unreadable or incomplete headers on the next event.
-const transcriptChildCache = new Map<string, boolean>()
-
-function sessionIsChild(state: SessionState, payload: HookPayload): boolean {
-  if (agentSource !== "pi" && agentSource !== "omo") return false
-  const path = payload.transcript_path || state.transcriptPath
-  if (!path) return false
-  const cached = transcriptChildCache.get(path)
-  if (cached !== undefined) return cached
-  const child = transcriptHeaderIsChild(path)
-  if (child === null) return false
-  transcriptChildCache.set(path, child)
-  return child
-}
-
-function transcriptHeaderIsChild(path: string): boolean | null {
-  let fd: number
-  try {
-    fd = openSync(path, "r")
-  } catch {
-    return null
-  }
-  try {
-    const buf = Buffer.alloc(16 * 1024)
-    const n = readSync(fd, buf, 0, buf.length, 0)
-    const text = buf.subarray(0, n).toString("utf8")
-    const nl = text.indexOf("\n")
-    const header = JSON.parse(nl >= 0 ? text.slice(0, nl) : text) as Record<string, unknown>
-    return firstString(header.parentSession, header.parentSessionId) !== ""
-  } catch {
-    return null
-  } finally {
-    try {
-      closeSync(fd)
-    } catch {}
-  }
+// Pi's parentSession(-Id) records normal fork/resume ancestry, not a
+// headless agent. Only an explicit agent kind identifies a subagent.
+function sessionIsChild(payload: HookPayload): boolean {
+  return payload.agent_kind === "sub"
 }
 
 interface HookPayload {
@@ -476,6 +443,7 @@ interface HookPayload {
   cwd: string
   model: string
   context_remaining: number | undefined
+  agent_kind: string
   [key: string]: unknown
 }
 
@@ -514,9 +482,14 @@ function baseEnvelope(payload: HookPayload, sessionId: string, eventName: string
 function handleEvent(payload: HookPayload): void {
   const sessionId = payload.session_id || newSessionID()
   const state = stateFor(sessionId)
-  const isChild = sessionIsChild(state, payload)
+  const isChild = sessionIsChild(payload)
   switch (payload.hook_event_name) {
     case "SessionStart": {
+      // OMP subagents run in the parent process and inherit its pane; their
+      // start would repoint the pane at a session whose transcript the
+      // daemon cannot serve. Pi/OmO lineage children are user-driven forks
+      // that do take over the pane, so they still announce themselves.
+      if (isChild && agentSource === "omp") return
       if (payload.model) state.model = payload.model
       if (payload.transcript_path) state.transcriptPath = payload.transcript_path
       state.sessionStartTime = nowSeconds()
@@ -557,6 +530,9 @@ function handleEvent(payload: HookPayload): void {
     case "PermissionRequest": {
       // Mirror Pi's approval state. The daemon can relay a remote decision
       // to Pi's prompt when it has a verified terminal target.
+      // OMP subagents are headless: OMP settles their approvals itself and
+      // nothing is drawn in the inherited parent pane to answer.
+      if (isChild && agentSource === "omp") return
       const toolName = firstString(payload.tool_name)
       state.lastToolName = toolName
       const title = agentDisplayName + " needs approval"
@@ -573,6 +549,7 @@ function handleEvent(payload: HookPayload): void {
       return
     }
     case "PermissionResolved": {
+      if (isChild && agentSource === "omp") return
       const title = agentDisplayName + " resumed"
       const envelope = baseEnvelope(payload, sessionId, "PermissionResolved")
       // The daemon closes the open approval card by its action id.
@@ -605,6 +582,11 @@ function handleEvent(payload: HookPayload): void {
   }
 }
 
+function agentKind(ctx: Record<string, unknown>): string {
+  const agent = ctx.agent && typeof ctx.agent === "object" ? ctx.agent as Record<string, unknown> : {}
+  return firstString(agent.kind)
+}
+
 function send(eventName: string, event: unknown, ctx: unknown, extra: Record<string, unknown> = {}) {
   // Recheck each event so revoking opt-in mid-session stops future delivery.
   if (moshiDisabled()) return
@@ -617,6 +599,7 @@ function send(eventName: string, event: unknown, ctx: unknown, extra: Record<str
     cwd: firstString(ctxObj.cwd as string, process.cwd()),
     model: modelLabel(ctxObj.model),
     context_remaining: contextRemaining(ctxObj),
+    agent_kind: agentKind(ctxObj),
     ...extra,
   }
 

@@ -4,6 +4,7 @@ import { EventEmitter } from "node:events";
 import fs from "node:fs";
 import net from "node:net";
 import os from "node:os";
+import path from "node:path";
 import childProcess from "node:child_process";
 import { syncBuiltinESMExports } from "node:module";
 import { test } from "node:test";
@@ -12,7 +13,8 @@ let serial = 0;
 const tick = () => new Promise(resolve => setImmediate(resolve));
 
 async function harness(t, { enabled = false, disabled = false, offline = false,
-  envEnabled = false, envDisabled = false, holdAcks = false, holdConnects = false } = {}) {
+  envEnabled = false, envDisabled = false, holdAcks = false, holdConnects = false,
+  sessionHeader } = {}) {
   const env = { ...process.env };
   process.env.TMUX = "/test-tmux.sock,123,0";
   process.env.TMUX_PANE = "%99";
@@ -23,6 +25,13 @@ async function harness(t, { enabled = false, disabled = false, offline = false,
   if (envDisabled) process.env.DOTFILES_MOSHI_DISABLED = "1";
   if (envEnabled) process.env.DOTFILES_MOSHI_ENABLED = "1";
   const connections = [], sockets = [], envelopes = [], probes = [], handlers = new Map();
+  let sessionFile = "";
+  if (sessionHeader) {
+    const directory = fs.mkdtempSync(path.join(os.tmpdir(), "pi-moshi-session-"));
+    sessionFile = path.join(directory, "session.jsonl");
+    fs.writeFileSync(sessionFile, JSON.stringify({ type: "session", version: 3, ...sessionHeader }) + "\n");
+    t.after(() => fs.rmSync(directory, { recursive: true, force: true }));
+  }
   t.mock.method(os, "homedir", () => "/test home");
   t.mock.method(fs, "existsSync", path => {
     if (path === "/test home/.config/moshi/disabled") return disabled;
@@ -73,12 +82,12 @@ async function harness(t, { enabled = false, disabled = false, offline = false,
   extension({ on: (event, callback) => handlers.set(event, callback) });
   const ctx = {
     cwd: "/test/project", model: { name: "Test model" },
-    sessionManager: { getSessionId: () => `test-${serial}`, getSessionFile: () => "" },
+    sessionManager: { getSessionId: () => `test-${serial}`, getSessionFile: () => sessionFile },
     getContextUsage: () => ({ percent: 25 }),
   };
   const dispatch = (name, event = {}) => handlers.get(name)?.(event, ctx);
   return {
-    handlers, connections, sockets, envelopes, probes, dispatch, tick,
+    handlers, connections, sockets, envelopes, probes, sessionFile, dispatch, tick,
     enable: value => { enabled = value; },
     disable: value => { disabled = value; },
     emit: async (name, event = {}) => { await dispatch(name, event); await tick(); },
@@ -138,6 +147,27 @@ test("enabled lifecycle preserves metadata and waits for agent_settled", async t
   assert.equal(h.envelopes[2].title, "All done");
   assert.equal(h.envelopes[3].type, "session.closed");
 });
+
+for (const reason of ["fork", "resume"]) {
+  test(`${reason} with fork ancestry preserves prompt, completion, and close notifications`, async t => {
+    const h = await harness(t, {
+      enabled: true,
+      sessionHeader: { parentSession: "/test/original-session.jsonl" },
+    });
+    await h.emit("session_start", { reason });
+    await h.emit("before_agent_start", { prompt: "Continue the forked task" });
+    await h.emit("agent_end", { messages: [{ role: "assistant", content: "Forked task complete" }] });
+    await h.emit("agent_settled");
+    await h.emit("session_shutdown");
+    assert.deepEqual(h.envelopes.map(e => e.category), [
+      undefined, "session_started", "task_complete", "session_ended",
+    ]);
+    assert.equal(h.envelopes[1].message, "You: Continue the forked task");
+    assert.equal(h.envelopes[2].title, "Forked task complete");
+    assert.equal(h.envelopes[3].type, "session.closed");
+    assert.ok(h.envelopes.every(e => e.transcriptPath === h.sessionFile));
+  });
+}
 
 for (const mode of ["remove opt-in", "add opt-out"]) {
   test(`${mode} mid-session stops future events`, async t => {
