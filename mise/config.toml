@@ -2,14 +2,19 @@ min_version = "2026.10.4"
 
 [bootstrap.packages]
 "brew:bash" = { os = "macos" }
+"brew-cask:font-hack-nerd-font" = { os = "macos" }
+"brew-cask:ghostty" = { os = "macos" }
 "brew-cask:obsidian" = { os = "macos" }
 "brew:git" = { os = "macos" }
+"pacman:ghostty" = { os = "linux" }
 "pacman:git" = { os = "linux" }
+"pacman:ttf-hack-nerd" = { os = "linux" }
 
 [dotfiles]
 "~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
 "~/.bashrc" = { source = "../bash/bashrc", mode = "symlink" }
 "~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
+"~/.config/ghostty/config" = { source = "../ghostty/config", mode = "symlink" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
 "~/.config/mise" = { source = ".", mode = "symlink-each" }
 
@@ -33,6 +38,35 @@ min_version = "2026.10.4"
 
 "~/.agents/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
 "~/.claude/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
+
+# linux only
+[dotfiles."~/.config/ghostty/config-linux"]
+source = "../ghostty/config-linux"
+mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/xdg-terminals.list"]
+source = "../xdg/xdg-terminals.list"
+mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/hypr"]
+source = "../hypr"
+mode = "symlink-each"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/omarchy"]
+source = "../omarchy"
+mode = "symlink-each"
+variants = [
+  { os = "linux" },
+]
 
 [tools]
 fzf = "0.74.4"
