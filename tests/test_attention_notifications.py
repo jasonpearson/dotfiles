@@ -21,7 +21,7 @@ ATTENTION = os.environ.get("TMUX_ATTENTION_TEST_BIN", shutil.which("tmux-attenti
 
 
 class NotificationDeploymentTests(unittest.TestCase):
-    def test_release_pin_and_config_replace_local_checkout_and_legacy_env(self):
+    def test_release_pin_and_managed_directory_discovery(self):
         config = tomllib.loads((ROOT / "mise/config.toml").read_text())
         self.assertRegex(config["tools"]["github:jasonpearson/tmux-attention"],
                          r"^\d+\.\d+\.\d+$")

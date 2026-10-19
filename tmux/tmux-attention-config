@@ -7,7 +7,7 @@ agent_commands=(pi claude codex)
 # Case-sensitive session-name globs. An empty array disables subagent grouping.
 subagent_session_patterns=('*subagents*')
 
-# Use the existing zoxide directory list instead of walking the filesystem.
+# Discover directories from zoxide.
 dir_command='zoxide query --list'
 
 # Pane picker only.

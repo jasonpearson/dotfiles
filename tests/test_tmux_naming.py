@@ -30,7 +30,7 @@ class WindowNamingTests(unittest.TestCase):
         config = self.home / ".config/tmux"
         config.mkdir(parents=True)
         # Parse the real config without unrelated shell/theme/plugin startup.
-        text = (ROOT / "tmux/tmux.conf").read_text().split("# Other plugins still use tpack", 1)[0]
+        text = (ROOT / "tmux/tmux.conf").read_text().split("# Optional plugins:", 1)[0]
         self.conf = config / "tmux.conf"
         self.conf.write_text("\n".join(line for line in text.splitlines() if not line.startswith("run-shell ")))
         self.cwd = self.home / "project with spaces"

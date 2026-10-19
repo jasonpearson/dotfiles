@@ -47,16 +47,14 @@ function conversationText(ctx: ExtensionContext): string {
 }
 
 export default function (pi: ExtensionAPI) {
-	// A nested print/RPC process inherits TMUX_PANE too; it must not take over
-	// the interactive parent's title or attention state.
+	// Only interactive Pi owns the pane's title and attention state.
 	const enabled = (ctx: ExtensionContext) =>
 		Boolean(process.env.TMUX && process.env.TMUX_PANE && ctx.mode === "tui");
 
 	const attention = async (ctx: ExtensionContext, state: "working" | "blocked" | "done" | "failed" | "idle" | "clear") => {
 		if (!enabled(ctx)) return;
 		try {
-			// Resolve the current mise selection, not a versioned PATH inherited
-			// when Pi started (which can outlive a local-checkout switch).
+			// Resolve the configured version even if Pi's inherited PATH is stale.
 			const result = await pi.exec("mise", ["exec", "--", "tmux-attention", state], { timeout: 1000 });
 			if (result.code === 0 && !result.killed) return;
 		} catch {
@@ -72,9 +70,8 @@ export default function (pi: ExtensionAPI) {
 		current === state && state.sessionId === state.ctx.sessionManager.getSessionId();
 
 	const renderTitle = (state?: TitleState) => {
-		// Pi writes its native OSC title again *after* session_start on startup,
-		// resume and reload. Keep tmux's authoritative title separate from OSC.
-		// Serialize writes and resolve the latest manual name at execution time.
+		// Keep @pi_title separate from Pi's startup/resume OSC title writes.
+		// Serialize updates and resolve manual names when each write runs.
 		titleWrites = titleWrites.then(async () => {
 			if (state && !isCurrent(state)) return;
 			const target = process.env.TMUX_PANE;
@@ -140,13 +137,11 @@ export default function (pi: ExtensionAPI) {
 				.map((part) => part.text).join(" ")).replace(/^['"]|['"]$/g, "").slice(0, 80);
 			if (!title) return;
 			state.summary = { title, hash, updatedAt: Date.now() };
-			// Separate metadata, never setSessionName(): generated titles must not
-			// masquerade as manual names. Restores instantly on resume/reload.
+			// Persist summaries separately so manual names always take precedence.
 			pi.appendEntry(summaryEntryType, state.summary);
 			await renderTitle(state);
 		} catch {
-			// Retain the previous title. Retry on the next conversation event, not
-			// an idle polling loop (and still respect the rate limit).
+			// Keep the title and retry on a conversation event, within the rate limit.
 		} finally {
 			if (state.request === request) state.request = undefined;
 		}

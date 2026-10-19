@@ -77,7 +77,7 @@ egf() {
   e "${files[@]}"
 }
 
-# Git helpers. Avoid ga/gd here because Omarchy uses those for worktree helpers.
+# Git helpers
 ga() { git add "$@"; }
 gd() { git diff "$@"; }
 gac() { git add -A && git commit "$@"; }

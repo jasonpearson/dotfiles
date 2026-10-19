@@ -360,8 +360,8 @@ local function checks()
   eq(#errors, 1, "config failure reported")
   errors = {}
 
-  -- No mode entry: legacy light marker. Also verify function opts + config
-  -- semantics, not just table opts, survive lazy spec rebuilds.
+  -- Without a mode entry, use the light marker. Function opts and config
+  -- must also survive lazy spec rebuilds.
   local configured = generate("nightfox", [[function(_, opts)
     opts.options = { transparent = false }
     vim.g.theme_opts_ran = (vim.g.theme_opts_ran or 0) + 1
@@ -375,7 +375,7 @@ local function checks()
   eq(vim.g.theme_opts_ran, 1, "function opts evaluated")
   eq(vim.g.theme_config_ran, 1, "custom config evaluated")
   changed(generate("aether", '{colors = {fg = "#667788"}}'), nil, "aether", true)
-  eq(vim.o.background, "light", "legacy light.mode marker")
+  eq(vim.o.background, "light", "light.mode marker")
   changed(generate("aether", '{colors = {fg = "#667788"}}'), "dark", "aether")
   eq(vim.o.background, "dark", "metadata-only change")
   local function metadata(colors, expected)
@@ -383,7 +383,7 @@ local function checks()
     write(theme_dir .. "/colors.toml", colors)
     controller.poll()
     controller.poll()
-    eq(vim.o.background, expected, "legacy metadata mode")
+    eq(vim.o.background, expected, "theme_type mode")
     eq(schemes, prior + 1, "one event for metadata change")
   end
   metadata('theme_type = "light"\n', "light")

@@ -1,30 +1,52 @@
-## Persistent configuration changes
+# Repository guidance
 
-- Treat this repository and `mise/config.toml` as the source of truth. Before editing live configuration under `$HOME` or `$XDG_CONFIG_HOME`, resolve symlinks and inspect the mise dotfile mappings; a file under `~/.config` is not necessarily repository-managed.
-- Make persistent fixes in tracked source files and include the deployment mapping. For previously unmanaged configuration, manage the smallest necessary file, use appropriate OS guards, and preserve unrelated local settings. Do not bring caches, credentials, or generated application state into Git.
-- Live edits made during diagnosis are temporary until accounted for in the repository and deployment. Before calling a fix complete, either make it reproducible on another machine or explicitly identify the remaining machine-local changes and agree on follow-up. If the user asks to discuss portability first, present the plan rather than applying it.
-- Preview deployment with `mise dot apply --dry-run`; scope any actual apply to the intended targets. Verify both the deployed files and the application's effective settings. Report supported platforms, required reloads, and any remaining local-only changes.
+## Configuration changes
 
-## Agent skills
+- Edit tracked sources and deployment mappings in `mise/config.toml`. Before
+  touching live files under `$HOME` or `$XDG_CONFIG_HOME`, resolve symlinks and
+  check the mappings; not every local configuration file is managed here.
+- Manage only the files or keys needed. Preserve unrelated local settings, add
+  OS guards where needed, and keep credentials, caches, and generated state out
+  of Git.
+- Treat live diagnostic edits as temporary. Make fixes reproducible through the
+  repository, or identify local-only changes and agree on follow-up. If the user
+  asks for a portability plan first, discuss it before applying changes.
+- Preview with `mise dot apply --dry-run` and apply only the intended targets.
+  Verify deployed files and effective application settings. Report platform
+  support, required reloads, and any remaining local-only changes.
 
-### Issue tracker
+## Layout
 
-Issues and specs live as local Markdown under `.scratch/<feature>/`. See `docs/agents/issue-tracker.md`.
+- App directories contain deployment sources; `mise/config.toml` defines their
+  destinations and tool versions.
+- `theme/` renders shared palettes into the local cache. Omarchy supplies its
+  active palette through `omarchy/themed/` and `omarchy/hooks/theme-set.d/`.
+- `agents/` holds agent settings, extensions, shared instructions, and skills.
+- `tests/` covers deployment, themes, clipboard behavior, navigation, and hooks.
 
-### Triage labels
+## Validation
 
-Use the five default triage roles. See `docs/agents/triage-labels.md`.
+Run relevant checks from the repository root:
 
-### Domain docs
+```sh
+mise exec -- python3 -m unittest discover -s tests -v
+mise exec -- node --test tests/*.test.mjs
+mise exec -- bash tests/nvim-theme.sh
+```
 
-Single-context: root `CONTEXT.md` and `docs/adr/`. Before exploring the codebase, read `docs/agents/domain.md`.
+Tests use temporary homes and private tmux servers. Neovim theme tests require
+an installed `lazy.nvim`; add `--integration` to exercise installed theme plugins.
 
 ### Pi extensions
 
-mise links `agents/pi` into `~/.pi/agent` file by file, so a file added under `agents/pi` does not exist where Pi loads it until `mise dot apply` runs. After adding or renaming any file there, run `mise dot apply`, then verify the extension from the installed path rather than the repo path:
+mise links `agents/pi/` into `~/.pi/agent/` file by file. After adding or renaming
+files, preview and apply the `~/.pi/agent` target. Test extensions from their
+installed paths, for example:
 
 ```sh
-pi -p -ne --no-session --model bogus/bogus-model -e ~/.pi/agent/extensions/<name>/index.ts hi
+pi -p -ne --no-session --model bogus/bogus-model -e ~/.pi/agent/extensions/tmux-attention.ts hi
 ```
 
-This surfaces load errors and then fails on the model without a paid call. `pi --help -e <file>` exits 0 even for a broken file.
+Expect a model-not-found error and no extension load errors. This makes no paid
+call. `pi --help -e <file>` does not validate extension loading. Use `/reload` in
+Pi to load edits.

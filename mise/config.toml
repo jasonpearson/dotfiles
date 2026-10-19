@@ -33,7 +33,7 @@ min_version = "2026.10.4"
 "~/.config/tmux/attention-notifications.conf" = { source = "../tmux/attention-notifications.conf", mode = "symlink" }
 "~/.config/tmux-attention/config" = { source = "../tmux/tmux-attention-config", mode = "symlink" }
 
-# agents
+# Agent configuration
 # Moshi's installer writes these files. Copies keep its updates out of Git.
 "~/.claude" = { source = "../agents/claude", mode = "symlink-each", exclude = ["settings.json"] }
 "~/.claude/settings.json" = { source = "../agents/claude/settings.json", mode = "copy" }
@@ -47,7 +47,7 @@ min_version = "2026.10.4"
 "~/.codex/config.toml/theme" = { source = "../agents/codex/theme.toml", merge = true }
 "~/.codex/hooks.json" = { source = "../agents/codex/hooks.json", mode = "copy" }
 
-# agent skills
+# Shared skills
 "~/.agents/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
 "~/.claude/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
 
@@ -63,7 +63,7 @@ min_version = "2026.10.4"
 "~/.agents/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
 "~/.claude/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
 
-# linux only
+# Linux only
 [dotfiles."~/.config/ghostty/config-linux"]
 source = "../ghostty/config-linux"
 mode = "symlink"
@@ -71,7 +71,7 @@ variants = [
   { os = "linux" },
 ]
 
-# Retire the old Pi Ctrl+Shift+U workaround, including already-deployed links.
+# Leave Fcitx's Unicode input settings at their defaults.
 [dotfiles."~/.config/fcitx5/conf/unicode.conf"]
 mode = "absent"
 variants = [

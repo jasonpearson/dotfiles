@@ -1,8 +1,6 @@
--- Clipboard setup across local and remote sessions:
--- macOS uses pbcopy/pbpaste; local Linux Wayland uses wl-copy/wl-paste; and
--- tmux/SSH/Herdr sessions also emit OSC 52 so yanks can reach the attaching
--- terminal. Without a display, remote paste is an OSC 52 query that tmux (or
--- the terminal) answers.
+-- macOS uses pbcopy/pbpaste. Elsewhere, use Wayland when available and send
+-- OSC 52 copies in tmux/SSH/Herdr sessions. Without Wayland, those sessions
+-- also query the terminal for paste.
 local M = {}
 
 local function proc_lines(pid, file)

@@ -1,8 +1,7 @@
--- Keep an explicit offline-ready inventory: Omarchy 4 ships both native theme
--- specs and generated aether palettes. Only the selected theme is loaded.
+-- Install themes for offline switching; load only the selected theme.
 local specs = {
   { "ribru17/bamboo.nvim", lazy = true, priority = 1000 },
-  -- Match the generated spec exactly, including its installation directory.
+  -- Use the name and directory expected by Omarchy's generated specs.
   { "bjarneo/aether.nvim", name = "aether", branch = "v3", lazy = true, priority = 1000 },
   { "bjarneo/ethereal.nvim", lazy = true, priority = 1000 },
   { "bjarneo/hackerman.nvim", lazy = true, priority = 1000 },

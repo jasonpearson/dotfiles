@@ -1,6 +1,5 @@
-# Shared palette bridge. Only startup/manual apply invokes Python; the prompt
-# callback uses Bash builtins and rereads the small, atomically generated file.
-# Match mise's explicit ~/.config destinations, even with a custom XDG value.
+# Render colors at interactive startup; refresh from the cache before each prompt.
+# Configuration paths match mise's fixed ~/.config destinations.
 _dotfiles_theme_config="$HOME/.config/dotfiles/theme"
 _dotfiles_theme_cache="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/theme"
 
@@ -33,7 +32,7 @@ _dotfiles_theme_read() {
   [[ -r "$_dotfiles_theme_cache/colors.sh" ]] || return 0
   content=$(<"$_dotfiles_theme_cache/colors.sh")
   if [[ $content != "${_dotfiles_theme_last_colors:-}" ]]; then
-    # This is our validated/generated cache, not a downloaded theme script.
+    # apply.py validates and atomically writes this cache.
     # shellcheck disable=SC1091
     source "$_dotfiles_theme_cache/colors.sh"
     _dotfiles_theme_last_colors=$content
@@ -55,18 +54,15 @@ _dotfiles_theme_precmd() {
 }
 
 _dotfiles_theme_install_prompt_hook() {
-  # Install after local.bash, preserving its callback and avoiding self-chains
-  # when .bashrc is sourced again. Starship preserves command/pipeline status.
+  # Preserve local.bash's callback and avoid duplicate hooks on reload.
   if [[ ${starship_precmd_user_func:-} != _dotfiles_theme_precmd ]]; then
     _dotfiles_theme_previous_precmd=${starship_precmd_user_func:-}
     starship_precmd_user_func=_dotfiles_theme_precmd
   fi
 }
 
-# A missing/broken renderer must not prevent a shell opening. Existing cache
-# remains usable; without one Starship/tmux have ANSI fallbacks.
-# Omarchy runs its app hooks in parallel noninteractive login shells. Do not
-# render once per app; its single theme-set hook handles that transition.
+# A renderer failure leaves the cache usable and must not block shell startup.
+# Omarchy's noninteractive app hooks share one render from the theme-set hook.
 if [[ $- == *i* && -r "$_dotfiles_theme_config/apply.py" ]]; then
   dotfiles_theme_apply --no-reload || true
 fi

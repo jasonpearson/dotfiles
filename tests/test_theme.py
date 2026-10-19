@@ -327,7 +327,7 @@ bind -v | grep 'vi-.*-mode-string'
         # Bindings are installed, not executed. TMUX_TMPDIR isolates even the
         # default socket, including nested `tmux` commands in run-shell.
         conf = self.home / "tmux.conf"
-        conf.write_text(text.split("# Other plugins still use tpack", 1)[0])
+        conf.write_text(text.split("# Optional plugins:", 1)[0])
         sockets = [self.home / "one", self.home / "two"]
         def tm(socket, *args):
             return subprocess.run(["tmux", "-S", str(socket), *args], env=self.env,
@@ -392,10 +392,9 @@ bind -v | grep 'vi-.*-mode-string'
             assert_styles(socket)
 
     @unittest.skipUnless(shutil.which("tmux"), "tmux not installed")
-    def test_tmux_legacy_styles_warn_until_one_time_config_reload(self):
-        # Reproduce an already-running pre-bridge server: new palette options
-        # arrive successfully but borders/status still use inherited colors.
-        socket = self.home / "legacy socket"
+    def test_tmux_styles_bypassing_palette_warn_until_config_reload(self):
+        # Palette options alone cannot update styles that read shell colors.
+        socket = self.home / "custom socket"
         def tm(*args):
             return subprocess.run(["tmux", "-S", str(socket), *args], env=self.env,
                                   text=True, capture_output=True, check=True, timeout=15).stdout.strip()
@@ -408,25 +407,25 @@ bind -v | grep 'vi-.*-mode-string'
         tm("set", "-g", "status-style", "bg=#{@status_background}")
         tm("set", "-g", "status-left", "sentinel-layout")
         result = self.run_apply("--select", "osaka-jade", "--tmux-socket", str(socket))
-        self.assertIn("legacy color formats", result.stderr)
+        self.assertIn("styles bypass the shared palette", result.stderr)
         self.assertIn("source-file", result.stderr)
         self.assertIn(str(socket), result.stderr)
         self.assertEqual(tm("show-option", "-gqv", "@theme_accent"), "#509475")
         self.assertEqual(tm("display-message", "-p", "#{E:pane-active-border-style}"), "fg=#89b4fa")
         self.assertEqual(tm("show-option", "-gqv", "status-left"), "sentinel-layout")
-        # The recommended explicit reload installs the new format references.
+        # A full reload makes styles reference the shared palette.
         config = self.config / "tmux/tmux.conf"
         config.parent.mkdir(parents=True)
-        config.write_text((ROOT / "tmux/tmux.conf").read_text().split("# Other plugins still use tpack", 1)[0])
+        config.write_text((ROOT / "tmux/tmux.conf").read_text().split("# Optional plugins:", 1)[0])
         tm("source-file", str(config))
         result = self.run_apply("--select", "ethereal")
-        self.assertNotIn("legacy color formats", result.stderr)
+        self.assertNotIn("styles bypass the shared palette", result.stderr)
         self.assertEqual(tm("display-message", "-p", "#{E:pane-active-border-style}"), "fg=#7d82d9")
         self.assertEqual(tm("display-message", "-p", "#{E:status-style}"), "bg=#8f766d,fg=#060b1e")
         # A stale per-window override also gets diagnosed, even in another window.
         tm("new-window", "-d", "-n", "old-style", "sleep 120")
         tm("set", "-w", "-t", "probe:old-style", "pane-active-border-style", "fg=#{THEME_ACCENT}")
-        self.assertIn("legacy color formats", self.run_apply("--select", "catppuccin").stderr)
+        self.assertIn("styles bypass the shared palette", self.run_apply("--select", "catppuccin").stderr)
 
     @unittest.skipUnless(Path("/usr/share/omarchy/bin/omarchy-theme-set-templates").exists(), "Omarchy not installed")
     def test_real_omarchy_templates_without_switching_desktop(self):

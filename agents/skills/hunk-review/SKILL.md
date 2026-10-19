@@ -134,7 +134,7 @@ hunk session comment add --repo . --reply-to user:123 --summary "Addressed in th
 printf '%s\n' '{"comments":[{"filePath":"README.md","newLine":103,"summary":"Tighten this wording"}]}' | hunk session comment apply --repo . --stdin
 ```
 
-- `comment list --type user` shows human-authored inline notes; without `--type`, `comment list` preserves the legacy live-agent-comment view
+- `comment list --type user` shows human-authored inline notes; without `--type`, it shows live agent comments
 - `comment add` is best for one note; `comment apply` is best when an agent already has several notes ready
 - Root `comment add` notes require `--file`, `--summary`, and exactly one of `--old-line` or `--new-line`; replies use `--reply-to <note-id>` with `--summary` and inherit the parent's anchor
 - `comment apply` items require `summary` plus either `replyTo` by itself or `filePath` with exactly one target such as `hunk`, `hunkNumber`, `oldLine`, or `newLine`

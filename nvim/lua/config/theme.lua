@@ -2,7 +2,7 @@ local M = {}
 local uv = vim.uv or vim.loop
 local theme_dir = vim.fn.expand("~/.local/state/omarchy/current/theme")
 
--- Safe default before the first `mise theme` / shell startup render.
+-- Use Catppuccin Mocha when no generated theme is available.
 local cache = (vim.env.XDG_CACHE_HOME and vim.env.XDG_CACHE_HOME ~= "" and vim.env.XDG_CACHE_HOME
   or vim.fn.expand("~/.cache")) .. "/dotfiles/theme/neovim.json"
 local fallback = { plugins = {}, colorscheme = "catppuccin-mocha", mode = "dark", source = "manual" }
@@ -24,7 +24,7 @@ local transparent_groups = {
 
 local function apply_transparency()
   for _, name in ipairs(transparent_groups) do
-    -- Do not sever links or clear groups the colorscheme never defined.
+    -- Preserve linked highlights and undefined groups.
     local ok, hl = pcall(vim.api.nvim_get_hl, 0, { name = name, create = false })
     if ok and not hl.link and hl.bg ~= nil then
       hl.bg = nil
@@ -50,7 +50,7 @@ end
 local function snapshot()
   local source = read_file(theme_dir .. "/neovim.lua")
   if not source then
-    -- Never flash back to a stale manual preset in Omarchy's rm/mv window.
+    -- Keep the active theme while Omarchy swaps directories.
     if current and current.source == "omarchy" then
       return nil
     end
@@ -66,8 +66,7 @@ local function snapshot()
     colors = colors,
     name = name,
     light = light,
-    -- Include the Omarchy name as well as contents: different themes can use
-    -- identical generated Aether specs, and theme.name is updated separately.
+    -- Theme names can change independently of identical Aether palettes.
     key = source .. "\0" .. colors .. "\0" .. tostring(light) .. "\0" .. name,
   }
 end
@@ -95,7 +94,7 @@ local function parse(raw)
       if type(spec.opts) == "table" and spec.opts.colorscheme then
         selected.colorscheme = spec.opts.colorscheme
       end
-      return nil -- This is metadata, never an invitation to load the distro.
+      return nil -- Read the colorscheme selector without loading LazyVim.
     end
     assert(not spec.import and not spec.specs, "Theme imports are not supported")
     spec.name = spec.name or names[spec[1]] or require("lazy.core.plugin").Spec.get_name(spec[1])
@@ -122,9 +121,7 @@ local function parse(raw)
   assert(type(selected.colorscheme) == "string" and selected.colorscheme:match("^[%w_.%-]+$"),
     "Missing or invalid Omarchy colorscheme selector")
   assert(#selected.plugins > 0, "Missing Omarchy theme plugin")
-  -- Omarchy generates Aether palettes for Ethereal, but the standalone plugin
-  -- has different syntax highlights. Match :colorscheme ethereal without
-  -- rewriting generated state or overriding explicit native theme specs.
+  -- Use native Ethereal highlights when Omarchy selects Aether for Ethereal.
   if raw.name == "ethereal" and selected.colorscheme == "aether" then
     selected.plugins = { filter({ "bjarneo/ethereal.nvim", opts = {} }) }
     selected.colorscheme = "ethereal"
@@ -136,8 +133,6 @@ local function parse(raw)
       colors[key] = value
     end
   end
-  -- Match omarchy-theme-color's precedence, without a shell process per poll:
-  -- mode, legacy theme_type, light.mode marker, then background luminance.
   selected.mode = colors.mode or colors.theme_type
   if selected.mode then
     assert(selected.mode == "light" or selected.mode == "dark", "Invalid Omarchy theme mode")
@@ -153,10 +148,8 @@ local function parse(raw)
   return selected
 end
 
--- aether v3 has an unconditional watcher setup (no disable option). We own
--- Omarchy reloads for ALL themes, so suppress that hook before setup/load can
--- register handles or emit extra ColorScheme/LazyReload events. Do not patch
--- files or global libuv functions. Reinstall the hook after module unloading.
+-- This controller handles all theme reloads. Disable Aether's own watcher
+-- on each module load to avoid duplicate reloads.
 local function configure_aether(plugin, opts, config)
   local ok, hotreload = pcall(require, "aether.hotreload")
   if ok then
@@ -169,8 +162,7 @@ local function configure_aether(plugin, opts, config)
   end
 end
 
--- Called on every lazy spec rebuild. The staged snapshot is the only source;
--- do not reread a half-written generated file while lazy is rebuilding.
+-- Rebuild lazy specs from one snapshot, not partially written theme files.
 function M.specs(inventory)
   for _, spec in ipairs(inventory) do
     names[spec[1]] = spec.name or require("lazy.core.plugin").Spec.get_name(spec[1])
@@ -185,7 +177,7 @@ function M.specs(inventory)
     end
   end
   vim.list_extend(inventory, vim.deepcopy(current.plugins))
-  -- This final fragment also covers native themes that depend on aether.
+  -- Apply the same watcher policy to themes that depend on Aether.
   local aether_config
   local function find_aether(specs)
     for _, spec in ipairs(specs) do
@@ -234,7 +226,7 @@ local function apply(selected, on_start)
   for _, spec in ipairs(selected.plugins) do
     visit(spec.name)
   end
-  -- Also locate the owning plugin for the portable fallback.
+  -- Locate the plugin for a preset colorscheme.
   local scheme = "colors/" .. selected.colorscheme
   local available = #vim.api.nvim_get_runtime_file(scheme .. ".lua", false) > 0
     or #vim.api.nvim_get_runtime_file(scheme .. ".vim", false) > 0
@@ -250,8 +242,8 @@ local function apply(selected, on_start)
     on_start()
   end
 
-  -- Changing 'background' with colors_name set automatically reapplies the OLD
-  -- theme. Suppress that extra load/event; apply the new scheme just once below.
+  -- Clear colors_name before changing background to avoid reapplying the
+  -- active theme. Apply the selected colorscheme once below.
   vim.cmd("highlight clear")
   if vim.fn.exists("syntax_on") == 1 then
     vim.cmd("syntax reset")
@@ -259,16 +251,14 @@ local function apply(selected, on_start)
   vim.g.colors_name = nil
   vim.o.background = selected.mode
   for _, plugin in ipairs(plugins) do
-    -- Equivalent to lazy's reload, but don't re-source previously loaded
-    -- colors/*.vim scripts (loader.reload does, causing duplicate applies).
-    -- The freshly rebuilt spec must be in place BEFORE clearing cached opts.
+    -- Reset plugin state without loader.reload's extra colors/*.vim execution.
+    -- Specs must be rebuilt before clearing cached options.
     loader.deactivate(plugin)
     plugin._.cache = nil
     if loader.init_done and plugin.init then
       plugin.init(plugin)
     end
-    -- Run config with lazy's resolved opts, but let errors reach our rollback
-    -- rather than lazy's notification-only error handler.
+    -- Use lazy's resolved options and let configuration errors trigger rollback.
     local configure = plugin.config
     local has_config = configure or plugin.opts
     local opts = has_config and require("lazy.core.plugin").values(plugin, "opts", false)
@@ -305,7 +295,7 @@ local function activate(selected, rebuild)
     applied = selected
     return true
   end
-  -- Missing/broken new plugins should not replace an already-working theme.
+  -- Restore the working theme if the selected plugin fails.
   current = previous or fallback
   local restored, restore_err = pcall(function()
     require("lazy.core.plugin").load()
@@ -328,7 +318,7 @@ function M.poll()
   end
   local raw = snapshot()
   if not raw then
-    pending = nil -- rm/mv window: never switch to the portable fallback here.
+    pending = nil -- Keep the active theme during a directory swap.
     return
   end
   if (applied and raw.key == applied.key) or raw.key == rejected then
@@ -372,8 +362,7 @@ function M.setup()
   if not applied then
     activate(current or fallback, false)
   end
-  -- Poll the pathname, not a replaceable inode. This works even if Omarchy is
-  -- installed after startup, and survives any number of rm/mv theme swaps.
+  -- Poll paths so directory swaps and themes created after startup are detected.
   timer = assert(uv.new_timer())
   local handle = timer
   timer:start(500, 500, vim.schedule_wrap(function()

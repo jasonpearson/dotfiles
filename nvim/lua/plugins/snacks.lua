@@ -34,7 +34,6 @@ return {
     words = { enabled = false },
     styles = {
       notification = {
-        -- wo = { wrap = true } -- Wrap notifications
       }
     }
   },
@@ -95,8 +94,7 @@ return {
     -- LSP
     { "gd", function() Snacks.picker.lsp_definitions() end, desc = "Goto Definition" },
     { "gD", function() Snacks.picker.lsp_declarations() end, desc = "Goto Declaration" },
-    -- No `nowait` here: it would fire the instant `gr` matched, which makes
-    -- every `gr`-prefixed builtin (grn, gra, grr, gri, grt, grx) unreachable.
+    -- Wait for longer built-in mappings such as grn and gra.
     { "gr", function() Snacks.picker.lsp_references() end, desc = "References" },
     { "gI", function() Snacks.picker.lsp_implementations() end, desc = "Goto Implementation" },
     { "gy", function() Snacks.picker.lsp_type_definitions() end, desc = "Goto T[y]pe Definition" },
@@ -142,7 +140,7 @@ return {
     vim.api.nvim_create_autocmd("User", {
       pattern = "VeryLazy",
       callback = function()
-        -- Setup some globals for debugging (lazy-loaded)
+        -- Debugging helpers
         _G.dd = function(...)
           Snacks.debug.inspect(...)
         end
@@ -159,7 +157,7 @@ return {
           vim.print = _G.dd 
         end
 
-        -- Create some toggle mappings
+        -- Display toggles
         Snacks.toggle.option("spell", { name = "Spelling" }):map("<leader>us")
         Snacks.toggle.option("wrap", { name = "Wrap" }):map("<leader>uw")
         Snacks.toggle.option("relativenumber", { name = "Relative Number" }):map("<leader>uL")

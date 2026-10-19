@@ -108,9 +108,8 @@ style = "bg:runtime_segment"
 format = '[[  $time ](fg:git_segment bg:runtime_segment)]($style)'
 
 [palettes.shared]
-# ANSI safety palette for invocations outside the managed Bash environment.
-# Bash selects the generated RGB config via STARSHIP_CONFIG. Edit
-# theme/palette.toml for manual colors, not this terminal-palette fallback.
+# ANSI fallback outside managed Bash. Bash selects the generated RGB config
+# via STARSHIP_CONFIG; preset colors are defined in theme/*.toml.
 foreground = "white"
 background = "black"
 accent = "blue"

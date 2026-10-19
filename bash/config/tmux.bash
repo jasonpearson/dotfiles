@@ -1,6 +1,4 @@
-# Clear an agent's OSC title on return to the shell, even after a crash or
-# Ctrl+Z. The tmux pane-title-changed hook then rechecks all panes in the window.
-# No subprocesses and no directory/title quoting needed: tmux reads cwd itself.
+# Clear the terminal title at each prompt so tmux names the pane by directory.
 _dotfiles_tmux_prompt_title() {
   local status=$?
   printf '\033]0;\007'
@@ -8,8 +6,7 @@ _dotfiles_tmux_prompt_title() {
 }
 
 if [[ $- == *i* && -n ${TMUX:-} ]]; then
-  # Append after Starship; preserve string or array PROMPT_COMMAND and avoid
-  # installing twice when .bashrc is sourced again. Managed Bash supports arrays.
+  # Append after Starship, preserving existing hooks and avoiding duplicates.
   if [[ " ${PROMPT_COMMAND[*]} " != *" _dotfiles_tmux_prompt_title "* ]]; then
     PROMPT_COMMAND+=("_dotfiles_tmux_prompt_title")
   fi

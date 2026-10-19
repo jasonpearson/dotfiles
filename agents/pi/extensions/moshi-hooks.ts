@@ -1,13 +1,7 @@
-// Vendored from moshi-hook 0.4.9's generated Pi extension.
-// Local changes: omit the unused helperBinary, require per-host opt-in,
-// and defer terminal probing until an enabled event is sent.
-// Review regenerated hooks before updating this dotfiles-managed copy.
-//
-// Lifecycle events are normalized here and written straight to the moshi-hook
-// daemon socket (a named pipe on Windows) — no per-event helper spawn. When
-// the daemon is absent the connect fails silently and the turn is never
-// interrupted. Debug replay: pipe a normalized payload JSON into the CLI
-// adapter, "moshi-hook pi-hook".
+// Based on moshi-hook 0.4.9's Pi extension.
+// With per-machine opt-in, normalize lifecycle events and send them directly
+// to the Moshi daemon. Terminal details are probed only when an event is sent.
+// Connection failures are silent. Replay normalized payloads with `moshi-hook pi-hook`.
 import type { ExtensionAPI } from "@earendil-works/pi-coding-agent"
 import { createConnection } from "node:net"
 import { homedir } from "node:os"
@@ -26,9 +20,7 @@ function moshiDisabled(): boolean {
     !existsSync(pathJoin(homedir(), ".config", "moshi", "enabled"))
 }
 
-// Mirrors internal/config.SocketPath. The MOSHI_SOCKET_PATH override wins
-// over the per-platform default so tests and dev daemons can point us at a
-// throwaway socket.
+// MOSHI_SOCKET_PATH overrides the platform's default daemon socket.
 function resolveSocketPath(): string {
   const override = process.env.MOSHI_SOCKET_PATH
   if (override) return override
@@ -44,11 +36,8 @@ function resolveSocketPath(): string {
   return "/tmp/moshi-hook.sock"
 }
 
-// One-message-per-connection wire protocol (see internal/socket/server.go):
-// dial, write one envelope as a JSON line, half-close, drain the daemon ack
-// (so the daemon does not log broken pipes), close. Every failure resolves
-// silently — hooks must never interrupt the user's Pi turn when
-// Moshi is absent.
+// Send one JSON line per connection, then half-close and drain the acknowledgement
+// to avoid broken-pipe errors in the daemon. Socket failures never interrupt Pi.
 //
 // Envelopes go out one at a time, in order. The daemon handles connections
 // concurrently, so a resolution on its own connection could otherwise land
@@ -177,8 +166,7 @@ function resolveTerminalContext(): TerminalContext {
   }
   const zellijSession = process.env.ZELLIJ_SESSION_NAME ?? ""
   const zellijPane = process.env.ZELLIJ_PANE_ID ?? ""
-  // Herdr stamps pane identity into every pane's environment; labels are
-  // resolved daemon-side from these ids, so no herdr CLI runs in-process.
+  // Herdr supplies pane IDs through the environment; the daemon resolves labels.
   const inHerdr = process.env.HERDR_ENV === "1"
   const herdrSession = inHerdr ? process.env.HERDR_SESSION ?? "" : ""
   const herdrInfo = {
@@ -322,10 +310,7 @@ function newSessionID(): string {
   return Array.from(buf, (b) => b.toString(16).padStart(2, "0")).join("")
 }
 
-// Markdown stripping mirrors stripMarkdown in
-// internal/cli/hook_claude_transcript.go: code blocks dropped wholesale,
-// inline pairs keep their text, everything collapses to one line.
-// \u0060 is a backtick — the enclosing Go raw string cannot contain one.
+// Drop code blocks, retain inline text, and collapse Markdown to one line.
 const mdCodeBlock = /\u0060\u0060\u0060[a-zA-Z0-9_-]*\n[\s\S]*?\u0060\u0060\u0060/g
 const mdInlineCode = /\u0060([^\u0060]*)\u0060/g
 const mdLink = /\[([^\]]+)\]\([^)]+\)/g
@@ -360,9 +345,7 @@ function plainTextClip(s: string, n: number): string {
   return truncateText(stripMarkdown(s), n)
 }
 
-// displayUserPrompt mirrors internal/cli/hook_more_agents.go: agents that
-// wrap the typed ask in <user_query> (or append skill/system blocks) should
-// not leak that markup into the "You:" subtitle.
+// Extract the user's prompt without agent-added wrappers or context blocks.
 const userQueryRe = /<user_query>\s*([\s\S]*?)\s*<\/user_query>/i
 const skillInfoRe = /<skill_information>[\s\S]*?<\/skill_information>/gi
 const imageFilesRe = /<image_files>[\s\S]*?<\/image_files>/gi
@@ -382,9 +365,7 @@ function formatUserPromptDetail(prompt: string): string {
   return s ? "You: " + s : ""
 }
 
-// Per-session bookkeeping, the in-process equivalent of the CLI adapter's
-// internal/agentstate files. The extension lives as long as the agent
-// process, so plain maps carry state across events.
+// Track session state across events for the lifetime of the extension.
 interface SessionState {
   model: string
   transcriptPath: string
@@ -426,16 +407,14 @@ function nowSeconds(): number {
   return Date.now() / 1000
 }
 
-// Mirrors internal/agentstate.PromptSequenceForSubmit: reuse the in-flight
-// turn's number, or advance when the previous turn already completed.
+// Reuse an in-flight turn's number; advance after completion.
 function promptSequenceForSubmit(state: SessionState): number {
   if (state.promptSequence === 0) return 1
   if (state.completedPromptSequence >= state.promptSequence) return state.promptSequence + 1
   return state.promptSequence
 }
 
-// Mirrors recordTaskCompletion in internal/cli/hook_more_agents.go: suppress
-// duplicate stop events inside a short cooldown once the turn completed.
+// Suppress duplicate completion events within the cooldown.
 const stopCooldownSeconds = 5
 
 function recordTaskCompletion(state: SessionState, signature: string, now: number): boolean {
@@ -451,11 +430,8 @@ function recordTaskCompletion(state: SessionState, signature: string, now: numbe
   return true
 }
 
-// Pi's (and OmO's senpi fork's) versioned SessionHeader writes parentSession(-Id) when a session was
-// created by fork/clone/newSession with lineage; child sessions stay out of
-// the inbox. Lineage cannot change for a live transcript, so a successful
-// read is cached per path; an unreadable or half-written header is retried
-// on the next event.
+// Session headers identify children through parentSession or parentSessionId.
+// Cache successful reads; retry unreadable or incomplete headers on the next event.
 const transcriptChildCache = new Map<string, boolean>()
 
 function sessionIsChild(state: SessionState, payload: HookPayload): boolean {
@@ -535,8 +511,6 @@ function baseEnvelope(payload: HookPayload, sessionId: string, eventName: string
   return envelope
 }
 
-// handleEvent is the in-module port of runPiFamilyHook in
-// internal/cli/hook_more_agents.go.
 function handleEvent(payload: HookPayload): void {
   const sessionId = payload.session_id || newSessionID()
   const state = stateFor(sessionId)
@@ -549,9 +523,7 @@ function handleEvent(payload: HookPayload): void {
       if (state.promptSequence > state.completedPromptSequence) {
         state.completedPromptSequence = state.promptSequence
       }
-      // A category-less update is a silent state carrier: the daemon persists
-      // the transcript path / model / pane for Chat View without publishing
-      // anything — the first prompt announces the session.
+      // Save session metadata silently; the first prompt announces the session.
       sendEnvelope(baseEnvelope(payload, sessionId, "SessionStart"))
       return
     }
@@ -583,9 +555,8 @@ function handleEvent(payload: HookPayload): void {
     case "AgentStart":
       return
     case "PermissionRequest": {
-      // Pi owns the approval prompt and decision. Moshi mirrors
-      // the waiting state; with a verified terminal target the daemon's TUI
-      // bridge can send the user's remote decision into the native prompt.
+      // Mirror Pi's approval state. The daemon can relay a remote decision
+      // to Pi's prompt when it has a verified terminal target.
       const toolName = firstString(payload.tool_name)
       state.lastToolName = toolName
       const title = agentDisplayName + " needs approval"

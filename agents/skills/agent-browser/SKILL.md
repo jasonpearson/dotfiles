@@ -18,14 +18,14 @@ their generic tool preferences do not override those policies.
 
 ## Start here
 
-This file is a discovery stub, not the usage guide. Before running any `agent-browser` command, load the actual workflow content from the CLI:
+Load the CLI's workflow guide before starting browser work:
 
 ```bash
 agent-browser skills get core             # start here — workflows, common patterns, troubleshooting
 agent-browser skills get core --full      # include full command reference and templates
 ```
 
-The CLI serves skill content that always matches the installed version, so instructions never go stale. The content in this stub cannot change between releases, which is why it just points at `skills get core`.
+The CLI provides guides for the installed version.
 
 ## Specialized skills
 

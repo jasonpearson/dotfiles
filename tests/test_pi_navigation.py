@@ -81,7 +81,7 @@ class NavigationConfigTests(unittest.TestCase):
             self.assertIn("keybind = shift+insert=paste_from_clipboard", result.stdout)
 
     @unittest.skipUnless(shutil.which("mise"), "requires mise >= 2026.10.4")
-    def test_fcitx_cleanup_removes_old_link_not_other_settings(self):
+    def test_fcitx_absent_mapping_removes_dangling_link_not_other_settings(self):
         mapping = tomllib.loads((ROOT / "mise/config.toml").read_text())["dotfiles"]["~/.config/fcitx5/conf/unicode.conf"]
         self.assertEqual(mapping, {"mode": "absent", "variants": [{"os": "linux"}]})
         self.assertFalse((ROOT / "fcitx5/conf/unicode.conf").exists())
@@ -134,7 +134,7 @@ class PiNavigationTests(unittest.TestCase):
         for key in ("TMUX", "TMUX_PANE", "PI_SESSION_ID", "PI_SESSION_FILE"):
             self.env.pop(key, None)
         # Use real tmux key and terminal settings, without theme/plugin processes.
-        text = (ROOT / "tmux/tmux.conf").read_text().split("# Other plugins still use tpack", 1)[0]
+        text = (ROOT / "tmux/tmux.conf").read_text().split("# Optional plugins:", 1)[0]
         conf = self.home / "tmux.conf"
         conf.write_text("\n".join(line for line in text.splitlines() if not line.startswith("run-shell ")))
         self.addCleanup(lambda: subprocess.run(
@@ -236,10 +236,9 @@ class PiNavigationTests(unittest.TestCase):
 
     def test_shift_enter_inserts_newlines_without_submitting(self):
         with self.client_input() as send:
-            # Reproduce the old Ghostty mapping: LF is Ctrl+J, so tmux consumes
-            # it rather than inserting an editor newline. Keep pane navigation.
-            send(b"LEGACY_ONE\n")
-            self.assertIn("LEGACY_ONELEGACY_TWO", send(b"LEGACY_TWO"))
+            # Raw LF is Ctrl+J: tmux consumes it for pane navigation, not newlines.
+            send(b"RAW_ONE\n")
+            self.assertIn("RAW_ONERAW_TWO", send(b"RAW_TWO"))
             send(b"\x03")
             # Accept both terminal extended-key encodings; tmux forwards CSI-u
             # to Pi. No Ghostty-specific text mapping is needed.
