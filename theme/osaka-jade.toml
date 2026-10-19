@@ -2,8 +2,8 @@
 # https://github.com/basecamp/omarchy/blob/master/themes/osaka-jade/colors.toml
 # https://github.com/basecamp/omarchy/blob/master/default/themed/ghostty.conf.tpl
 # Shell blends match omarchy/themed/dotfiles-palette.toml.tpl (round half up).
-# Omarchy pairs Osaka Jade with native Bamboo, not a colorscheme named osaka-jade.
-colorscheme = "bamboo"
+# Use Miasma for Neovim alongside Osaka Jade's terminal palette.
+colorscheme = "miasma"
 mode = "dark"
 foreground = "#c1c497"
 background = "#111c18"

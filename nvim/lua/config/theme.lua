@@ -126,6 +126,11 @@ local function parse(raw)
     selected.plugins = { filter({ "bjarneo/ethereal.nvim", opts = {} }) }
     selected.colorscheme = "ethereal"
   end
+  if raw.name == "osaka-jade"
+    and (selected.colorscheme == "bamboo" or selected.colorscheme == "aether") then
+    selected.plugins = { filter({ "OldJobobo/miasma.nvim", opts = {} }) }
+    selected.colorscheme = "miasma"
+  end
   local colors = {}
   for line in raw.colors:gmatch("[^\r\n]+") do
     local key, value = line:match("^%s*[\"']?([%w_]+)[\"']?%s*=%s*[\"']([^\"']*)[\"']")

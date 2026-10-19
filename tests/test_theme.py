@@ -81,7 +81,7 @@ class ThemeTests(unittest.TestCase):
         state = self.home / "state/dotfiles/theme/selection"
         self.assertFalse(state.exists())
         for name, accent, scheme in [("ethereal", "#7d82d9", "ethereal"),
-                                     ("osaka-jade", "#509475", "bamboo"),
+                                     ("osaka-jade", "#509475", "miasma"),
                                      ("catppuccin", "#89b4fa", "catppuccin-mocha")]:
             self.run_apply("--select", name, "--no-reload")
             self.assertEqual(state.read_text(), name + "\n")

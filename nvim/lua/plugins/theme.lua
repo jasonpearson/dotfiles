@@ -1,8 +1,9 @@
 -- Install themes for offline switching; load only the selected theme.
 local specs = {
   { "ribru17/bamboo.nvim", lazy = true, priority = 1000 },
-  -- Use the name and directory expected by Omarchy's generated specs.
-  { "bjarneo/aether.nvim", name = "aether", branch = "v3", lazy = true, priority = 1000 },
+  -- Match Omarchy's plugin name; mise provisions this checkout outside Lazy's root.
+  { "bjarneo/aether.nvim", name = "aether", branch = "v3",
+    dir = vim.fn.expand("~/.local/share/nvim/themes/aether"), lazy = true, priority = 1000 },
   { "bjarneo/ethereal.nvim", lazy = true, priority = 1000 },
   { "bjarneo/hackerman.nvim", lazy = true, priority = 1000 },
   { "bjarneo/vantablack.nvim", lazy = true, priority = 1000 },
@@ -17,7 +18,8 @@ local specs = {
   { "rose-pine/neovim", name = "rose-pine", lazy = true, priority = 1000 },
   { "ficcdaf/ashen.nvim", lazy = true, priority = 1000 },
   { "folke/tokyonight.nvim", lazy = true, priority = 1000 },
-  { "OldJobobo/miasma.nvim", lazy = true, priority = 1000 },
+  { "OldJobobo/miasma.nvim",
+    dir = vim.fn.expand("~/.local/share/nvim/themes/miasma"), lazy = true, priority = 1000 },
   { "OldJobobo/retro-82.nvim", lazy = true, priority = 1000 },
   { "omacom-io/lumon.nvim", lazy = true, priority = 1000 },
 }

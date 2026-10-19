@@ -27,6 +27,7 @@ local function generate(name, opts, extra)
     aether = '"bjarneo/aether.nvim", name = "aether", branch = "v3"',
     ethereal = '"bjarneo/ethereal.nvim"',
     bamboo = '"ribru17/bamboo.nvim"',
+    miasma = '"OldJobobo/miasma.nvim"',
     catppuccin = '"catppuccin/nvim", name = "catppuccin"',
     nightfox = '"EdenEast/nightfox.nvim"',
   }
@@ -153,6 +154,9 @@ return { setup = function() error('Competing aether watcher must not start') end
   fixture("bamboo.nvim", "bamboo", "{}", {
     ["bamboo.lua"] = [[require('bamboo').load('bamboo')]],
   })
+  fixture("miasma.nvim", "miasma", "{}", {
+    ["miasma.lua"] = [[require('miasma').load('miasma')]],
+  })
 end
 
 require("lazy").setup({
@@ -178,7 +182,7 @@ local function checks()
   eq(entered, 1, "natural VimEnter")
   eq(schemes, 1, "explicit startup colorscheme")
   if scenario == "osaka-jade" then
-    eq(vim.g.colors_name, "bamboo", "Osaka Jade uses Bamboo at startup")
+    eq(vim.g.colors_name, "miasma", "Osaka Jade uses Miasma at startup")
     eq(vim.o.background, "dark")
     local function highlights()
       local result = {}
@@ -189,10 +193,23 @@ local function checks()
     end
     local portable = highlights()
     if real then
-      eq(portable.Normal.fg, 0xf1e9d2, "native Bamboo foreground")
+      eq(portable.Normal.fg, 0xd7c483, "native Miasma foreground")
     end
-    changed(generate("bamboo"), "dark", "bamboo", nil, "osaka-jade")
+    changed(generate("bamboo"), "dark", "miasma", nil, "osaka-jade")
     eq(highlights(), portable, "portable and Omarchy Osaka Jade highlights match")
+    local source = generate("aether", '{colors = {fg = "#c1c497"}}')
+    changed(source, "dark", "miasma", nil, "osaka-jade")
+    eq(highlights(), portable, "generated Aether palette does not replace Miasma")
+    eq(table.concat(vim.fn.readfile(theme_dir .. "/neovim.lua"), "\n"), source,
+      "generated state is unchanged")
+    changed(source, "dark", "aether", nil, "another-theme")
+    eq(vim.api.nvim_get_hl(0, { name = "Normal", link = false }).fg, 0xc1c497,
+      "other themes retain generated Aether")
+    write(theme_dir .. ".name", "osaka-jade\n")
+    controller.poll()
+    controller.poll()
+    eq(vim.g.colors_name, "miasma", "name-only change selects Miasma")
+    eq(highlights(), portable, "Miasma highlights survive switching away and back")
     eq(errors, {}, "Osaka Jade errors")
     print(("PASS nvim-theme osaka-jade (%s)"):format(real and "installed plugins" or "fixtures"))
     return
@@ -204,7 +221,7 @@ local function checks()
     if real then
       eq(native.fg, 0xffcead, "native Ethereal foreground")
     end
-    local expected = { catppuccin = "catppuccin-mocha", ethereal = "ethereal", ["osaka-jade"] = "bamboo" }
+    local expected = { catppuccin = "catppuccin-mocha", ethereal = "ethereal", ["osaka-jade"] = "miasma" }
     -- Cover every directed transition between the three portable presets.
     for _, name in ipairs({ "catppuccin", "osaka-jade", "ethereal", "osaka-jade", "catppuccin", "ethereal" }) do
       local before = schemes

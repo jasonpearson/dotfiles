@@ -15,6 +15,11 @@ dotfiles_config = "{{ config_source | canonicalize }}"
 "pacman:git" = { os = "linux" }
 "pacman:ttf-hack-nerd" = { os = "linux" }
 
+[bootstrap.repos]
+# Neovim uses these checkouts directly; keep refs aligned with their specs.
+"~/.local/share/nvim/themes/aether" = { url = "https://github.com/bjarneo/aether.nvim.git", ref = "v3" }
+"~/.local/share/nvim/themes/miasma" = { url = "https://github.com/OldJobobo/miasma.nvim.git" }
+
 [dotfiles]
 # Keep source paths relative to mise/ with ../; the global template anchors them.
 "~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
