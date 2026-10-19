@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 from pathlib import Path
 import shlex
 import shutil
@@ -110,6 +111,52 @@ class NotificationConfigTests(unittest.TestCase):
         self.tm("source-file", str(CONF))
         self.assertEqual(self.tm("show-options", "-gv", "@attention_notify"), "off")
         self.assertEqual(self.tm("show-options", "-gv", "@attention_notify_command"), "")
+
+    @unittest.skipUnless(ATTENTION, "requires tmux-attention on PATH or TMUX_ATTENTION_TEST_BIN")
+    def test_claude_questions_permissions_and_errors_update_the_pane(self):
+        fake_bin = self.home / "bin"
+        fake_bin.mkdir()
+        mise = fake_bin / "mise"
+        mise.write_text('#!/bin/sh\n[ "$1" = exec ] && [ "$2" = -- ] || exit 65\nshift 2\nexec "$@"\n')
+        mise.chmod(0o755)
+        (fake_bin / "tmux-attention").symlink_to(Path(ATTENTION).resolve())
+        pane = self.tm("display-message", "-p", "#{pane_id}")
+        pid = self.tm("display-message", "-p", "#{pid}")
+        env = dict(self.env, TMUX=f"{self.socket},{pid},0", TMUX_PANE=pane,
+                   PATH=f"{fake_bin}:{os.environ['PATH']}")
+        # Never source the sound config or invoke Moshi; exercise the actual
+        # configured state commands against a private, detached tmux server.
+        hooks = json.loads((ROOT / "agents/claude/settings.json").read_text())["hooks"]
+
+        def emit(event, state, tool=""):
+            commands = [hook["command"] for group in hooks.get(event, [])
+                        if not group.get("matcher") or re.search(group["matcher"], tool)
+                        for hook in group["hooks"] if "tmux-attention" in hook.get("command", "")]
+            self.assertTrue(commands, f"no attention command for {event} {tool}")
+            for command in commands:
+                subprocess.run(["/bin/sh", "-c", command], env=env,
+                               capture_output=True, check=True, timeout=10)
+            self.assertEqual(self.tm("show-options", "-pqv", "-t", pane, "@attention_state"), state)
+
+        emit("UserPromptSubmit", "working")
+        for tool in ("AskUserQuestion", "ExitPlanMode"):
+            emit("PreToolUse", "blocked", tool)
+            emit("PostToolUse", "working", tool)
+        emit("PermissionRequest", "blocked", "Bash")
+        emit("PermissionDenied", "working", "Bash")
+        emit("PermissionRequest", "blocked", "Bash")
+        emit("PostToolUseFailure", "working", "Bash")
+        emit("Elicitation", "blocked")
+        emit("ElicitationResult", "working")
+        emit("StopFailure", "failed")
+        emit("UserPromptSubmit", "working")
+        emit("Stop", "done")
+        for group in hooks["SessionEnd"]:
+            for hook in group["hooks"]:
+                if "tmux-attention" in hook.get("command", ""):
+                    subprocess.run(["/bin/sh", "-c", hook["command"]], env=env,
+                                   capture_output=True, check=True, timeout=10)
+        self.assertEqual(self.tm("show-options", "-pqv", "-t", pane, "@attention_state"), "")
 
     @unittest.skipUnless(ATTENTION, "requires tmux-attention on PATH or TMUX_ATTENTION_TEST_BIN")
     def test_installed_cli_dispatches_once_and_preserves_command_failure(self):

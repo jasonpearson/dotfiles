@@ -23,6 +23,10 @@ min_version = "2026.10.4"
 "~/.config/ghostty/config-theme" = { source = "../ghostty/config-theme.tera", mode = "template" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
 "~/.config/mise" = { source = ".", mode = "symlink-each" }
+"~/.config/moshi/config.toml" = { source = "../moshi/config.toml", mode = "copy" }
+"~/.config/moshi/agent-hook.sh" = { source = "../moshi/agent-hook.sh", mode = "symlink" }
+"~/.config/moshi/control.sh" = { source = "../moshi/control.sh", mode = "symlink" }
+"~/.config/moshi/service.py" = { source = "../moshi/service.py", mode = "symlink" }
 "~/.config/nvim" = { source = "../nvim", mode = "symlink-each" }
 "~/.config/starship.toml" = { source = "../starship/starship.toml", mode = "symlink" }
 "~/.config/tmux/tmux.conf" = { source = "../tmux/tmux.conf", mode = "symlink" }
@@ -30,8 +34,11 @@ min_version = "2026.10.4"
 "~/.config/tmux-attention/config" = { source = "../tmux/tmux-attention-config", mode = "symlink" }
 
 # agents
-"~/.claude" = { source = "../agents/claude", mode = "symlink-each" }
-"~/.pi/agent" = { source = "../agents/pi", mode = "symlink-each" }
+# Moshi's installer writes these files. Copies keep its updates out of Git.
+"~/.claude" = { source = "../agents/claude", mode = "symlink-each", exclude = ["settings.json"] }
+"~/.claude/settings.json" = { source = "../agents/claude/settings.json", mode = "copy" }
+"~/.pi/agent" = { source = "../agents/pi", mode = "symlink-each", exclude = ["extensions/moshi-hooks.ts"] }
+"~/.pi/agent/extensions/moshi-hooks.ts" = { source = "../agents/pi/extensions/moshi-hooks.ts", mode = "copy" }
 "~/.pi/agent/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
 "~/.claude/CLAUDE.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
 "~/.codex/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
@@ -91,6 +98,10 @@ mode = "symlink-each"
 variants = [
   { os = "linux" },
 ]
+
+[tasks.moshi]
+description = "Moshi hooks and background service: on, off, or status (default)"
+run = 'sh "$HOME/.config/moshi/control.sh"'
 
 [tasks.theme]
 description = "Switch all terminal apps: mise theme [catppuccin|ethereal|osaka-jade] (no argument shows selection)"

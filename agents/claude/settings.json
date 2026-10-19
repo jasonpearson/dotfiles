@@ -24,10 +24,27 @@
     "web-search": "user-invocable-only"
   },
   "hooks": {
+    "Notification": [
+      {
+        "matcher": "permission_prompt",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": true
+          }
+        ]
+      }
+    ],
     "SessionStart": [
       {
-        "matcher": "",
-        "hooks": []
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": true
+          }
+        ]
       }
     ],
     "UserPromptSubmit": [
@@ -40,12 +57,47 @@
             "timeout": 3
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": true
+          }
+        ]
       }
     ],
     "PreToolUse": [
       {
-        "matcher": "",
-        "hooks": []
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise exec -- tmux-attention blocked >/dev/null 2>&1 || :",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "mise exec -- tmux-attention blocked >/dev/null 2>&1 || :",
+            "timeout": 3
+          },
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": true
+          }
+        ]
       }
     ],
     "PermissionRequest": [
@@ -58,6 +110,15 @@
             "timeout": 3
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": false
+          }
+        ]
       }
     ],
     "PostToolUse": [
@@ -68,6 +129,26 @@
             "type": "command",
             "command": "mise exec -- tmux-attention working >/dev/null 2>&1 || :",
             "timeout": 3
+          }
+        ]
+      },
+      {
+        "matcher": "AskUserQuestion",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": true
+          }
+        ]
+      },
+      {
+        "matcher": "ExitPlanMode",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": true
           }
         ]
       }
@@ -106,6 +187,15 @@
             "timeout": 3
           }
         ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": true
+          }
+        ]
       }
     ],
     "SessionEnd": [
@@ -116,6 +206,15 @@
             "type": "command",
             "command": "mise exec -- tmux-attention clear >/dev/null 2>&1 || :",
             "timeout": 3
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" claude-hook",
+            "async": true
           }
         ]
       }

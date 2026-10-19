@@ -5,6 +5,14 @@
         "hooks": [
           {
             "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" codex-hook"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
             "command": "mise exec -- tmux-attention blocked >/dev/null 2>&1 || :",
             "timeout": 3
           }
@@ -12,6 +20,14 @@
       }
     ],
     "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" codex-hook"
+          }
+        ]
+      },
       {
         "hooks": [
           {
@@ -28,6 +44,14 @@
         "hooks": [
           {
             "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" codex-hook"
+          }
+        ]
+      },
+      {
+        "hooks": [
+          {
+            "type": "command",
             "command": "mise exec -- tmux-attention done >/dev/null 2>&1 || :",
             "timeout": 3
           }
@@ -35,6 +59,14 @@
       }
     ],
     "UserPromptSubmit": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" codex-hook"
+          }
+        ]
+      },
       {
         "hooks": [
           {

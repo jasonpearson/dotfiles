@@ -51,6 +51,21 @@ class CodexAttentionTests(unittest.TestCase):
     def test_local_server_and_hooks_are_enabled(self):
         self.assertEqual(self.config, {"features": {"hooks": True, "daemon_auto_start": False}})
 
+    def test_moshi_keeps_its_existing_events_and_precedes_attention(self):
+        moshi_events = {"PermissionRequest", "SessionStart", "UserPromptSubmit", "Stop"}
+        for event, groups in self.all_hooks.items():
+            with self.subTest(event=event):
+                if event in moshi_events:
+                    self.assertEqual(len(groups), 2)
+                    handler, = groups[0]["hooks"]
+                    self.assertEqual(handler, {
+                        "type": "command",
+                        "command": 'sh "$HOME/.config/moshi/agent-hook.sh" codex-hook',
+                    })
+                    self.assertNotIn("matcher", groups[0])
+                else:
+                    self.assertEqual(len(groups), 1)
+
     def test_state_lifecycle_and_synchronous_timeouts(self):
         self.assertEqual(set(self.hooks), set(STATES))
         for event, state in STATES.items():
