@@ -1,0 +1,32 @@
+# Native Ethereal palette: bjarneo/ethereal.nvim, lua/ethereal/colors/init.lua.
+# https://github.com/bjarneo/ethereal.nvim/tree/a0ec73332e537228981b6a4f465cef82bb3e1d36
+# Shell segment blends follow omarchy/themed/dotfiles-palette.toml.tpl.
+colorscheme = "ethereal"
+mode = "dark"
+foreground = "#ffcead"
+background = "#060b1e"
+accent = "#7d82d9"
+muted = "#6d7db6"
+error = "#ed5b5a"
+status_background = "#8f766d"
+prompt_accent = "#7d82d9"
+prompt_text = "#060b1e"
+prompt_segment = "#24294d"
+git_segment = "#a88a7b"
+runtime_segment = "#060b1e"
+runtime_segment_alt = "#121525"
+hostname = "#faaaa9"
+node = "#92a593"
+
+# Bundle terminal colors: Ethereal is not a built-in Ghostty theme.
+[ghostty]
+cursor-color = "#ffcead"
+cursor-text = "#060b1e"
+selection-foreground = "#ffcead"
+selection-background = "#443c42"
+palette = [
+  "#060b1e", "#ed5b5a", "#92a593", "#e9bb4f",
+  "#7d82d9", "#c89dc1", "#a3bfd1", "#f99957",
+  "#6d7db6", "#ed5b5a", "#92a593", "#e9bb4f",
+  "#7d82d9", "#c89dc1", "#a3bfd1", "#ffcead",
+]

@@ -49,6 +49,21 @@ mise dot apply '~/.config/tmux/tmux.conf'
 
 Reload the affected application after changing its configuration.
 
+## Themes
+
+```sh
+mise theme                 # show the selection and available presets
+mise theme catppuccin
+mise theme ethereal
+mise theme osaka-jade
+```
+
+Themes coordinate Ghostty, Neovim, Bash/Starship, and tmux. Reload Ghostty with
+**Cmd+Shift+,** on macOS or **Ctrl+Shift+,** on Linux; the other apps update
+automatically after initial setup. The selection stays local to each machine.
+
+On Omarchy, use `omarchy theme set <name>` instead.
+
 ## Restore dotfile links
 
 If you unapplied the dotfiles, restore them without relying on shell setup:

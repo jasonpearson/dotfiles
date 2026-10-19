@@ -12,6 +12,7 @@ case ":$PATH:" in
   *) export PATH="$HOME/repos/k8s-start/bin:$PATH" ;;
 esac
 command -v mise >/dev/null 2>&1 && eval "$(mise activate bash)"
+[[ -r ~/.config/bash/colors.sh ]] && source ~/.config/bash/colors.sh
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
 export EDITOR=nvim
@@ -21,6 +22,10 @@ if [[ $- == *i* ]]; then
   set -o vi
   bind -m vi-insert '"kj": vi-movement-mode'
   bind 'set keyseq-timeout 200'
+
+  # Readline redraws the mode arrow without rerunning Starship.
+  bind 'set show-mode-in-prompt on'
+  _dotfiles_theme_readline
 fi
 
 alias t='tmux-attention'

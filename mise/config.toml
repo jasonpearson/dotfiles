@@ -15,9 +15,15 @@ min_version = "2026.10.4"
 "~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
 "~/.bashrc" = { source = "../bash/bashrc", mode = "symlink" }
 "~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
+"~/.config/dotfiles/theme/apply.py" = { source = "../theme/apply.py", mode = "symlink" }
+"~/.config/dotfiles/theme/palette.toml" = { source = "../theme/palette.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/ethereal.toml" = { source = "../theme/ethereal.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/osaka-jade.toml" = { source = "../theme/osaka-jade.toml", mode = "symlink" }
 "~/.config/ghostty/config" = { source = "../ghostty/config", mode = "symlink" }
+"~/.config/ghostty/config-theme" = { source = "../ghostty/config-theme.tera", mode = "template" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
 "~/.config/mise" = { source = ".", mode = "symlink-each" }
+"~/.config/starship.toml" = { source = "../starship/starship.toml", mode = "symlink" }
 "~/.config/tmux/tmux.conf" = { source = "../tmux/tmux.conf", mode = "symlink" }
 "~/.config/tmux/attention-notifications.conf" = { source = "../tmux/attention-notifications.conf", mode = "symlink" }
 "~/.config/tmux-attention/config" = { source = "../tmux/tmux-attention-config", mode = "symlink" }
@@ -30,6 +36,7 @@ min_version = "2026.10.4"
 "~/.codex/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
 "~/.codex/config.toml/tmux-title" = { source = "../agents/codex/tmux.toml", merge = true }
 "~/.codex/config.toml/tmux-attention" = { source = "../agents/codex/attention.toml", merge = true }
+"~/.codex/config.toml/theme" = { source = "../agents/codex/theme.toml", merge = true }
 "~/.codex/hooks.json" = { source = "../agents/codex/hooks.json", mode = "copy" }
 
 # agent skills
@@ -83,6 +90,14 @@ mode = "symlink-each"
 variants = [
   { os = "linux" },
 ]
+
+[tasks.theme]
+description = "Switch all terminal apps: mise theme [catppuccin|ethereal|osaka-jade] (no argument shows selection)"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py" --select'
+
+[tasks."theme:apply"]
+description = "Re-render the saved preset or Omarchy theme and refresh registered tmux servers"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py"'
 
 [tools]
 claude = "latest"

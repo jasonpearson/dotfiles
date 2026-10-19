@@ -1,0 +1,33 @@
+# Omarchy Osaka Jade: terminal colors from colors.toml + ghostty.conf.tpl.
+# https://github.com/basecamp/omarchy/blob/master/themes/osaka-jade/colors.toml
+# https://github.com/basecamp/omarchy/blob/master/default/themed/ghostty.conf.tpl
+# Shell blends match omarchy/themed/dotfiles-palette.toml.tpl (round half up).
+# Omarchy pairs Osaka Jade with native Bamboo, not a colorscheme named osaka-jade.
+colorscheme = "bamboo"
+mode = "dark"
+foreground = "#c1c497"
+background = "#111c18"
+accent = "#509475"
+muted = "#53685b"
+error = "#ff5345"
+status_background = "#72785e"
+prompt_accent = "#509475"
+prompt_text = "#111c18"
+prompt_segment = "#213a2f"
+git_segment = "#83896b"
+runtime_segment = "#111c18"
+runtime_segment_alt = "#1a241e"
+hostname = "#a2734b"
+node = "#549e6a"
+
+[ghostty]
+cursor-color = "#f7e8b2"
+cursor-text = "#111c18"
+selection-foreground = "#f7e8b2"
+selection-background = "#32473b"
+palette = [
+  "#111c18", "#ff5345", "#549e6a", "#459451",
+  "#509475", "#d2689c", "#2dd5b7", "#c1c497",
+  "#53685b", "#db9f9c", "#63b07a", "#e5c736",
+  "#acd4cf", "#75bbb3", "#8cd3cb", "#f7e8b2",
+]
