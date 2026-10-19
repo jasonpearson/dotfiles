@@ -16,6 +16,9 @@ git clone https://github.com/jasonpearson/dotfiles.git "$HOME/repos/dotfiles"
 curl https://mise.run | sh
 ```
 
+tmux-attention is pinned to the published **0.5.0** release. No local checkout
+is required; its managed config supplies directory discovery and picker keys.
+
 Preview, then install packages, tools, and dotfile links:
 
 ```sh
@@ -35,6 +38,13 @@ file mappings in [`mise/config.toml`](mise/config.toml).
 mise dot status
 mise dot apply --dry-run
 mise dot apply
+```
+
+To apply one target:
+
+```sh
+mise dot apply --dry-run '~/.config/tmux/tmux.conf'
+mise dot apply '~/.config/tmux/tmux.conf'
 ```
 
 Reload the affected application after changing its configuration.

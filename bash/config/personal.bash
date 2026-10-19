@@ -23,6 +23,9 @@ if [[ $- == *i* ]]; then
   bind 'set keyseq-timeout 200'
 fi
 
+alias t='tmux-attention'
+tl() { tmux list-sessions "$@"; }
+
 br() { bun run "$@"; }
 alias cc='claude'
 alias cl='mise exec -- claude'
@@ -85,3 +88,20 @@ gs() { git status "$@"; }
 gw() { git worktree "$@"; }
 
 ll() { ls -lah "$@"; }
+
+if [[ -n "${HERDR_PANE_ID:-}" && -z "${TMUX:-}" ]]; then
+  _herdr_focus_left() { herdr pane focus --current --direction left >/dev/null 2>&1; }
+  _herdr_focus_down() { herdr pane focus --current --direction down >/dev/null 2>&1; }
+  _herdr_focus_up() { herdr pane focus --current --direction up >/dev/null 2>&1; }
+  _herdr_focus_right() { herdr pane focus --current --direction right >/dev/null 2>&1; }
+
+  bind -x '"\C-h": _herdr_focus_left'
+  bind -x '"\C-j": _herdr_focus_down'
+  bind -x '"\C-k": _herdr_focus_up'
+  bind -x '"\C-l": _herdr_focus_right'
+
+  bind -x '"\e[104;5u": _herdr_focus_left'
+  bind -x '"\e[106;5u": _herdr_focus_down'
+  bind -x '"\e[107;5u": _herdr_focus_up'
+  bind -x '"\e[108;5u": _herdr_focus_right'
+fi

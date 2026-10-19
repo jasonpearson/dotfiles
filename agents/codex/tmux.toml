@@ -1,0 +1,4 @@
+# Only this key is merged into Codex's otherwise machine-local configuration.
+# Manual /rename takes precedence over Codex's generated thread title.
+[tui]
+terminal_title = ["thread-name"]

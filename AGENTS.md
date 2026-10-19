@@ -18,3 +18,13 @@ Use the five default triage roles. See `docs/agents/triage-labels.md`.
 ### Domain docs
 
 Single-context: root `CONTEXT.md` and `docs/adr/`. Before exploring the codebase, read `docs/agents/domain.md`.
+
+### Pi extensions
+
+mise links `agents/pi` into `~/.pi/agent` file by file, so a file added under `agents/pi` does not exist where Pi loads it until `mise dot apply` runs. After adding or renaming any file there, run `mise dot apply`, then verify the extension from the installed path rather than the repo path:
+
+```sh
+pi -p -ne --no-session --model bogus/bogus-model -e ~/.pi/agent/extensions/<name>/index.ts hi
+```
+
+This surfaces load errors and then fails on the model without a paid call. `pi --help -e <file>` exits 0 even for a broken file.

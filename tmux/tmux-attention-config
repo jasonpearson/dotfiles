@@ -1,0 +1,18 @@
+# Bash configuration for tmux-attention navigation (macOS and Linux).
+# Reopen pickers after editing. Environment preferences override these values.
+
+# Exact, case-sensitive pane commands. Lists replace the built-in defaults.
+agent_commands=(pi claude codex)
+
+# Case-sensitive session-name globs. An empty array disables subagent grouping.
+subagent_session_patterns=('*subagents*')
+
+# Use the existing zoxide directory list instead of walking the filesystem.
+dir_command='zoxide query --list'
+
+# Pane picker only.
+picker_kill_key='K'
+picker_filter_key='shift-tab'
+
+# Both pickers; Escape always cancels too.
+picker_cancel_key='ctrl-c'

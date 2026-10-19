@@ -8,6 +8,9 @@ font-size = 15
 config-file = ?config-linux
 font-feature = -calt, -liga, -dlig
 macos-titlebar-proxy-icon = hidden
+# Pi's Alt navigation/editing shortcuts; right Option still types Unicode.
+# This setting has no effect on Linux.
+macos-option-as-alt = left
 title = " "
 
 keybind = global:control+`=toggle_quick_terminal
@@ -30,9 +33,8 @@ keybind = super+l=goto_split:right
 keybind = super+j=goto_split:bottom
 keybind = super+h=goto_split:left
 
-keybind = control+shift+k=resize_split:up,15
+# Ctrl+Shift+J/K pass through to Pi for message navigation.
 keybind = control+shift+l=resize_split:right,15
-keybind = control+shift+j=resize_split:down,15
 keybind = control+shift+h=resize_split:left,15
 
 ###############
@@ -41,4 +43,3 @@ keybind = control+shift+h=resize_split:left,15
 keybind = super+u=scroll_page_up
 keybind = super+d=scroll_page_down
 keybind = super+f=write_screen_file:paste
-keybind = shift+enter=text:\n

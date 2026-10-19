@@ -1,3 +1,4 @@
+# Per-key Codex configuration merging requires this version.
 min_version = "2026.10.4"
 
 [bootstrap.packages]
@@ -17,11 +18,19 @@ min_version = "2026.10.4"
 "~/.config/ghostty/config" = { source = "../ghostty/config", mode = "symlink" }
 "~/.config/git" = { source = "../git", mode = "symlink-each" }
 "~/.config/mise" = { source = ".", mode = "symlink-each" }
+"~/.config/tmux/tmux.conf" = { source = "../tmux/tmux.conf", mode = "symlink" }
+"~/.config/tmux/attention-notifications.conf" = { source = "../tmux/attention-notifications.conf", mode = "symlink" }
+"~/.config/tmux-attention/config" = { source = "../tmux/tmux-attention-config", mode = "symlink" }
 
 # agents
+"~/.claude" = { source = "../agents/claude", mode = "symlink-each" }
+"~/.pi/agent" = { source = "../agents/pi", mode = "symlink-each" }
 "~/.pi/agent/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
 "~/.claude/CLAUDE.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
 "~/.codex/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.codex/config.toml/tmux-title" = { source = "../agents/codex/tmux.toml", merge = true }
+"~/.codex/config.toml/tmux-attention" = { source = "../agents/codex/attention.toml", merge = true }
+"~/.codex/hooks.json" = { source = "../agents/codex/hooks.json", mode = "copy" }
 
 # agent skills
 "~/.agents/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
@@ -43,6 +52,13 @@ min_version = "2026.10.4"
 [dotfiles."~/.config/ghostty/config-linux"]
 source = "../ghostty/config-linux"
 mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
+# Retire the old Pi Ctrl+Shift+U workaround, including already-deployed links.
+[dotfiles."~/.config/fcitx5/conf/unicode.conf"]
+mode = "absent"
 variants = [
   { os = "linux" },
 ]
@@ -69,8 +85,11 @@ variants = [
 ]
 
 [tools]
+claude = "latest"
+codex = "latest"
 fzf = "0.74.4"
 github-cli = "2.101.0"
+"github:jasonpearson/tmux-attention" = "0.5.0"
 hunk = "0.22.0"
 jq = "1.8.2"
 mosh = "latest"
@@ -78,10 +97,12 @@ node = "24.21.0"
 "npm:@playwright/cli" = "0.1.21"
 "npm:agent-browser" = "0.38.1"
 "npm:skills" = "1.7.0"
+pi = "latest"
 "pypi:ddgs" = "9.16.0"
 python = "3.14.7"
 ripgrep = "15.2.0"
 starship = "1.26.0"
+tmux = "3.7c"
 uv = "0.12.19"
 yq = "4.53.6"
 zoxide = "0.10.0"
