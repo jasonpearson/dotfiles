@@ -61,6 +61,9 @@ dotfiles_config = "{{ config_source | canonicalize }}"
 "~/.agents/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
 "~/.claude/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
 
+"~/.agents/skills/ammend-commits" = { source = "../agents/skills/ammend-commits", mode = "symlink" }
+"~/.claude/skills/ammend-commits" = { source = "../agents/skills/ammend-commits", mode = "symlink" }
+
 "~/.agents/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
 "~/.claude/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
 

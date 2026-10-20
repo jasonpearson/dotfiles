@@ -103,6 +103,31 @@ class DotfileDeploymentTests(unittest.TestCase):
         self.mise("dot", "status", "--missing", cwd=self.elsewhere)
         self.assertEqual(self.source_config.read_text(), current)
 
+    def test_amend_skill_deploys_with_human_only_invocation(self):
+        name = "ammend-commits"
+        targets = (f"~/.agents/skills/{name}", f"~/.claude/skills/{name}")
+        source = self.checkout / "agents/skills" / name
+        self.mise("dot", "apply", "--dry-run", *targets)
+        for target in targets:
+            self.assertFalse((self.home / target.removeprefix("~/")).exists())
+        self.mise("dot", "apply", "--yes", *targets)
+        for target in targets:
+            deployed = self.home / target.removeprefix("~/")
+            self.assertTrue(deployed.is_symlink())
+            self.assertEqual(deployed.resolve(), source)
+            skill = (deployed / "SKILL.md").read_text()
+            frontmatter = skill.split("---\n", 2)[1].splitlines()
+            self.assertIn(f"name: {name}", frontmatter)
+            self.assertIn("disable-model-invocation: true", frontmatter)
+            self.assertEqual(
+                (deployed / "agents/openai.yaml").read_text(),
+                "policy:\n  allow_implicit_invocation: false\n",
+            )
+        # Reapplying the two skill targets must not deploy unrelated settings.
+        self.mise("dot", "apply", "--yes", *targets)
+        self.assertFalse((self.home / ".claude/settings.json").exists())
+        self.assertFalse((self.home / ".pi/agent/settings.json").exists())
+
     def test_deployed_git_global_ignore_is_effective(self):
         self.mise("dot", "apply", "--dry-run", "~/.config/git")
         self.mise("dot", "apply", "--yes", "~/.config/git")
