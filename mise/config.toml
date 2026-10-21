@@ -7,12 +7,14 @@ dotfiles_config = "{{ config_source | canonicalize }}"
 
 [bootstrap.packages]
 "brew:bash" = { os = "macos" }
+"brew:tailscale" = { os = "macos" }
 "brew-cask:font-hack-nerd-font" = { os = "macos" }
 "brew-cask:ghostty" = { os = "macos" }
 "brew-cask:obsidian" = { os = "macos" }
 "brew:git" = { os = "macos" }
 "pacman:ghostty" = { os = "linux" }
 "pacman:git" = { os = "linux" }
+"pacman:tailscale" = { os = "linux" }
 "pacman:ttf-hack-nerd" = { os = "linux" }
 
 [bootstrap.repos]
