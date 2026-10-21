@@ -107,6 +107,8 @@ Also show:
 - All descendants whose IDs will change, even if their patches will not.
 - A proposed unused backup ref, plus how dirty work and residual staging will
   be saved and restored. A branch backup alone does **not** save uncommitted work.
+- Approval includes resolving conflicts during replay and residual-work
+  restoration without further approval, using the verified backups for recovery.
 - Whether local refs indicate the affected history is published/shared; unknown
   publication status must remain unknown. Warn about collaborators, dependent
   branches, invalidated signatures, and any later coordinated force-push.
@@ -156,10 +158,19 @@ boundary. A direct amend is sufficient when the sole target is HEAD. Either way:
 5. Restore only the residual uncommitted work and staging. Never silently
    normalize all remaining changes to staged or unstaged.
 
-Keep Git hooks enabled. If hooks fail or alter contents, or conflicts arise,
-pause and report the state rather than bypassing hooks, choosing ours/theirs
-wholesale, dropping commits, or changing the approved scope. Material changes
-to assignments, code, messages, or replay strategy require renewed approval.
+Resolve conflicts during replay and residual-work restoration autonomously;
+do not pause for user approval of conflict fixes. The verified backup ref and
+dirty-work snapshots provide recovery points. Use the pinned history, approved
+assignments, expected final tree, and recorded residual state to resolve each
+conflict while preserving both the amendments and later commits' intent. Review
+and stage only the resolved paths/hunks, then continue the operation. Do not
+choose ours/theirs wholesale, drop commits, or expand the approved scope.
+Conflict fixes within that scope are already authorized; material changes to
+assignments, unrelated code, messages, or replay strategy still require renewed
+approval.
+
+Keep Git hooks enabled. If hooks fail or alter contents, pause and report the
+state rather than bypassing hooks or silently accepting a different result.
 
 Do not use `git reset --hard`, `git clean`, automatic rollback, or automatic
 backup deletion. On interruption or failure, retain the backup and dirty-work
@@ -187,5 +198,6 @@ repair code or claim success. Report tests actually run, distinguishing hook
 checks from tests of intermediate commits; say when tests were not run.
 
 Finish with the old-to-new IDs of amended commits, a short summary of what each
-absorbed, remaining uncommitted work, verification results, and retained backup
-refs/snapshot locations. Leave publishing and backup cleanup to the user.
+absorbed, conflicts resolved, remaining uncommitted work, verification results,
+and retained backup refs/snapshot locations. Leave publishing and backup cleanup
+to the user.
