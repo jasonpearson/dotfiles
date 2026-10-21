@@ -9,6 +9,7 @@ import json
 import os
 from pathlib import Path
 import plistlib
+import re
 import shutil
 import subprocess
 import sys
@@ -390,6 +391,33 @@ bind -v | grep 'vi-.*-mode-string'
             self.assertEqual(tm(socket, "show-option", "-gqv", "status-left"), "sentinel-layout")
             self.assertEqual(tm(socket, "display-message", "-p", "-t", "probe", "#{@theme_accent}"), "#123456")
             assert_styles(socket)
+
+    @unittest.skipUnless(shutil.which("tmux"), "tmux not installed")
+    def test_tmux_zoom_indicator_spacing(self):
+        conf = self.home / "tmux.conf"
+        conf.write_text((ROOT / "tmux/tmux.conf").read_text().split("# Optional plugins:", 1)[0])
+        socket = self.home / "zoom"
+        def tm(*args):
+            return subprocess.run(["tmux", "-S", str(socket), *args], env=self.env,
+                                  text=True, capture_output=True, check=True, timeout=15).stdout.rstrip("\n")
+        self.addCleanup(lambda: subprocess.run(["tmux", "-S", str(socket), "kill-server"],
+                                               env=self.env, capture_output=True))
+        tm("-f", str(conf), "new-session", "-d", "-s", "probe", "sleep 120")
+        tm("split-window", "-d", "-t", "probe", "sleep 120")
+        for zoomed in (False, True, False):
+            if zoomed or tm("display-message", "-p", "-t", "probe", "#{window_zoomed_flag}") == "1":
+                tm("resize-pane", "-Z", "-t", "probe")
+            for attention in ("", "!"):
+                with self.subTest(zoomed=zoomed, attention=attention):
+                    tm("set", "-g", "@attention_global", attention)
+                    status = tm("display-message", "-p", "-t", "probe", "#{E:status-left}")
+                    # Each segment owns its padding; no extra cell after the
+                    # zoom segment's background resets, even before a badge.
+                    expected = (" Z " if zoomed else "") + (" !" if attention else "") + " [probe] "
+                    self.assertEqual(re.sub(r"#\[[^\]]*\]", "", status), expected)
+                    if zoomed:
+                        self.assertTrue(status.startswith(
+                            f'#[fg={self.palette()["background"]}]#[bg={self.palette()["error"]}]#[bold] Z #[default]#['))
 
     @unittest.skipUnless(shutil.which("tmux"), "tmux not installed")
     def test_tmux_styles_bypassing_palette_warn_until_config_reload(self):
