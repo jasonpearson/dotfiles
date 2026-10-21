@@ -23,20 +23,21 @@ GHOSTTY = shutil.which("ghostty") or "/Applications/Ghostty.app/Contents/MacOS/g
 
 
 class NavigationConfigTests(unittest.TestCase):
-    def test_scrolling_keys_are_not_editor_or_exit_keys(self):
+    def test_custom_navigation_preserves_default_draft_editing(self):
         bindings = json.loads((ROOT / "agents/pi/keybindings.json").read_text())
-        scrolling = {"ctrl+b", "ctrl+f", "ctrl+u", "ctrl+d", "ctrl+y", "ctrl+e", "ctrl+g", "ctrl+shift+g"}
-        displaced = ["cursorLeft", "cursorRight", "cursorLineEnd", "deleteCharForward",
-                     "deleteToLineStart", "yank"]
-        for action in displaced:
-            keys = bindings[f"tui.editor.{action}"]
-            self.assertFalse(scrolling.intersection([keys] if isinstance(keys, str) else keys))
+        self.assertFalse(any(action.startswith(("tui.editor.", "tui.input.")) for action in bindings))
+        for action in ("app.editor.external", "tui.altScreen.pageUp", "tui.altScreen.pageDown",
+                       "tui.altScreen.previousPrompt", "tui.altScreen.nextPrompt", "tui.altScreen.top"):
+            self.assertNotIn(action, bindings)
+        for action, keys in {
+            "halfPageUp": "ctrl+shift+k", "halfPageDown": "ctrl+shift+j",
+            "lineUp": "ctrl+shift+y", "lineDown": "ctrl+shift+e",
+            "bottom": ["end", "ctrl+shift+g"],
+            "searchNext": ["enter", "ctrl+n"],
+            "searchPrevious": ["shift+enter", "ctrl+shift+n"],
+        }.items():
+            self.assertEqual(bindings[f"tui.altScreen.{action}"], keys)
         self.assertEqual(bindings["app.exit"], [])
-        self.assertEqual(bindings["app.editor.external"], "ctrl+shift+e")
-        self.assertEqual(bindings["tui.altScreen.searchNext"], ["enter", "ctrl+n"])
-        self.assertEqual(bindings["tui.altScreen.searchPrevious"], ["shift+enter", "ctrl+shift+n"])
-        self.assertIn("ctrl+shift+k", bindings["tui.altScreen.previousPrompt"])
-        self.assertIn("ctrl+shift+j", bindings["tui.altScreen.nextPrompt"])
         all_keys = {key for keys in bindings.values() for key in ([keys] if isinstance(keys, str) else keys)}
         self.assertNotIn("ctrl+shift+u", all_keys)
         self.assertNotIn("ctrl+shift+d", all_keys)
@@ -258,7 +259,7 @@ class PiNavigationTests(unittest.TestCase):
             send(b"/name Newline regression\r")
             self.assertIn("Newline regression", self.tm("display-message", "-p", "-t", "test:1", "#{pane_title}"))
 
-    def test_shift_jk_jumps_messages_without_changing_tmux_panes(self):
+    def test_shift_jk_scrolls_half_pages_without_changing_tmux_panes(self):
         pane = self.tm("display-message", "-p", "-t", "test:1", "#{pane_id}")
         lower = self.tm("split-window", "-d", "-v", "-t", pane, "-P", "-F", "#{pane_id}", "sleep", "300")
         with self.client_input() as send:
@@ -267,7 +268,7 @@ class PiNavigationTests(unittest.TestCase):
                 (b"\x1b[107;6u", b"\x1b[106;6u"),
                 (b"\x1b[27;6;107~", b"\x1b[27;6;106~"),
             ]:
-                bottom = send(b"\x1b[103;5u")  # Ctrl+G
+                bottom = send(b"\x1b[103;6u")  # Ctrl+Shift+G
                 previous = send(previous_key)
                 self.assertLess(self.rows(previous)[0], self.rows(bottom)[0])
                 earlier = send(previous_key)
@@ -290,30 +291,30 @@ class PiNavigationTests(unittest.TestCase):
         bottom = self.press(draft, literal=True)
         bottom_rows = self.rows(bottom)
         self.assertIn(draft, bottom)
-        half = self.press("C-u")
+        half = self.press("C-S-k")
         self.assertLess(self.rows(half)[0], bottom_rows[0])
         self.assertIn(draft, half)
-        self.assertEqual(self.rows(self.press("C-d")), bottom_rows)
-        page = self.press("C-b")
+        self.assertEqual(self.rows(self.press("C-S-j")), bottom_rows)
+        page = self.press("PPage")
         self.assertLess(self.rows(page)[0], self.rows(half)[0])
         self.assertIn(draft, page)
-        self.assertEqual(self.rows(self.press("C-f")), bottom_rows)
-        self.assertNotEqual(self.press("C-y"), bottom)
-        self.assertEqual(self.rows(self.press("C-e")), bottom_rows)
+        self.assertEqual(self.rows(self.press("NPage")), bottom_rows)
+        self.assertNotEqual(self.press("C-S-y"), bottom)
+        self.assertEqual(self.rows(self.press("C-S-e")), bottom_rows)
 
-        self.assertIn("ROW_000", self.press("C-S-g"))
-        self.assertEqual(self.rows(self.press("C-g")), bottom_rows)
-        previous = self.press("M-k")
+        self.assertIn("ROW_000", self.press("C-Home"))
+        self.assertEqual(self.rows(self.press("C-S-g")), bottom_rows)
+        previous = self.press("C-Up")
         self.assertLess(self.rows(previous)[0], bottom_rows[0])
-        earlier = self.press("M-k")
+        earlier = self.press("C-Up")
         # Both user and assistant messages are marked, including adjacent
         # boundaries before the same first assistant line.
         self.assertNotEqual(earlier, previous)
         self.assertLessEqual(self.rows(earlier)[0], self.rows(previous)[0])
-        self.assertEqual(self.rows(self.press("M-j")), self.rows(previous))
-        self.assertEqual(self.rows(self.press("C-g")), bottom_rows)
+        self.assertEqual(self.rows(self.press("C-Down")), self.rows(previous))
+        self.assertEqual(self.rows(self.press("End")), bottom_rows)
 
-        self.press("C-S-g")
+        self.press("C-Home")
         self.press("C-S-f")
         self.press("PROMPT_", literal=True)
         searched = self.wait_screen(lambda screen: "PROMPT_00" in screen)
@@ -324,29 +325,42 @@ class PiNavigationTests(unittest.TestCase):
         self.assertIn("PROMPT_00", self.press("S-Enter"))
         self.press("Escape")
         self.assertIn(draft, self.screen())
-        self.assertEqual(self.rows(self.press("C-g")), bottom_rows)
-
-        # Ctrl+D scrolls even with an empty editor, never deletes or exits.
-        self.assertNotIn(draft, self.press("M-u"))
-        self.press("C-d")
-        self.assertIn(draft, self.press("M-y"))
-        self.press("Left")
-        self.press("C-d")
-        self.assertIn(draft, self.screen())
-        self.press("M-e")
-        self.assertIn(draft + "TAIL", self.press("TAIL", literal=True))
-        self.press("M-u")
-        self.press("SECOND_KILL", literal=True)
-        self.press("M-u")
-        self.assertIn("SECOND_KILL", self.press("M-y"))
-        self.assertIn(draft + "TAIL", self.press("M-S-y"))
-
-        # Ctrl+G/Shift+G must never launch the editor. Ctrl+Shift+E runs a
-        # harmless test editor and returns its changes to the Pi input.
+        self.assertEqual(self.rows(self.press("C-S-g")), bottom_rows)
         self.assertFalse(self.editor_probe.exists())
-        self.press("C-S-e")
+
+    def test_default_draft_editing_and_external_editor(self):
+        draft = "DRAFT_SENTINEL"
+        self.press(draft, literal=True)
+        self.assertNotIn(draft, self.press("C-u"))
+        # Ctrl+D still cannot exit with an empty editor, but now deletes forward.
+        self.press("C-d")
+        self.assertIn(draft, self.press("C-y"))
+        self.press("C-b")
+        self.assertRegex(self.press("C-d"), rf"(?m)^{draft[:-1]} *$")
+        self.press("L", literal=True)
+        self.press("C-a")
+        self.press("C-f")
+        self.assertRegex(self.press("C-k"), r"(?m)^D *$")
+        self.assertIn(draft, self.press("C-y"))
+        self.press("C-a")
+        self.press("C-e")
+        self.assertIn(draft + "TAIL", self.press("TAIL", literal=True))
+        self.press("C-u")
+        self.press("SECOND_KILL", literal=True)
+        self.press("C-u")
+        self.assertIn("SECOND_KILL", self.press("C-y"))
+        self.assertIn(draft + "TAIL", self.press("M-y"))
+
+        # Direct pane input bypasses tmux's Ctrl+J/K navigation bindings.
+        self.press("C-j")
+        self.assertRegex(self.press("SECOND_LINE", literal=True),
+                         rf"(?m)^{draft}TAIL *\nSECOND_LINE *$")
+        # Ctrl+G uses the default external-editor binding, with a harmless stub.
+        self.assertFalse(self.editor_probe.exists())
+        self.press("C-g")
         edited = self.wait_screen(lambda screen: "EXTERNAL_EDIT_OK" in screen)
         self.assertIn(draft + "TAIL", edited)
+        self.assertIn("SECOND_LINE", edited)
         self.assertEqual(self.editor_probe.read_text(), "opened\n")
 
 
