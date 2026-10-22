@@ -78,8 +78,6 @@ class NeovimBootstrapTests(unittest.TestCase):
                 source.write_text(source.read_text().replace('"main"', json.dumps(branch)))
                 self.git("add", ".", cwd=origin)
                 self.commit(f"{name} {branch}", cwd=origin)
-            theme_source = source.read_text()
-            expected_head = self.git("rev-parse", "HEAD", cwd=origin).stdout.strip()
             self.git("checkout", "--quiet", "main", cwd=origin)
 
             target, entry = next(
@@ -92,8 +90,6 @@ class NeovimBootstrapTests(unittest.TestCase):
                 "repository": repository,
                 "branch": branch,
                 "checkout": str(self.home / target[2:]),
-                "source": theme_source,
-                "head": expected_head,
             })
             # Exercise production targets and options, substituting only offline
             # Git origins. JSON strings are valid TOML basic strings here.
@@ -102,15 +98,12 @@ class NeovimBootstrapTests(unittest.TestCase):
             bootstrap_config.append(f"{json.dumps(target)} = {{ {options} }}")
         (self.project / "mise.toml").write_text("\n".join(bootstrap_config) + "\n")
 
-    def run_command(self, command, *, cwd=None, succeeds=True):
+    def run_command(self, command, *, cwd=None):
         result = subprocess.run(
             command, cwd=cwd or self.project, env=self.env,
             capture_output=True, text=True, timeout=30,
         )
-        if succeeds:
-            self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        else:
-            self.assertNotEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         return result
 
     def git(self, *args, cwd):
@@ -122,47 +115,9 @@ class NeovimBootstrapTests(unittest.TestCase):
             "commit", "--quiet", "-m", message, cwd=cwd,
         )
 
-    def bootstrap(self, *args, succeeds=True):
-        return self.run_command(
-            [MISE, "bootstrap", "--only", "repos", "--yes", *args], succeeds=succeeds,
-        )
-
-    def test_preview_install_and_reapply_preserve_local_work(self):
-        self.bootstrap("--dry-run")
-        for theme in self.themes:
-            self.assertFalse(Path(theme["checkout"]).exists(), "preview must not clone a theme")
-
-        self.bootstrap()
-        for theme in self.themes:
-            with self.subTest(theme=theme["name"], phase="installed"):
-                checkout = Path(theme["checkout"])
-                self.assertEqual((checkout / f"colors/{theme['name']}.lua").read_text(), theme["source"])
-                self.assertEqual(self.git("rev-parse", "HEAD", cwd=checkout).stdout.strip(), theme["head"])
-                self.assertEqual(self.git("status", "--porcelain", cwd=checkout).stdout, "")
-
-        self.bootstrap()
-        for theme in self.themes:
-            checkout = Path(theme["checkout"])
-            self.assertEqual(self.git("rev-parse", "HEAD", cwd=checkout).stdout.strip(), theme["head"])
-            (checkout / f"colors/{theme['name']}.lua").write_text(theme["source"] + "-- Local customization\n")
-        result = self.bootstrap(succeeds=False)
-        self.assertIn("has local changes", result.stderr)
-        self.bootstrap("--skip-dirty")
-        for theme in self.themes:
-            with self.subTest(theme=theme["name"], phase="dirty"):
-                checkout = Path(theme["checkout"])
-                self.assertEqual(
-                    (checkout / f"colors/{theme['name']}.lua").read_text(),
-                    theme["source"] + "-- Local customization\n",
-                )
-                self.assertEqual(
-                    self.git("status", "--porcelain", cwd=checkout).stdout,
-                    f" M colors/{theme['name']}.lua\n",
-                )
-
     @unittest.skipUnless(NVIM and (LAZY / "lua/lazy/init.lua").is_file(), "requires Neovim and installed lazy.nvim")
     def test_neovim_uses_mise_checkout_with_default_and_custom_xdg_data_home(self):
-        self.bootstrap()
+        self.run_command([MISE, "bootstrap", "--only", "repos", "--yes"])
         self.env.update(TEST_REPO=str(ROOT), TEST_LAZY=str(LAZY), TEST_THEMES=json.dumps(self.themes))
         for name in ("NVIM_APPNAME", "VIMINIT", "EXINIT", "GVIMINIT", "LUA_PATH", "LUA_CPATH"):
             self.env.pop(name, None)

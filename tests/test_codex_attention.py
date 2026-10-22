@@ -4,7 +4,6 @@ import json
 import os
 from pathlib import Path
 import re
-import shutil
 import subprocess
 import tempfile
 import tomllib
@@ -121,71 +120,6 @@ class CodexAttentionTests(unittest.TestCase):
                 capture_output=True, text=True, timeout=5,
             )
             self.assertEqual((result.returncode, result.stdout, result.stderr), (0, "", ""))
-
-    @unittest.skipUnless(shutil.which("mise"), "requires mise >= 2026.10.4")
-    def test_deployment_preserves_moshi_and_local_configuration(self):
-        mappings = tomllib.loads((ROOT / "mise/config.toml").read_text())["dotfiles"]
-        mapping = mappings[
-            "~/.codex/config.toml/tmux-attention"
-        ]
-        self.assertTrue(mapping["merge"])
-        self.assertEqual((ROOT / "mise" / mapping["source"]).resolve(), SOURCE)
-        hook_mapping = mappings["~/.codex/hooks.json"]
-        self.assertEqual(hook_mapping["mode"], "copy")
-        self.assertEqual((ROOT / "mise" / hook_mapping["source"]).resolve(), HOOK_SOURCE)
-        with tempfile.TemporaryDirectory() as temp:
-            home = Path(temp)
-            target = home / ".codex/config.toml"
-            target.parent.mkdir()
-            original = '''# local settings
-model = "local-model"
-notify = ["computer-use-client", "turn-ended"]
-[features]
-hooks = true
-[hooks.state."moshi-existing-hook"]
-trusted_hash = "leave-local-trust-unchanged"
-[plugins.example]
-enabled = true
-'''
-            target.write_text(original)
-            moshi = target.with_name("hooks.json")
-            # Model an existing deployment without ever writing to repo sources.
-            hook_source = home / "source/hooks.json"
-            hook_source.parent.mkdir()
-            hook_source.write_bytes(HOOK_SOURCE.read_bytes())
-            source_contents = hook_source.read_bytes()
-            moshi.symlink_to(hook_source)
-            config = home / "mise.toml"
-            config.write_text(
-                '[dotfiles]\n'
-                f'"~/.codex/config.toml/tmux-attention" = {{ source = "{SOURCE}", merge = true }}\n'
-                f'"~/.codex/hooks.json" = {{ source = "{hook_source}", mode = "copy" }}\n'
-            )
-            env = dict(os.environ, HOME=temp, XDG_CONFIG_HOME=str(home / ".config"),
-                       MISE_GLOBAL_CONFIG_FILE=str(config), MISE_TRUSTED_CONFIG_PATHS=temp,
-                       MISE_DATA_DIR=str(home / "data"), MISE_CACHE_DIR=str(home / "cache"),
-                       MISE_STATE_DIR=str(home / "state"))
-            command = [shutil.which("mise"), "-C", temp, "dot", "apply", "--yes",
-                       "~/.codex/config.toml/tmux-attention", "~/.codex/hooks.json"]
-            subprocess.run(command, env=env, check=True, text=True, capture_output=True)
-            expected = tomllib.loads(original)
-            expected["features"].update(self.config["features"])
-            self.assertEqual(tomllib.loads(target.read_text()), expected)
-            self.assertIn("# local settings", target.read_text())
-            self.assertFalse(moshi.is_symlink())
-            self.assertEqual(json.loads(moshi.read_text()), {"hooks": self.all_hooks})
-            # A future installer may edit its local copy without contaminating
-            # the portable source that another computer will receive.
-            moshi.write_text('{"hooks": {}, "local-installer-state": true}\n')
-            self.assertEqual(hook_source.read_bytes(), source_contents)
-            moshi.write_bytes(source_contents)
-            first = target.read_bytes()
-            subprocess.run(command, env=env, check=True, text=True, capture_output=True)
-            self.assertEqual(target.read_bytes(), first)
-            # Machines without local Codex configuration receive only state hooks.
-            target.unlink()
-            subprocess.run(command, env=env, check=True, text=True, capture_output=True)
-            self.assertEqual(tomllib.loads(target.read_text()), self.config)
 
 
 if __name__ == "__main__":

@@ -103,6 +103,57 @@ class DotfileDeploymentTests(unittest.TestCase):
         self.mise("dot", "status", "--missing", cwd=self.elsewhere)
         self.assertEqual(self.source_config.read_text(), current)
 
+    def test_codex_deployment_preserves_local_settings_and_protects_hook_source(self):
+        target = self.home / ".codex/config.toml"
+        target.parent.mkdir()
+        original = '''# local settings
+model = "local-model"
+notify = ["computer-use-client", "turn-ended"]
+
+[tui]
+theme = "local-theme"
+terminal_title = ["activity"]
+notifications = ["agent-turn-complete"]
+notification_method = "osc9"
+alternate_screen = "never"
+
+[features]
+hooks = false
+daemon_auto_start = true
+shell_snapshot = true
+
+[hooks.state."moshi-existing-hook"]
+trusted_hash = "leave-local-trust-unchanged"
+
+[plugins.example]
+enabled = true
+'''
+        target.write_text(original)
+        hook_source = self.checkout / "agents/codex/hooks.json"
+        source_contents = hook_source.read_bytes()
+        hooks = target.with_name("hooks.json")
+        hooks.symlink_to(hook_source)
+        targets = (
+            "~/.codex/config.toml/tmux-title",
+            "~/.codex/config.toml/tmux-attention",
+            "~/.codex/config.toml/theme",
+            "~/.codex/hooks.json",
+        )
+        self.mise("dot", "apply", "--dry-run", *targets)
+        self.assertEqual(target.read_text(), original)
+        self.assertTrue(hooks.is_symlink())
+        self.mise("dot", "apply", "--yes", *targets)
+        expected = tomllib.loads(original)
+        expected["tui"].update(theme="dotfiles", terminal_title=["thread-name"])
+        expected["features"].update(hooks=True, daemon_auto_start=False)
+        self.assertEqual(tomllib.loads(target.read_text()), expected)
+        self.assertIn("# local settings", target.read_text())
+        self.assertFalse(hooks.is_symlink())
+        self.assertEqual(hooks.read_bytes(), source_contents)
+        # Installer edits must stay local rather than write through to Git.
+        hooks.write_text('{"hooks": {}, "local-installer-state": true}\n')
+        self.assertEqual(hook_source.read_bytes(), source_contents)
+
     def test_amend_skill_deploys_with_human_only_invocation(self):
         name = "ammend-commits"
         targets = (f"~/.agents/skills/{name}", f"~/.claude/skills/{name}")

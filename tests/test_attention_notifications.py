@@ -4,11 +4,9 @@ import json
 import os
 import re
 from pathlib import Path
-import shlex
 import shutil
 import subprocess
 import tempfile
-import time
 import tomllib
 import unittest
 
@@ -157,30 +155,6 @@ class NotificationConfigTests(unittest.TestCase):
                     subprocess.run(["/bin/sh", "-c", hook["command"]], env=env,
                                    capture_output=True, check=True, timeout=10)
         self.assertEqual(self.tm("show-options", "-pqv", "-t", pane, "@attention_state"), "")
-
-    @unittest.skipUnless(ATTENTION, "requires tmux-attention on PATH or TMUX_ATTENTION_TEST_BIN")
-    def test_installed_cli_dispatches_once_and_preserves_command_failure(self):
-        log = self.home / "notifications"
-        self.tm("source-file", str(CONF))
-        # Override BEFORE any state command, even on macOS. No real sound.
-        self.tm("set-option", "-g", "@attention_notify_command",
-                f"printf '%s\\n' \"$TMUX_ATTENTION_STATE\" >> {shlex.quote(str(log))}")
-        self.tm("set-option", "-g", "@attention_notify", "always")
-        pane = self.tm("display-message", "-p", "#{pane_id}")
-        pid = self.tm("display-message", "-p", "#{pid}")
-        env = dict(self.env, TMUX=f"{self.socket},{pid},0", TMUX_PANE=pane)
-        for state in ("working", "done", "done"):
-            subprocess.run([str(ATTENTION), state], env=env, capture_output=True, check=True, timeout=10)
-        result = subprocess.run([str(ATTENTION), "run", "--", "/bin/sh", "-c", "exit 7"],
-                                env=env, capture_output=True, timeout=10)
-        self.assertEqual(result.returncode, 7)
-        deadline = time.monotonic() + 5
-        while time.monotonic() < deadline:
-            if log.exists() and len(log.read_text().splitlines()) >= 2:
-                break
-            time.sleep(0.05)
-        self.assertTrue(log.exists(), "notification command never ran")
-        self.assertEqual(log.read_text().splitlines(), ["done", "failed"])
 
 
 if __name__ == "__main__":

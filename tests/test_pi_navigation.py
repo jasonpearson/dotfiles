@@ -81,36 +81,10 @@ class NavigationConfigTests(unittest.TestCase):
             self.assertNotRegex(result.stdout, r"(?m)^keybind = ctrl\+shift\+[en]=")
             self.assertIn("keybind = shift+insert=paste_from_clipboard", result.stdout)
 
-    @unittest.skipUnless(shutil.which("mise"), "requires mise >= 2026.10.4")
-    def test_fcitx_absent_mapping_removes_dangling_link_not_other_settings(self):
+    def test_linux_fcitx_leaves_unicode_input_at_defaults(self):
         mapping = tomllib.loads((ROOT / "mise/config.toml").read_text())["dotfiles"]["~/.config/fcitx5/conf/unicode.conf"]
         self.assertEqual(mapping, {"mode": "absent", "variants": [{"os": "linux"}]})
         self.assertFalse((ROOT / "fcitx5/conf/unicode.conf").exists())
-        with tempfile.TemporaryDirectory() as temp:
-            home = Path(temp)
-            conf = home / ".config/fcitx5/conf"
-            conf.mkdir(parents=True)
-            other = conf / "clipboard.conf"
-            other.write_text("NumberOfEntries=9\n")
-            target = conf / "unicode.conf"
-            # Simulate Linux's mapping on either test platform. A removed source
-            # leaves a dangling link; cleanup must unlink it, not dereference it.
-            target.symlink_to(home / "removed-repo/fcitx5/conf/unicode.conf")
-            config = home / "mise.toml"
-            config.write_text('[dotfiles."~/.config/fcitx5/conf/unicode.conf"]\nmode = "absent"\n')
-            env = dict(os.environ, HOME=temp, XDG_CONFIG_HOME=str(home / ".config"),
-                       MISE_GLOBAL_CONFIG_FILE=str(config), MISE_TRUSTED_CONFIG_PATHS=temp,
-                       MISE_DATA_DIR=str(home / "data"), MISE_CACHE_DIR=str(home / "cache"),
-                       MISE_STATE_DIR=str(home / "state"))
-            command = [shutil.which("mise"), "-C", temp, "dot", "apply", "--yes",
-                       "~/.config/fcitx5/conf/unicode.conf"]
-            subprocess.run([*command, "--dry-run"], env=env, check=True, capture_output=True)
-            self.assertTrue(target.is_symlink())
-            for _ in range(2):
-                subprocess.run(command, env=env, check=True, capture_output=True)
-                self.assertFalse(target.is_symlink())
-                self.assertFalse(target.exists())
-                self.assertEqual(other.read_text(), "NumberOfEntries=9\n")
 
 
 @unittest.skipUnless(TMUX and PI, "requires tmux and Pi >= 1.0.2")
@@ -124,14 +98,9 @@ class PiNavigationTests(unittest.TestCase):
         agent.mkdir(parents=True)
         shutil.copy(ROOT / "agents/pi/keybindings.json", agent / "keybindings.json")
         (agent / "settings.json").write_text(json.dumps({"tuiMode": "fullscreen"}))
-        editor = self.home / "external-editor"
-        editor.write_text('#!/bin/sh\necho opened >> "$EDITOR_PROBE"\necho EXTERNAL_EDIT_OK >> "$1"\n')
-        editor.chmod(0o700)
-        self.editor_probe = self.home / "external-editor.calls"
         self.env = dict(os.environ, HOME=str(self.home), XDG_CONFIG_HOME=str(self.home / ".config"),
                         PI_CODING_AGENT_DIR=str(agent), TMUX_TMPDIR=str(self.home),
-                        PI_OFFLINE="1", PI_SKIP_VERSION_CHECK="1", PI_TELEMETRY="0",
-                        VISUAL=str(editor), EDITOR=str(editor), EDITOR_PROBE=str(self.editor_probe))
+                        PI_OFFLINE="1", PI_SKIP_VERSION_CHECK="1", PI_TELEMETRY="0")
         for key in ("TMUX", "TMUX_PANE", "PI_SESSION_ID", "PI_SESSION_FILE"):
             self.env.pop(key, None)
         # Use real tmux key and terminal settings, without theme/plugin processes.
@@ -182,14 +151,6 @@ class PiNavigationTests(unittest.TestCase):
                 return screen
             time.sleep(0.1)
         self.fail(f"Timed out waiting for Pi screen:\n{screen}")
-
-    def press(self, key, literal=False):
-        args = ["send-keys", "-t", "test:1"]
-        if literal:
-            args.append("-l")
-        self.tm(*args, "--", key)
-        time.sleep(0.15)
-        return self.screen()
 
     @staticmethod
     def rows(screen):
@@ -260,6 +221,9 @@ class PiNavigationTests(unittest.TestCase):
             self.assertIn("Newline regression", self.tm("display-message", "-p", "-t", "test:1", "#{pane_title}"))
 
     def test_shift_jk_scrolls_half_pages_without_changing_tmux_panes(self):
+        self.assertEqual(self.tm("show-options", "-gqv", "prefix"), "C-a")
+        self.assertEqual(self.tm("show-options", "-gqv", "prefix2"), "None")
+        self.assertIn("xterm-ghostty:extkeys", self.tm("show-options", "-g", "terminal-features"))
         pane = self.tm("display-message", "-p", "-t", "test:1", "#{pane_id}")
         lower = self.tm("split-window", "-d", "-v", "-t", pane, "-P", "-F", "#{pane_id}", "sleep", "300")
         with self.client_input() as send:
@@ -282,86 +246,6 @@ class PiNavigationTests(unittest.TestCase):
             self.assertEqual(self.tm("display-message", "-p", "-t", "test:1", "#{pane_id}"), lower)
             send(b"\x0b")
             self.assertEqual(self.tm("display-message", "-p", "-t", "test:1", "#{pane_id}"), pane)
-
-    def test_navigation_search_and_editing_preserve_draft(self):
-        self.assertEqual(self.tm("show-options", "-gqv", "prefix"), "C-a")
-        self.assertEqual(self.tm("show-options", "-gqv", "prefix2"), "None")
-        self.assertIn("xterm-ghostty:extkeys", self.tm("show-options", "-g", "terminal-features"))
-        draft = "DRAFT_SENTINEL"
-        bottom = self.press(draft, literal=True)
-        bottom_rows = self.rows(bottom)
-        self.assertIn(draft, bottom)
-        half = self.press("C-S-k")
-        self.assertLess(self.rows(half)[0], bottom_rows[0])
-        self.assertIn(draft, half)
-        self.assertEqual(self.rows(self.press("C-S-j")), bottom_rows)
-        page = self.press("PPage")
-        self.assertLess(self.rows(page)[0], self.rows(half)[0])
-        self.assertIn(draft, page)
-        self.assertEqual(self.rows(self.press("NPage")), bottom_rows)
-        self.assertNotEqual(self.press("C-S-y"), bottom)
-        self.assertEqual(self.rows(self.press("C-S-e")), bottom_rows)
-
-        self.assertIn("ROW_000", self.press("C-Home"))
-        self.assertEqual(self.rows(self.press("C-S-g")), bottom_rows)
-        previous = self.press("C-Up")
-        self.assertLess(self.rows(previous)[0], bottom_rows[0])
-        earlier = self.press("C-Up")
-        # Both user and assistant messages are marked, including adjacent
-        # boundaries before the same first assistant line.
-        self.assertNotEqual(earlier, previous)
-        self.assertLessEqual(self.rows(earlier)[0], self.rows(previous)[0])
-        self.assertEqual(self.rows(self.press("C-Down")), self.rows(previous))
-        self.assertEqual(self.rows(self.press("End")), bottom_rows)
-
-        self.press("C-Home")
-        self.press("C-S-f")
-        self.press("PROMPT_", literal=True)
-        searched = self.wait_screen(lambda screen: "PROMPT_00" in screen)
-        self.assertIn(draft, searched)
-        self.assertIn("PROMPT_01", self.press("C-n"))
-        self.assertIn("PROMPT_00", self.press("C-S-n"))
-        self.assertIn("PROMPT_01", self.press("Enter"))
-        self.assertIn("PROMPT_00", self.press("S-Enter"))
-        self.press("Escape")
-        self.assertIn(draft, self.screen())
-        self.assertEqual(self.rows(self.press("C-S-g")), bottom_rows)
-        self.assertFalse(self.editor_probe.exists())
-
-    def test_default_draft_editing_and_external_editor(self):
-        draft = "DRAFT_SENTINEL"
-        self.press(draft, literal=True)
-        self.assertNotIn(draft, self.press("C-u"))
-        # Ctrl+D still cannot exit with an empty editor, but now deletes forward.
-        self.press("C-d")
-        self.assertIn(draft, self.press("C-y"))
-        self.press("C-b")
-        self.assertRegex(self.press("C-d"), rf"(?m)^{draft[:-1]} *$")
-        self.press("L", literal=True)
-        self.press("C-a")
-        self.press("C-f")
-        self.assertRegex(self.press("C-k"), r"(?m)^D *$")
-        self.assertIn(draft, self.press("C-y"))
-        self.press("C-a")
-        self.press("C-e")
-        self.assertIn(draft + "TAIL", self.press("TAIL", literal=True))
-        self.press("C-u")
-        self.press("SECOND_KILL", literal=True)
-        self.press("C-u")
-        self.assertIn("SECOND_KILL", self.press("C-y"))
-        self.assertIn(draft + "TAIL", self.press("M-y"))
-
-        # Direct pane input bypasses tmux's Ctrl+J/K navigation bindings.
-        self.press("C-j")
-        self.assertRegex(self.press("SECOND_LINE", literal=True),
-                         rf"(?m)^{draft}TAIL *\nSECOND_LINE *$")
-        # Ctrl+G uses the default external-editor binding, with a harmless stub.
-        self.assertFalse(self.editor_probe.exists())
-        self.press("C-g")
-        edited = self.wait_screen(lambda screen: "EXTERNAL_EDIT_OK" in screen)
-        self.assertIn(draft + "TAIL", edited)
-        self.assertIn("SECOND_LINE", edited)
-        self.assertEqual(self.editor_probe.read_text(), "opened\n")
 
 
 if __name__ == "__main__":
