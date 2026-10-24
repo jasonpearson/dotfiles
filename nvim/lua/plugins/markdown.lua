@@ -1,0 +1,60 @@
+return {
+	{
+		"MeanderingProgrammer/render-markdown.nvim",
+		ft = { "markdown" },
+		opts = { enabled = true },
+		init = function()
+			vim.api.nvim_create_autocmd("FileType", {
+				group = vim.api.nvim_create_augroup("MarkdownWrap", { clear = true }),
+				pattern = "markdown",
+				callback = function()
+					vim.opt_local.wrap = true
+				end,
+			})
+		end,
+		keys = {
+			{
+				"<leader>md",
+				function()
+					require("render-markdown").toggle()
+				end,
+				desc = "Toggle Markdown Preview",
+			},
+		},
+	},
+	{
+		"iamcco/markdown-preview.nvim",
+		build = function(plugin)
+			local result = vim.system({ "npm", "install", "--omit=dev" }, {
+				cwd = vim.fs.joinpath(plugin.dir, "app"),
+				text = true,
+			}):wait()
+			assert(result.code == 0,
+				"Markdown Preview installation failed:\n" .. (result.stderr or "") .. (result.stdout or ""))
+		end,
+		keys = {
+			{ "<leader>cp", false },
+			{ "<leader>mp", "<cmd>MarkdownPreviewToggle<cr>", desc = "Markdown Preview" },
+		},
+	},
+	{
+		"mfussenegger/nvim-lint",
+		optional = true,
+		opts = function(_, opts)
+			opts.linters = opts.linters or {}
+			opts.linters["markdownlint-cli2"] = opts.linters["markdownlint-cli2"] or {}
+
+			local efm = "stdin:%l:%c %m,stdin:%l %m"
+			local parser = require("lint.parser").from_errorformat(efm, {
+				source = "markdownlint",
+				severity = vim.diagnostic.severity.WARN,
+			})
+
+			opts.linters["markdownlint-cli2"].parser = function(output, bufnr, linter_cwd)
+				return vim.tbl_filter(function(diagnostic)
+					return not diagnostic.message:match("MD013/line%-length")
+				end, parser(output, bufnr, linter_cwd))
+			end
+		end,
+	},
+}

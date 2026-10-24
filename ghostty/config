@@ -1,0 +1,42 @@
+# Default theme; `mise theme <name>` selects a shared preset.
+theme = Catppuccin Mocha
+config-file = ?config-theme
+
+# Omarchy colors take precedence when present.
+config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
+
+font-family = "Hack Nerd Font"
+font-style = Regular
+font-size = 15
+# Optional font-size override, deployed only on Linux by mise.
+config-file = ?config-linux
+font-feature = -calt, -liga, -dlig
+macos-titlebar-proxy-icon = hidden
+# Left Option sends Pi's Alt shortcuts; right Option types Unicode.
+macos-option-as-alt = left
+title = " "
+
+keybind = global:control+`=toggle_quick_terminal
+copy-on-select = true
+quick-terminal-position = bottom
+quick-terminal-size = 60%
+
+# Splits
+unfocused-split-opacity = 0.8
+
+keybind = super+s=new_split:down
+keybind = super+;=new_split:right
+
+keybind = super+k=goto_split:top
+keybind = super+l=goto_split:right
+keybind = super+j=goto_split:bottom
+keybind = super+h=goto_split:left
+
+# Ctrl+Shift+J/K pass through to Pi for message navigation.
+keybind = control+shift+l=resize_split:right,15
+keybind = control+shift+h=resize_split:left,15
+
+# Scrollback
+keybind = super+u=scroll_page_up
+keybind = super+d=scroll_page_down
+keybind = super+f=write_screen_file:paste

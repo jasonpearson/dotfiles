@@ -1,0 +1,3 @@
+# Managed by mise; regenerate with `mise dot apply '~/.config/ghostty/config-theme'`.
+# Resolve XDG_CACHE_HOME at deployment; Ghostty does not expand shell variables.
+config-file = ?"{% if env.XDG_CACHE_HOME | default(value='') %}{{ env.XDG_CACHE_HOME }}{% else %}{{ env.HOME }}/.cache{% endif %}/dotfiles/theme/ghostty.conf"

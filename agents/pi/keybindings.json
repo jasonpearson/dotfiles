@@ -1,0 +1,12 @@
+{
+  "app.exit": [],
+  "tui.altScreen.halfPageUp": "ctrl+shift+k",
+  "tui.altScreen.halfPageDown": "ctrl+shift+j",
+  "tui.altScreen.lineUp": "ctrl+shift+y",
+  "tui.altScreen.lineDown": "ctrl+shift+e",
+  "tui.altScreen.bottom": ["end", "ctrl+shift+g"],
+  "tui.altScreen.searchNext": ["enter", "ctrl+n"],
+  "tui.altScreen.searchPrevious": ["shift+enter", "ctrl+shift+n"],
+  "app.model.select": "ctrl+shift+l",
+  "app.tree.filter.labeledOnly": "ctrl+shift+l"
+}

@@ -1,0 +1,5 @@
+# Hook commands need the invoking terminal's tmux environment.
+# Keep the app server local to each Codex invocation instead of the daemon.
+[features]
+hooks = true
+daemon_auto_start = false

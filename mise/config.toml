@@ -1,0 +1,156 @@
+# Per-key Codex configuration merging requires this version.
+min_version = "2026.10.4"
+
+[vars]
+# The global template keeps this canonical path when it renders itself again.
+dotfiles_config = "{{ config_source | canonicalize }}"
+
+[bootstrap.packages]
+"brew:bash" = { os = "macos" }
+"brew:tailscale" = { os = "macos" }
+"brew-cask:font-hack-nerd-font" = { os = "macos" }
+"brew-cask:ghostty" = { os = "macos" }
+"brew-cask:obsidian" = { os = "macos" }
+"brew:git" = { os = "macos" }
+"pacman:ghostty" = { os = "linux" }
+"pacman:git" = { os = "linux" }
+"pacman:tailscale" = { os = "linux" }
+"pacman:ttf-hack-nerd" = { os = "linux" }
+
+[bootstrap.repos]
+# Neovim uses these checkouts directly; keep refs aligned with their specs.
+"~/.local/share/nvim/themes/aether" = { url = "https://github.com/bjarneo/aether.nvim.git", ref = "v3" }
+"~/.local/share/nvim/themes/miasma" = { url = "https://github.com/OldJobobo/miasma.nvim.git" }
+
+[dotfiles]
+# Keep source paths relative to mise/ with ../; the global template anchors them.
+"~/.bash_profile" = { source = "../bash/bash_profile", mode = "symlink" }
+"~/.bashrc" = { source = "../bash/bashrc", mode = "symlink" }
+"~/.config/bash" = { source = "../bash/config", mode = "symlink-each" }
+"~/.config/dotfiles/theme/apply.py" = { source = "../theme/apply.py", mode = "symlink" }
+"~/.config/dotfiles/theme/palette.toml" = { source = "../theme/palette.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/ethereal.toml" = { source = "../theme/ethereal.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/osaka-jade.toml" = { source = "../theme/osaka-jade.toml", mode = "symlink" }
+"~/.config/ghostty/config" = { source = "../ghostty/config", mode = "symlink" }
+"~/.config/ghostty/config-theme" = { source = "../ghostty/config-theme.tera", mode = "template" }
+"~/.config/git" = { source = "../git", mode = "symlink-each" }
+"~/.config/mise/config.toml" = { source = "../mise/global-config.tera", mode = "template" }
+"~/.config/moshi/config.toml" = { source = "../moshi/config.toml", mode = "copy" }
+"~/.config/moshi/agent-hook.sh" = { source = "../moshi/agent-hook.sh", mode = "symlink" }
+"~/.config/moshi/control.sh" = { source = "../moshi/control.sh", mode = "symlink" }
+"~/.config/moshi/service.py" = { source = "../moshi/service.py", mode = "symlink" }
+"~/.config/nvim" = { source = "../nvim", mode = "symlink-each" }
+"~/.config/starship.toml" = { source = "../starship/starship.toml", mode = "symlink" }
+"~/.config/tmux/tmux.conf" = { source = "../tmux/tmux.conf", mode = "symlink" }
+"~/.config/tmux/attention-notifications.conf" = { source = "../tmux/attention-notifications.conf", mode = "symlink" }
+"~/.config/tmux-attention/config" = { source = "../tmux/tmux-attention-config", mode = "symlink" }
+
+# Agent configuration
+# Moshi's installer writes these files. Copies keep its updates out of Git.
+"~/.claude" = { source = "../agents/claude", mode = "symlink-each", exclude = ["settings.json"] }
+"~/.claude/settings.json" = { source = "../agents/claude/settings.json", mode = "copy" }
+"~/.pi/agent" = { source = "../agents/pi", mode = "symlink-each", exclude = ["extensions/moshi-hooks.ts"] }
+"~/.pi/agent/extensions/moshi-hooks.ts" = { source = "../agents/pi/extensions/moshi-hooks.ts", mode = "copy" }
+"~/.pi/agent/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.claude/CLAUDE.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.codex/AGENTS.md" = { source = "../agents/global-instructions.md", mode = "symlink" }
+"~/.codex/config.toml/tmux-title" = { source = "../agents/codex/tmux.toml", merge = true }
+"~/.codex/config.toml/tmux-attention" = { source = "../agents/codex/attention.toml", merge = true }
+"~/.codex/config.toml/theme" = { source = "../agents/codex/theme.toml", merge = true }
+"~/.codex/hooks.json" = { source = "../agents/codex/hooks.json", mode = "copy" }
+
+# Shared skills
+"~/.agents/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
+"~/.claude/skills/agent-browser" = { source = "../agents/skills/agent-browser", mode = "symlink" }
+
+"~/.agents/skills/ammend-commits" = { source = "../agents/skills/ammend-commits", mode = "symlink" }
+"~/.claude/skills/ammend-commits" = { source = "../agents/skills/ammend-commits", mode = "symlink" }
+
+"~/.agents/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
+"~/.claude/skills/hunk-review" = { source = "../agents/skills/hunk-review", mode = "symlink" }
+
+"~/.agents/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
+"~/.claude/skills/playwright-cli" = { source = "../agents/skills/playwright-cli", mode = "symlink" }
+
+"~/.agents/skills/recommit" = { source = "../agents/skills/recommit", mode = "symlink" }
+"~/.claude/skills/recommit" = { source = "../agents/skills/recommit", mode = "symlink" }
+
+"~/.agents/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
+"~/.claude/skills/web-search" = { source = "../agents/skills/web-search", mode = "symlink" }
+
+# Linux only
+[dotfiles."~/.config/ghostty/config-linux"]
+source = "../ghostty/config-linux"
+mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
+# Leave Fcitx's Unicode input settings at their defaults.
+[dotfiles."~/.config/fcitx5/conf/unicode.conf"]
+mode = "absent"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/xdg-terminals.list"]
+source = "../xdg/xdg-terminals.list"
+mode = "symlink"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/hypr"]
+source = "../hypr"
+mode = "symlink-each"
+variants = [
+  { os = "linux" },
+]
+
+[dotfiles."~/.config/omarchy"]
+source = "../omarchy"
+mode = "symlink-each"
+variants = [
+  { os = "linux" },
+]
+
+[tasks.moshi]
+description = "Moshi hooks and background service: on, off, or status (default)"
+run = 'sh "$HOME/.config/moshi/control.sh"'
+
+[tasks.theme]
+description = "Switch all terminal apps: mise theme [catppuccin|ethereal|osaka-jade] (no argument shows selection)"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py" --select'
+
+[tasks."theme:apply"]
+description = "Re-render the saved preset or Omarchy theme and refresh registered tmux servers"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py"'
+
+[tools]
+claude = "latest"
+codex = "latest"
+fzf = "0.74.4"
+github-cli = "2.101.0"
+"github:jasonpearson/tmux-attention" = "0.5.0"
+hunk = "0.22.0"
+jq = "1.8.2"
+lazygit = "0.65.1"
+lua-language-server = "3.19.1"
+mosh = "latest"
+neovim = "0.12.5"
+node = "24.21.0"
+"npm:@playwright/cli" = "0.1.21"
+"npm:agent-browser" = "0.38.1"
+"npm:skills" = "1.7.0"
+"npm:typescript" = "5.9.3"
+"npm:typescript-language-server" = "6.0.1"
+pi = "latest"
+"pypi:ddgs" = "9.16.0"
+python = "3.14.7"
+ripgrep = "15.2.0"
+starship = "1.26.0"
+tmux = "3.7c"
+tree-sitter = "0.26.1"
+uv = "0.12.19"
+yq = "4.53.6"
+zoxide = "0.10.0"

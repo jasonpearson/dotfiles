@@ -1,0 +1,6 @@
+[[ -r ~/.config/bash/personal.bash ]] && source ~/.config/bash/personal.bash
+[[ -r ~/.config/bash/local.bash ]] && source ~/.config/bash/local.bash
+if [[ $- == *i* ]] && declare -F _dotfiles_theme_install_prompt_hook >/dev/null; then
+  _dotfiles_theme_install_prompt_hook
+fi
+[[ -r ~/.config/bash/tmux.bash ]] && source ~/.config/bash/tmux.bash

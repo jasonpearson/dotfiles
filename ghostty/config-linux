@@ -1,0 +1,10 @@
+# Font size for the Omarchy desktop's GTK text scale.
+font-size = 11
+
+# Omarchy's Super+V sends Shift+Insert to terminals. Paste the regular
+# clipboard (Neovim's + register), not the primary selection (* register).
+keybind = shift+insert=paste_from_clipboard
+
+# Pass Pi's external-editor and previous-search-match shortcuts through.
+keybind = ctrl+shift+e=unbind
+keybind = ctrl+shift+n=unbind

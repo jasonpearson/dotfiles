@@ -1,0 +1,21 @@
+# Catppuccin Mocha preset and default off Omarchy (including macOS).
+# Customize shell colors here, then run `mise theme catppuccin`.
+colorscheme = "catppuccin-mocha"
+mode = "dark"
+foreground = "#cdd6f4"
+background = "#1e1e2e"
+accent = "#89b4fa"
+muted = "#585b70"
+error = "#f38ba8"
+status_background = "#7c85aa"
+prompt_accent = "#89b4fa"
+prompt_text = "#090c0c"
+prompt_segment = "#394260"
+git_segment = "#8c97c0"
+runtime_segment = "#1d2230"
+runtime_segment_alt = "#212736"
+hostname = "#fab387"
+node = "#a6e3a1"
+
+[ghostty]
+theme = "Catppuccin Mocha"

@@ -1,0 +1,7 @@
+{# Keep source paths rooted in the checkout when mise loads this global file. #}
+{%- set repo = vars.dotfiles_config | dirname | dirname -%}
+{%- set prefix = (repo ~ "/") | json_encode | trim_end(pat='"') -%}
+{%- set config_value = vars.dotfiles_config | json_encode -%}
+{{ read_file(path=vars.dotfiles_config)
+   | replace(from='dotfiles_config = "{{ config_source | canonicalize }}"', to='dotfiles_config = ' ~ config_value)
+   | replace(from='source = "../', to='source = ' ~ prefix) -}}
