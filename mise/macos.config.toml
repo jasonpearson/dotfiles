@@ -1,7 +1,3 @@
-[bootstrap.repos]
-"~/.local/share/nvim/themes/aether" = { url = "https://github.com/bjarneo/aether.nvim.git", ref = "v3" }
-"~/.local/share/nvim/themes/miasma" = { url = "https://github.com/OldJobobo/miasma.nvim.git" }
-
 [bootstrap.packages]
 "brew:bash" = { os = "macos" }
 "brew:tailscale" = { os = "macos" }

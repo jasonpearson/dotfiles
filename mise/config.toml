@@ -1,3 +1,7 @@
+[bootstrap.repos]
+"~/.local/share/nvim/themes/aether" = { url = "https://github.com/bjarneo/aether.nvim.git", ref = "v3" }
+"~/.local/share/nvim/themes/miasma" = { url = "https://github.com/OldJobobo/miasma.nvim.git" }
+
 [dotfiles]
 # bash
 "~/.bash_profile" = { source = "~/repos/dotfiles/bash/bash_profile", mode = "symlink" }
