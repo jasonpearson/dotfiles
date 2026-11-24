@@ -1,9 +1,9 @@
 {
-  "theme": "system",
-  "tuiMode": "fullscreen",
-  "lastChangelogVersion": "1.6.0",
   "defaultProvider": "openai-codex",
-  "defaultModel": "gpt-6-astra",
+  "defaultModel": "gpt-6.2-sol",
   "defaultThinkingLevel": "xhigh",
-  "hideThinkingBlock": false
+  "hideThinkingBlock": false,
+  "lastChangelogVersion": "1.6.0",
+  "theme": "system",
+  "tuiMode": "fullscreen"
 }
