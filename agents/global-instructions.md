@@ -4,10 +4,10 @@
 
 Select by the coding-agent host, not its model provider:
 
-- **Claude Code and Codex:** prefer built-in methods. Use `agent-browser` or
+- **Claude Code and Codex:** prefer built-in methods. Use `browser-use` or
   `playwright-cli` only when the user explicitly requests that CLI or skill.
 - **Pi:** select either skill automatically by the immediate activity:
-  - **Research → `agent-browser`:** gather external information through browser
+  - **Research → `browser-use`:** gather external information through browser
     interaction, including rendered documentation and other products' behavior.
   - **Engineering → `playwright-cli`:** inspect, reproduce bugs in, debug, or
     validate the application under development; author or maintain Playwright

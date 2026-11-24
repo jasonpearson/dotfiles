@@ -36,7 +36,7 @@
 "~/.codex/hooks.json" = { source = "~/repos/dotfiles/agents/codex/hooks.json", mode = "copy" }
 
 # agent skills
-"~/.agents/skills/agent-browser" = { source = "~/repos/dotfiles/agents/skills/agent-browser", mode = "symlink" }
+"~/.agents/skills/browser-use" = { source = "~/repos/dotfiles/agents/skills/browser-use", mode = "symlink" }
 "~/.agents/skills/ammend-commits" = { source = "~/repos/dotfiles/agents/skills/ammend-commits", mode = "symlink" }
 "~/.agents/skills/hunk-review" = { source = "~/repos/dotfiles/agents/skills/hunk-review", mode = "symlink" }
 "~/.agents/skills/playwright-cli" = { source = "~/repos/dotfiles/agents/skills/playwright-cli", mode = "symlink" }
@@ -44,7 +44,7 @@
 "~/.agents/skills/web-search" = { source = "~/repos/dotfiles/agents/skills/web-search", mode = "symlink" }
 
 # claude skills
-"~/.claude/skills/agent-browser" = { source = "~/repos/dotfiles/agents/skills/agent-browser", mode = "symlink" }
+"~/.claude/skills/browser-use" = { source = "~/repos/dotfiles/agents/skills/browser-use", mode = "symlink" }
 "~/.claude/skills/ammend-commits" = { source = "~/repos/dotfiles/agents/skills/ammend-commits", mode = "symlink" }
 "~/.claude/skills/hunk-review" = { source = "~/repos/dotfiles/agents/skills/hunk-review", mode = "symlink" }
 "~/.claude/skills/playwright-cli" = { source = "~/repos/dotfiles/agents/skills/playwright-cli", mode = "symlink" }
@@ -65,11 +65,11 @@ mosh = "latest"
 neovim = "0.12.5"
 node = "24.21.0"
 "npm:@playwright/cli" = "0.1.21"
-"npm:agent-browser" = "0.38.1"
 "npm:skills" = "1.7.0"
 "npm:typescript" = "5.9.3"
 "npm:typescript-language-server" = "6.0.1"
 pi = "latest"
+"pypi:browser-use" = "1.0.6"
 "pypi:ddgs" = "9.16.0"
 python = "3.14.7"
 ripgrep = "15.2.0"

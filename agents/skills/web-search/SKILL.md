@@ -42,7 +42,7 @@ your answer relies on only part of the page.
 DDGS can print an error while returning a successful exit code; inspect the
 output before treating a search or extraction as successful. Pages requiring
 JavaScript or login may return little useful text. Use available browser tools
-or the `agent-browser` skill when needed, respecting the host's skill invocation
+or the `browser-use` skill when needed, respecting the host's skill invocation
 policy. If neither is available, report the limitation. Do not silently switch
 to a paid search provider.
 

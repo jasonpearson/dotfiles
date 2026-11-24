@@ -18,7 +18,7 @@
   },
   "model": "claude-fable-5-1[1m]",
   "skillOverrides": {
-    "agent-browser": "user-invocable-only",
+    "browser-use": "user-invocable-only",
     "playwright-cli": "user-invocable-only",
     "recommit": "user-invocable-only",
     "web-search": "user-invocable-only"
