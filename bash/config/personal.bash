@@ -14,6 +14,8 @@ esac
 command -v mise >/dev/null 2>&1 && eval "$(mise activate bash)"
 if [[ -r ~/.config/dotfiles/theme/colors.bash ]]; then
   source ~/.config/dotfiles/theme/colors.bash
+elif [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/starship-omarchy.toml" ]]; then
+  export STARSHIP_CONFIG="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/starship-omarchy.toml"
 elif [[ ${STARSHIP_CONFIG:-} == "${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/theme/starship.toml" ]]; then
   # Drop a generated config inherited from a shell using the old deployment.
   unset STARSHIP_CONFIG

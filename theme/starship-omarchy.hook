@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python3 -B "$(dirname "$(realpath "$0")")/starship-omarchy.py"
