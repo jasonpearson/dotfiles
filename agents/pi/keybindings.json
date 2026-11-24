@@ -1,12 +1,15 @@
 {
   "app.exit": [],
-  "tui.altScreen.halfPageUp": "ctrl+shift+k",
-  "tui.altScreen.halfPageDown": "ctrl+shift+j",
+  "tui.altScreen.halfPageUp": "ctrl+shift+u",
+  "tui.altScreen.halfPageDown": "ctrl+shift+d",
   "tui.altScreen.lineUp": "ctrl+shift+y",
   "tui.altScreen.lineDown": "ctrl+shift+e",
   "tui.altScreen.bottom": ["end", "ctrl+shift+g"],
+  "tui.altScreen.nextPrompt": ["ctrl+shift+j"],
+  "tui.altScreen.previousPrompt": ["ctrl+shift+k"],
   "tui.altScreen.searchNext": ["enter", "ctrl+n"],
   "tui.altScreen.searchPrevious": ["shift+enter", "ctrl+shift+n"],
+  "tui.input.newLine": "shift+enter",
   "app.model.select": "ctrl+shift+l",
   "app.tree.filter.labeledOnly": "ctrl+shift+l"
 }
