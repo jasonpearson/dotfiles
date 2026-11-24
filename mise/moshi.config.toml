@@ -1,0 +1,14 @@
+[dotfiles]
+# moshi
+"~/.config/moshi/config.toml" = { source = "~/repos/dotfiles/moshi/config.toml", mode = "copy" }
+"~/.config/moshi/agent-hook.sh" = { source = "~/repos/dotfiles/moshi/agent-hook.sh", mode = "symlink" }
+"~/.config/moshi/control.sh" = { source = "~/repos/dotfiles/moshi/control.sh", mode = "symlink" }
+"~/.config/moshi/service.py" = { source = "~/repos/dotfiles/moshi/service.py", mode = "symlink" }
+
+# pi
+"~/.pi/agent" = { source = "~/repos/dotfiles/agents/pi", mode = "symlink-each", exclude = ["extensions/moshi-hooks.ts"] }
+"~/.pi/agent/extensions/moshi-hooks.ts" = { source = "~/repos/dotfiles/agents/pi/extensions/moshi-hooks.ts", mode = "copy" }
+
+[tasks.moshi]
+description = "Moshi hooks and background service: on, off, or status (default)"
+run = 'sh "$HOME/.config/moshi/control.sh"'

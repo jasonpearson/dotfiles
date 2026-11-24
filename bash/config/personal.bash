@@ -12,7 +12,12 @@ case ":$PATH:" in
   *) export PATH="$HOME/repos/k8s-start/bin:$PATH" ;;
 esac
 command -v mise >/dev/null 2>&1 && eval "$(mise activate bash)"
-[[ -r ~/.config/bash/colors.sh ]] && source ~/.config/bash/colors.sh
+if [[ -r ~/.config/dotfiles/theme/colors.bash ]]; then
+  source ~/.config/dotfiles/theme/colors.bash
+elif [[ ${STARSHIP_CONFIG:-} == "${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/theme/starship.toml" ]]; then
+  # Drop a generated config inherited from a shell using the old deployment.
+  unset STARSHIP_CONFIG
+fi
 eval "$(starship init bash)"
 eval "$(zoxide init bash)"
 export EDITOR=nvim
@@ -25,7 +30,12 @@ if [[ $- == *i* ]]; then
 
   # Readline redraws the mode arrow without rerunning Starship.
   bind 'set show-mode-in-prompt on'
-  _dotfiles_theme_readline
+  if declare -F _dotfiles_theme_readline >/dev/null; then
+    _dotfiles_theme_readline
+  else
+    bind 'set vi-ins-mode-string "\1\e[34m\2❯\1\e[0m\2"'
+    bind 'set vi-cmd-mode-string "\1\e[31m\2❮\1\e[0m\2"'
+  fi
 fi
 
 alias t='tmux-attention'

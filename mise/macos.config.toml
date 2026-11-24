@@ -1,0 +1,30 @@
+[bootstrap.repos]
+"~/.local/share/nvim/themes/aether" = { url = "https://github.com/bjarneo/aether.nvim.git", ref = "v3" }
+"~/.local/share/nvim/themes/miasma" = { url = "https://github.com/OldJobobo/miasma.nvim.git" }
+
+[bootstrap.packages]
+"brew:bash" = { os = "macos" }
+"brew:tailscale" = { os = "macos" }
+"brew-cask:font-hack-nerd-font" = { os = "macos" }
+"brew-cask:ghostty" = { os = "macos" }
+"brew-cask:obsidian" = { os = "macos" }
+"brew:git" = { os = "macos" }
+
+[dotfiles]
+# theme
+"~/.codex/config.toml/theme" = { source = "~/repos/dotfiles/agents/codex/theme.toml", merge = true }
+"~/.config/dotfiles/theme/colors.bash" = { source = "~/repos/dotfiles/theme/colors.bash", mode = "symlink" }
+"~/.config/dotfiles/theme/apply.py" = { source = "~/repos/dotfiles/theme/apply.py", mode = "symlink" }
+"~/.config/dotfiles/theme/palette.toml" = { source = "~/repos/dotfiles/theme/palette.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/ethereal.toml" = { source = "~/repos/dotfiles/theme/ethereal.toml", mode = "symlink" }
+"~/.config/dotfiles/theme/osaka-jade.toml" = { source = "~/repos/dotfiles/theme/osaka-jade.toml", mode = "symlink" }
+"~/.config/ghostty/config-theme" = { source = "~/repos/dotfiles/theme/ghostty.tera", mode = "template" }
+
+[tasks.theme]
+description = "Switch all terminal apps: mise theme [catppuccin|ethereal|osaka-jade] (no argument shows selection)"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py" --select'
+
+[tasks."theme:apply"]
+description = "Re-render the saved macOS preset and refresh registered tmux servers"
+run = 'python3 "$HOME/.config/dotfiles/theme/apply.py"'
+

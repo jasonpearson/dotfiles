@@ -62,8 +62,7 @@ _dotfiles_theme_install_prompt_hook() {
 }
 
 # A renderer failure leaves the cache usable and must not block shell startup.
-# Omarchy's noninteractive app hooks share one render from the theme-set hook.
-if [[ $- == *i* && -r "$_dotfiles_theme_config/apply.py" ]]; then
+if [[ $- == *i* ]]; then
   dotfiles_theme_apply --no-reload || true
 fi
 _dotfiles_theme_read

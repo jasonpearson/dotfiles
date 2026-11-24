@@ -1,0 +1,10 @@
+
+[bootstrap.packages]
+"pacman:ghostty" = { os = "linux" }
+"pacman:git" = { os = "linux" }
+"pacman:tailscale" = { os = "linux" }
+"pacman:ttf-hack-nerd" = { os = "linux" }
+
+
+[dotfiles]
+"~/.config/hypr" = { source = "~/repos/dotfiles/hypr", mode = "symlink-each" }

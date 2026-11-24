@@ -1,3 +1,0 @@
-#!/usr/bin/env bash
-# Read the active palette; overlapping theme switches can make the argument stale.
-python3 "$HOME/.config/dotfiles/theme/apply.py"

@@ -36,7 +36,7 @@ format = '[$output](bold fg:hostname) '
 
 [os]
 disabled = false
-style = "fg:prompt_segment bg:prompt_accent"
+style = "fg:prompt_text bg:prompt_accent"
 
 [os.symbols]
 Windows = ""
@@ -62,7 +62,7 @@ RedHatEnterprise = "󱄛"
 
 [username]
 show_always = true
-style_user = "fg:prompt_segment bg:prompt_accent"
+style_user = "fg:prompt_text bg:prompt_accent"
 format = '[ $user ]($style)'
 
 [directory]
@@ -108,15 +108,15 @@ style = "bg:runtime_segment"
 format = '[[  $time ](fg:git_segment bg:runtime_segment)]($style)'
 
 [palettes.shared]
-# ANSI fallback outside managed Bash. Bash selects the generated RGB config
-# via STARSHIP_CONFIG; preset colors are defined in theme/*.toml.
+# ANSI colors follow the terminal palette when Omarchy switches themes.
+# The macOS renderer replaces these entries in its generated config.
 foreground = "white"
 background = "black"
 accent = "blue"
 prompt_accent = "blue"
 prompt_text = "black"
-prompt_segment = "bright-black"
-git_segment = "white"
+prompt_segment = "black"
+git_segment = "green"
 runtime_segment = "black"
 runtime_segment_alt = "black"
 hostname = "yellow"
