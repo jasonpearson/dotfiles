@@ -16,7 +16,7 @@ vim.keymap.set({ "v" }, "<leader>y", '"+y') -- yank to system clipboard
 vim.keymap.set({ "n" }, "<leader>y", '<cmd>let @+ = expand("%:.")<cr>') -- yank path relative to cwd to clipboard
 vim.keymap.set({ "n" }, "<leader>Y", '<cmd>let @+ = expand("%:p")<cr>') -- yank absolute path to clipboard
 
-local function navigate(direction, tmux_flag, herdr_direction)
+local function navigate(direction, tmux_flag)
 	return function()
 		local before = vim.api.nvim_get_current_win()
 		vim.cmd.wincmd(direction)
@@ -27,16 +27,14 @@ local function navigate(direction, tmux_flag, herdr_direction)
 
 		if vim.env.TMUX then
 			vim.fn.jobstart({ "tmux", "select-pane", tmux_flag }, { detach = true })
-		elseif vim.env.HERDR_PANE_ID then
-			vim.fn.jobstart({ "herdr", "pane", "focus", "--current", "--direction", herdr_direction }, { detach = true })
 		end
 	end
 end
 
-vim.keymap.set("n", "<C-h>", navigate("h", "-L", "left"), { desc = "Go to left window or pane" })
-vim.keymap.set("n", "<C-j>", navigate("j", "-D", "down"), { desc = "Go to lower window or pane" })
-vim.keymap.set("n", "<C-k>", navigate("k", "-U", "up"), { desc = "Go to upper window or pane" })
-vim.keymap.set("n", "<C-l>", navigate("l", "-R", "right"), { desc = "Go to right window or pane" })
+vim.keymap.set("n", "<C-h>", navigate("h", "-L"), { desc = "Go to left window or pane" })
+vim.keymap.set("n", "<C-j>", navigate("j", "-D"), { desc = "Go to lower window or pane" })
+vim.keymap.set("n", "<C-k>", navigate("k", "-U"), { desc = "Go to upper window or pane" })
+vim.keymap.set("n", "<C-l>", navigate("l", "-R"), { desc = "Go to right window or pane" })
 
 vim.keymap.set("n", "<leader>yp", function()
   vim.fn.setreg("+", vim.fn.expand("%"))

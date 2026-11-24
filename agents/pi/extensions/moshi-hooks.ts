@@ -133,12 +133,6 @@ interface TerminalContext {
   tmuxSocket: string
   zellijSession: string
   zellijPane: string
-  herdrSession: string
-  herdrPane: string
-  herdrWorkspaceId: string
-  herdrWorkspace: string
-  herdrTabId: string
-  herdrTab: string
   muxEnv: Record<string, string>
 }
 
@@ -179,20 +173,8 @@ function resolveTerminalContext(): TerminalContext {
   }
   const zellijSession = process.env.ZELLIJ_SESSION_NAME ?? ""
   const zellijPane = process.env.ZELLIJ_PANE_ID ?? ""
-  // Herdr stamps pane identity into every pane's environment; labels are
-  // resolved daemon-side from these ids, so no herdr CLI runs in-process.
-  const inHerdr = process.env.HERDR_ENV === "1"
-  const herdrSession = inHerdr ? process.env.HERDR_SESSION ?? "" : ""
-  const herdrInfo = {
-    paneId: inHerdr ? process.env.HERDR_PANE_ID ?? "" : "",
-    workspaceId: inHerdr ? process.env.HERDR_WORKSPACE_ID ?? "" : "",
-    workspace: "",
-    tabId: inHerdr ? process.env.HERDR_TAB_ID ?? "" : "",
-    tab: "",
-  }
   let terminalKind = ""
   if (tmuxSession) terminalKind = "tmux"
-  else if (process.env.HERDR_ENV === "1") terminalKind = "herdr"
   else if (process.env.ZELLIJ || zellijSession || zellijPane) terminalKind = "zellij"
   // Mux-driver panes (tern, TUIOS, …) are detected daemon-side from these
   // variables (internal/mux), so a new driver needs no change here.
@@ -210,12 +192,6 @@ function resolveTerminalContext(): TerminalContext {
     tmuxSocket,
     zellijSession,
     zellijPane,
-    herdrSession,
-    herdrPane: herdrInfo.paneId,
-    herdrWorkspaceId: herdrInfo.workspaceId,
-    herdrWorkspace: herdrInfo.workspace,
-    herdrTabId: herdrInfo.tabId,
-    herdrTab: herdrInfo.tab,
   }
 }
 
@@ -233,7 +209,7 @@ function projectNameFromCwd(cwd: string): string {
 }
 
 function projectNameForCwd(cwd: string, terminal: TerminalContext): string {
-  return terminal.tmuxSession || terminal.herdrSession || terminal.zellijSession || projectNameFromCwd(cwd)
+  return terminal.tmuxSession || terminal.zellijSession || projectNameFromCwd(cwd)
 }
 
 function firstString(...values: unknown[]): string {
@@ -494,12 +470,6 @@ function baseEnvelope(payload: HookPayload, sessionId: string, eventName: string
     tmuxSocket: terminalContext.tmuxSocket,
     zellijSession: terminalContext.zellijSession,
     zellijPane: terminalContext.zellijPane,
-    herdrSession: terminalContext.herdrSession,
-    herdrPane: terminalContext.herdrPane,
-    herdrWorkspaceId: terminalContext.herdrWorkspaceId,
-    herdrWorkspace: terminalContext.herdrWorkspace,
-    herdrTabId: terminalContext.herdrTabId,
-    herdrTab: terminalContext.herdrTab,
     modelName: payload.model,
     transcriptPath: payload.transcript_path,
     requestedAt: new Date().toISOString(),
