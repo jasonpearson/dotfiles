@@ -5,9 +5,8 @@
 "~/.config/moshi/control.sh" = { source = "~/repos/dotfiles/moshi/control.sh", mode = "symlink" }
 "~/.config/moshi/service.py" = { source = "~/repos/dotfiles/moshi/service.py", mode = "symlink" }
 
-# pi
-"~/.pi/agent" = { source = "~/repos/dotfiles/agents/pi", mode = "symlink-each", exclude = ["extensions/moshi-hooks.ts"] }
-"~/.pi/agent/extensions/moshi-hooks.ts" = { source = "~/repos/dotfiles/agents/pi/extensions/moshi-hooks.ts", mode = "copy" }
+# The base Claude and Codex templates pick up Moshi when this environment is selected.
+"~/.pi/agent/extensions/moshi-hooks.ts" = { source = "~/repos/dotfiles/moshi/pi-hooks.ts", mode = "copy" }
 
 [tasks.moshi]
 description = "Moshi hooks and background service: on, off, or status (default)"

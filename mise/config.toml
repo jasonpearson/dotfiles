@@ -26,18 +26,17 @@
 "~/.config/tmux-attention/config" = { source = "~/repos/dotfiles/tmux/tmux-attention-config", mode = "symlink" }
 
 # claude
-"~/.claude" = { source = "~/repos/dotfiles/agents/claude", mode = "symlink-each", exclude = ["settings.json"] }
+"~/.claude" = { source = "~/repos/dotfiles/agents/claude", mode = "symlink-each", exclude = ["settings.json", "settings.json.tera"] }
 "~/.claude/CLAUDE.md" = { source = "~/repos/dotfiles/agents/global-instructions.md", mode = "symlink" }
-"~/.claude/settings.json" = { source = "~/repos/dotfiles/agents/claude/settings.json", mode = "copy" }
+"~/.claude/settings.json" = { source = "~/repos/dotfiles/agents/claude/settings.json.tera", mode = "template" }
 
 # pi
+"~/.pi/agent" = { source = "~/repos/dotfiles/agents/pi", mode = "symlink-each" }
 "~/.pi/agent/AGENTS.md" = { source = "~/repos/dotfiles/agents/global-instructions.md", mode = "symlink" }
 
 # codex
 "~/.codex/AGENTS.md" = { source = "~/repos/dotfiles/agents/global-instructions.md", mode = "symlink" }
-"~/.codex/config.toml/tmux-title" = { source = "~/repos/dotfiles/agents/codex/tmux.toml", merge = true }
-"~/.codex/config.toml/tmux-attention" = { source = "~/repos/dotfiles/agents/codex/attention.toml", merge = true }
-"~/.codex/hooks.json" = { source = "~/repos/dotfiles/agents/codex/hooks.json", mode = "copy" }
+"~/.codex/hooks.json" = { source = "~/repos/dotfiles/agents/codex/hooks.json.tera", mode = "template" }
 
 # agent skills
 "~/.agents/skills/browser-use" = { source = "~/repos/dotfiles/agents/skills/browser-use", mode = "symlink" }
@@ -54,6 +53,15 @@
 "~/.claude/skills/playwright-cli" = { source = "~/repos/dotfiles/agents/skills/playwright-cli", mode = "symlink" }
 "~/.claude/skills/recommit" = { source = "~/repos/dotfiles/agents/skills/recommit", mode = "symlink" }
 "~/.claude/skills/web-search" = { source = "~/repos/dotfiles/agents/skills/web-search", mode = "symlink" }
+
+[tasks.bootstrap]
+depends = ["codex:config"]
+
+[tasks."codex:config"]
+description = "Apply shared Codex settings without replacing machine-local config"
+run = """
+uv run --no-project --no-python-downloads --python "$(command -v python3)" "$HOME/repos/dotfiles/agents/codex/apply-config.py"{% if mise_env is defined and "macos" in mise_env %} --theme{% endif %}
+"""
 
 [tools]
 claude = "latest"

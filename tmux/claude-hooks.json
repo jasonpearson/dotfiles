@@ -1,0 +1,141 @@
+{
+  "UserPromptSubmit": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention working >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "PreToolUse": [
+    {
+      "matcher": "AskUserQuestion",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention blocked >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    },
+    {
+      "matcher": "ExitPlanMode",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention blocked >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "PermissionRequest": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention blocked >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "PostToolUse": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention working >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "PostToolUseFailure": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention working >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "PermissionDenied": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention working >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention done >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "SessionEnd": [
+    {
+      "matcher": "",
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention clear >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "StopFailure": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention failed >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "Elicitation": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention blocked >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ],
+  "ElicitationResult": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "mise exec -- tmux-attention working >/dev/null 2>&1 || :",
+          "timeout": 3
+        }
+      ]
+    }
+  ]
+}

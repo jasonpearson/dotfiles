@@ -3,7 +3,7 @@
 set -eu
 
 usage() {
-  printf 'Usage: mise moshi [on|off|status]\n' >&2
+  printf 'Usage: mise -E moshi run moshi [on|off|status]\n' >&2
   exit 2
 }
 

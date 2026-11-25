@@ -1,0 +1,42 @@
+{
+  "PermissionRequest": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" codex-hook"
+        }
+      ]
+    }
+  ],
+  "SessionStart": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" codex-hook"
+        }
+      ]
+    }
+  ],
+  "Stop": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" codex-hook"
+        }
+      ]
+    }
+  ],
+  "UserPromptSubmit": [
+    {
+      "hooks": [
+        {
+          "type": "command",
+          "command": "sh \"$HOME/.config/moshi/agent-hook.sh\" codex-hook"
+        }
+      ]
+    }
+  ]
+}

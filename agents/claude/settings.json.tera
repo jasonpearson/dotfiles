@@ -1,0 +1,5 @@
+{% set args = " claude" -%}
+{% if mise_env is defined and "moshi" in mise_env -%}
+{% set_global args = args ~ " --moshi" -%}
+{% endif -%}
+{{ exec(command=(mise_bin | quote) ~ " exec python -- python3 " ~ ((env.HOME ~ "/repos/dotfiles/agents/render-hooks.py") | quote) ~ args) }}

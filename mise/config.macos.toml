@@ -8,7 +8,6 @@
 
 [dotfiles]
 # theme
-"~/.codex/config.toml/theme" = { source = "~/repos/dotfiles/agents/codex/theme.toml", merge = true }
 "~/.config/dotfiles/theme/colors.bash" = { source = "~/repos/dotfiles/theme/colors.bash", mode = "symlink" }
 "~/.config/dotfiles/theme/apply.py" = { source = "~/repos/dotfiles/theme/apply.py", mode = "symlink" }
 "~/.config/dotfiles/theme/palette.toml" = { source = "~/repos/dotfiles/theme/palette.toml", mode = "symlink" }

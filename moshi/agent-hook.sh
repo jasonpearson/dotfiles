@@ -1,5 +1,5 @@
 #!/bin/sh
-# Claude/Codex hook opt-in policy; keep in sync with agents/pi/extensions/moshi-hooks.ts.
+# Claude/Codex hook opt-in policy; keep in sync with moshi/pi-hooks.ts.
 # Paths match mise's ~/.config targets. Explicit disable takes precedence.
 if [ "${DOTFILES_MOSHI_DISABLED:-}" = 1 ] || [ -e "$HOME/.config/moshi/disabled" ]; then
   exit 0
