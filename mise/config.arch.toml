@@ -7,6 +7,7 @@
 
 
 [dotfiles]
+"~/.config/ghostty/config-linux" = { source = "~/repos/dotfiles/ghostty/config-linux", mode = "symlink" }
 "~/.config/omarchy/hooks/theme-set.d/tmux-accent" = { source = "~/repos/dotfiles/theme/tmux-omarchy.bash", mode = "symlink" }
 "~/.config/omarchy/hooks/theme-set.d/starship" = { source = "~/repos/dotfiles/theme/starship-omarchy.hook", mode = "symlink" }
 "~/.config/hypr" = { source = "~/repos/dotfiles/hypr", mode = "symlink-each" }

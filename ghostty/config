@@ -1,4 +1,4 @@
-# Default theme; `mise theme <name>` selects a shared preset.
+# Default theme; on macOS, `mise -E macos run theme <name>` selects a shared preset.
 theme = Catppuccin Mocha
 config-file = ?config-theme
 
@@ -7,8 +7,8 @@ config-file = ?"~/.local/state/omarchy/current/theme/ghostty.conf"
 
 font-family = "Hack Nerd Font"
 font-style = Regular
-font-size = 15
-# Optional font-size override, deployed only on Linux by mise.
+font-size = 14
+# Optional font-size override, deployed by the mise arch environment.
 config-file = ?config-linux
 font-feature = -calt, -liga, -dlig
 macos-titlebar-proxy-icon = hidden

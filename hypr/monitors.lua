@@ -1,2 +1,2 @@
-hl.env("GDK_SCALE", "1")
-hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 2 })
+hl.env("GDK_SCALE", "2")
+hl.monitor({ output = "", mode = "preferred", position = "auto", scale = 1.6 })
