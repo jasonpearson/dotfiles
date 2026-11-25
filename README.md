@@ -18,16 +18,12 @@ mise always loads `mise/config.toml`, plus `mise/config.<env>.toml` for each exp
 
 The base config renders `~/.claude/settings.json` and `~/.codex/hooks.json` from the [tmux-attention hook fragments](tmux/) and, for Claude, [its base settings](agents/claude/settings.json). Pi gets its standalone tmux-attention extension. The renderer uses mise's configured Python; no separate Python install is needed.
 
-## Codex config
+## Bash and Zsh
 
-Bootstrap runs `codex:config` after installing tools. The task updates only the keys in [`agents/codex/`](agents/codex/), preserving other settings and comments in `~/.codex/config.toml` (or `$CODEX_HOME/config.toml`). This also works on mise 2026.9.10, which doesn't support dotfile merge entries.
+Bash and macOS Zsh load the same [shell aliases and helpers](shell/). Bootstrap installs `eza` and `fzf` on both platforms. `ls` uses eza's icons and directory-first listing, and **Ctrl+R** opens fzf's history picker. Use `command ls` for the system listing. tmux still starts Bash.
 
-To reapply just those settings:
+On macOS, back up any existing `~/.zshrc` before deploying the repo's [Zsh config](zsh/zshrc). It activates mise, Starship, and zoxide natively without sourcing Bash.
 
-```sh
-mise run codex:config           # tmux title and attention settings
-mise -E macos run codex:config  # also select the generated Codex theme
-```
 
 ## Moshi (optional, per machine)
 

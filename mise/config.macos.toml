@@ -7,6 +7,8 @@
 "brew:git" = { os = "macos" }
 
 [dotfiles]
+"~/.zshrc" = { source = "~/repos/dotfiles/zsh/zshrc", mode = "symlink" }
+
 # theme
 "~/.config/dotfiles/theme/colors.bash" = { source = "~/repos/dotfiles/theme/colors.bash", mode = "symlink" }
 "~/.config/dotfiles/theme/apply.py" = { source = "~/repos/dotfiles/theme/apply.py", mode = "symlink" }

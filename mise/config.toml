@@ -3,6 +3,9 @@
 "~/.local/share/nvim/themes/miasma" = { url = "https://github.com/OldJobobo/miasma.nvim.git" }
 
 [dotfiles]
+# shared shell files
+"~/.config/dotfiles/shell" = { source = "~/repos/dotfiles/shell", mode = "symlink-each" }
+
 # bash
 "~/.bash_profile" = { source = "~/repos/dotfiles/bash/bash_profile", mode = "symlink" }
 "~/.bashrc" = { source = "~/repos/dotfiles/bash/bashrc", mode = "symlink" }
@@ -66,6 +69,7 @@ uv run --no-project --no-python-downloads --python "$(command -v python3)" "$HOM
 [tools]
 claude = "latest"
 codex = "latest"
+eza = "0.23.5"
 fzf = "0.74.4"
 github-cli = "2.101.0"
 "github:jasonpearson/tmux-attention" = "0.5.0"

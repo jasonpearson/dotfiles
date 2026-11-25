@@ -1,0 +1,21 @@
+[[ -r ~/.config/dotfiles/shell/env.sh ]] && source ~/.config/dotfiles/shell/env.sh
+command -v mise >/dev/null 2>&1 && eval "$(mise activate zsh)"
+
+HISTFILE=${HISTFILE:-$HOME/.zsh_history}
+HISTSIZE=32768
+SAVEHIST=$HISTSIZE
+setopt append_history hist_ignore_dups
+
+# The macOS theme task writes the Starship config here.
+if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/theme/starship.toml" ]]; then
+  export STARSHIP_CONFIG="${XDG_CACHE_HOME:-$HOME/.cache}/dotfiles/theme/starship.toml"
+fi
+command -v starship >/dev/null 2>&1 && eval "$(starship init zsh)"
+command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+
+# Enable Ctrl+R without taking over Ctrl+T or Alt+C.
+if command -v fzf >/dev/null 2>&1; then
+  FZF_CTRL_T_COMMAND= FZF_ALT_C_COMMAND= source <(fzf --zsh)
+fi
+
+[[ -r ~/.config/dotfiles/shell/helpers.sh ]] && source ~/.config/dotfiles/shell/helpers.sh
